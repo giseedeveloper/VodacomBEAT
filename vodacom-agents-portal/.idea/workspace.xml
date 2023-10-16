@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="76a845a3-77a9-471d-8af4-115782e32966" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/.idea/voting-dashboard.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/.idea/voting-dashboard.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/ReadMe.MD" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/ReadMe.MD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/commit.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/commit.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/deploy-ui.MD" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/deploy-ui.MD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/deploy.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/deploy.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/docs/contrasena.md" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/docs/contrasena.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/public/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/public/favicon.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/public/logo192.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/public/logo192.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/public/logo512.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/public/logo512.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/public/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/public/robots.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/public/robots.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/scripts/versionIncrementer.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/scripts/versionIncrementer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/astronaut.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/astronaut.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/astronautNoFile.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/astronautNoFile.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/auth/login_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/auth/login_icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/empty.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/empty.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/etc/404-error.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/etc/404-error.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/admin.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/admin.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/boxes_orders.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/boxes_orders.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/currency.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/currency.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/destination.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/destination.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/label.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/label.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/people.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/people.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/product_returns.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/product_returns.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/promotions.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/promotions.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/sale.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/sale.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/icons/warehouse.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/icons/warehouse.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/log.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/log.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/mobiad-rectangle.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/mobiad-rectangle.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/mobiad.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/mobiad.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/assets/images/telescope.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/assets/images/telescope.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/css/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/css/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/css/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/css/custom.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/css/home-menu.css" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/css/home-menu.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/CustomerInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/CustomerInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/MessagesInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/MessagesInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/OrderInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/OrderInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/PaymentTransactions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/PaymentTransactions.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/ProductInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/ProductInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/ResourcesInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/ResourcesInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/ShippingInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/ShippingInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/SubscriptionsInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/SubscriptionsInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/referrals/ReferralsInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/referrals/ReferralsInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/interfaces/system/AuthInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/interfaces/system/AuthInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/react-app-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/react-app-env.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/reportWebVitals.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/reportWebVitals.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/services/auth/AuthHelpers.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/services/auth/AuthHelpers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/services/auth/Logout.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/services/auth/Logout.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/services/auth/RequireAuth.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/services/auth/RequireAuth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/services/notification/notifications.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/services/notification/notifications.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/services/rest/RestService.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/services/rest/RestService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/services/rest/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/services/rest/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/state/auth/authStore.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/state/auth/authStore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/state/auth/serverConfigsStore.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/state/auth/serverConfigsStore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/types/ui/BaseCardComponentProps.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/types/ui/BaseCardComponentProps.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/types/ui/ProductFormProps.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/types/ui/ProductFormProps.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/ui/AppRouter.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/ui/AppRouter.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/ui/MainLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/ui/MainLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/ui/auth/LoginPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/ui/auth/LoginPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/ui/etc/pages/PageNotFound.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/ui/etc/pages/PageNotFound.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/ui/features/reports/DashboardInsights.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/ui/features/reports/DashboardInsights.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/ui/features/reports/DashboardStatistic.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/ui/features/reports/DashboardStatistic.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/ui/features/reports/StatisticsGroup.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/ui/features/reports/StatisticsGroup.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/src/utils/helpers.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/src/utils/helpers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/version" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/version" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../referrals-agents-portal/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/referrals-agents-portal/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/voting-dashboard.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/.idea/voting-dashboard.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ReadMe.MD" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/ReadMe.MD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/commit.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/commit.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deploy-ui.MD" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/deploy-ui.MD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deploy.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/deploy.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/contrasena.md" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/docs/contrasena.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/public/favicon.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/logo192.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/public/logo192.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/logo512.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/public/logo512.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/public/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/robots.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/public/robots.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/versionIncrementer.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/scripts/versionIncrementer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/astronaut.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/astronaut.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/astronautNoFile.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/astronautNoFile.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/auth/login_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/auth/login_icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/empty.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/empty.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/etc/404-error.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/etc/404-error.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/admin.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/admin.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/boxes_orders.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/boxes_orders.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/currency.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/currency.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/destination.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/destination.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/label.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/label.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/people.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/people.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/product_returns.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/product_returns.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/promotions.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/promotions.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/sale.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/sale.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/icons/warehouse.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/icons/warehouse.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/log.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/log.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/mobiad-rectangle.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/mobiad-rectangle.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/mobiad.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/mobiad.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/telescope.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/telescope.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/voda.png" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/assets/images/voda.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/css/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/css/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/css/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/css/custom.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/css/home-menu.css" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/css/home-menu.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/CustomerInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/CustomerInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/MessagesInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/MessagesInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/OrderInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/OrderInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/PaymentTransactions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/PaymentTransactions.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/ProductInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/ProductInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/ResourcesInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/ResourcesInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/ShippingInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/ShippingInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/SubscriptionsInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/SubscriptionsInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/referrals/ReferralsInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/referrals/ReferralsInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/interfaces/system/AuthInterfaces.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/interfaces/system/AuthInterfaces.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/react-app-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/react-app-env.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportWebVitals.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/reportWebVitals.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/auth/AuthHelpers.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/services/auth/AuthHelpers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/auth/Logout.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/services/auth/Logout.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/auth/RequireAuth.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/services/auth/RequireAuth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/notification/notifications.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/services/notification/notifications.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/rest/RestService.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/services/rest/RestService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/rest/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/services/rest/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/auth/authStore.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/state/auth/authStore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/auth/serverConfigsStore.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/state/auth/serverConfigsStore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/ui/BaseCardComponentProps.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/types/ui/BaseCardComponentProps.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/ui/ProductFormProps.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/types/ui/ProductFormProps.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/AppRouter.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/ui/AppRouter.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/MainLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/ui/MainLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/PopUpMenu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/ui/PopUpMenu.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/auth/LoginPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/ui/auth/LoginPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/etc/pages/PageNotFound.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/ui/etc/pages/PageNotFound.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/features/customers/CustomerForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/ui/features/customers/CustomerForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/features/reports/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/ui/features/reports/Dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/features/reports/StatisticItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/ui/features/reports/StatisticItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/features/reports/StatisticsGroup.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/ui/features/reports/StatisticsGroup.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/helpers.js" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/src/utils/helpers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/version" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/version" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../portals/vodacom-agents-portal/yarn.lock" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2PWN0X3RxXeESM0QoEpwaepaaaj" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/usr/local/var/www/organizations/mobiad/mobiad-subscriptions/vodacom-agents-portal/public",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "/usr/local/var/www/organizations/mobiad/mobiad-subscriptions/vodacom-agents-portal/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public" />
+      <recent name="$PROJECT_DIR$/src/ui/features" />
+      <recent name="$PROJECT_DIR$/src/assets/images" />
+      <recent name="$PROJECT_DIR$/src/interfaces/referrals" />
+      <recent name="$PROJECT_DIR$/src/ui/features/referrals" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/ui" />
+      <recent name="$PROJECT_DIR$/src/ui/features/customers" />
+      <recent name="$PROJECT_DIR$/src/ui/features" />
+      <recent name="$PROJECT_DIR$/src/ui/subscribers" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="76a845a3-77a9-471d-8af4-115782e32966" name="Changes" comment="" />
+      <created>1683568655044</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1683568655044</updated>
+      <workItem from="1683568656156" duration="619000" />
+      <workItem from="1683569278254" duration="4869000" />
+      <workItem from="1683737787452" duration="24000" />
+      <workItem from="1683746778283" duration="2911000" />
+      <workItem from="1686544652411" duration="5527000" />
+      <workItem from="1686628105706" duration="1558000" />
+      <workItem from="1686630937509" duration="1430000" />
+      <workItem from="1686717457564" duration="16099000" />
+      <workItem from="1687189118248" duration="1211000" />
+      <workItem from="1687636053508" duration="145000" />
+      <workItem from="1688058449803" duration="4641000" />
+      <workItem from="1688063841633" duration="6195000" />
+      <workItem from="1690729272971" duration="63000" />
+      <workItem from="1693042040687" duration="15926000" />
+      <workItem from="1693933705551" duration="2384000" />
+      <workItem from="1696786802378" duration="1273000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+</project>

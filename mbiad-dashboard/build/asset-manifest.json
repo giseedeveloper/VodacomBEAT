@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/static/css/main.5d0be0cc.css",
+    "main.js": "/static/js/main.42fca2b2.js",
+    "static/js/787.349b0e60.chunk.js": "/static/js/787.349b0e60.chunk.js",
+    "static/media/mobiad-rectangle.png": "/static/media/mobiad-rectangle.1bd3ab8f1dd134ddc4a5.png",
+    "static/media/tower.png": "/static/media/tower.9c048918074bf74aaeae.png",
+    "static/media/subscription.png": "/static/media/subscription.56a4dc5de53860bd8833.png",
+    "static/media/currency.png": "/static/media/currency.8f924663f75a704c20d2.png",
+    "static/media/login_icon.png": "/static/media/login_icon.b5f6b5e3fc2c6852428e.png",
+    "static/media/people.png": "/static/media/people.179277f4142b6c87034e.png",
+    "static/media/agreement.png": "/static/media/agreement.fcefbe6034e590483870.png",
+    "static/media/admin.png": "/static/media/admin.86c5d0c4b6944783a41c.png",
+    "index.html": "/index.html",
+    "main.5d0be0cc.css.map": "/static/css/main.5d0be0cc.css.map",
+    "main.42fca2b2.js.map": "/static/js/main.42fca2b2.js.map",
+    "787.349b0e60.chunk.js.map": "/static/js/787.349b0e60.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5d0be0cc.css",
+    "static/js/main.42fca2b2.js"
+  ]
+}
