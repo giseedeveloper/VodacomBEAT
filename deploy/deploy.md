@@ -54,4 +54,4 @@ php artisan permission:cache-reset
 
 
 
-
+cp .env /var/www/mobiad/vodacom-caller-tunes/.env

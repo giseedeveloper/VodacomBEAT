@@ -13,8 +13,8 @@
 > pwd: roman$rev56proto
 
 # Files
-cd /var/www/mobiad/mobiad-subscriptions
-cd /var/www/mobiad/mobiad-subscriptions/storage/logs
+cd /var/www/mobiad/vodacom-caller-tunes
+cd /var/www/mobiad/vodacom-caller-tunes/storage/logs
 >> mv *.* bkp/
 
 # Nginx
