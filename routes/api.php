@@ -1,19 +1,14 @@
 <?php
 
+use App\Adapters\Selcom\SelcomTestsController;
 use App\Http\Controllers\auth\AuthController;
-use App\Http\Controllers\contest\ContestantsController;
-use App\Http\Controllers\contest\VotesController;
 use App\Http\Controllers\management\CommissionsManagementController;
-use App\Http\Controllers\management\ReferralsManagementController;
 use App\Http\Controllers\management\SubscriptionsManagementController;
-use App\Http\Controllers\management\TopicsManagementController;
-use App\Http\Controllers\management\UsersManagementController;
-use App\Http\Controllers\management\VotesWeightManagementController;
 use App\Http\Controllers\messages\MessagesManagementController;
-use App\Http\Controllers\public\PublicVotesController;
 use App\Http\Controllers\reports\ReportsController;
 use App\Http\Controllers\reports\SubscriptionsReportsController;
 use App\Http\Controllers\reports\TransactionsManagementController;
+use App\Http\Controllers\resources\FspResourceController;
 use App\Http\Controllers\tests\TestsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -75,9 +70,6 @@ Route::prefix('v1/commissions')->middleware('auth:api')->group(function () {
 
 });
 
-Route::prefix('v1/resources')->group(function () {
-    Route::post('/fsp', [FspResourceController::class,'fetchFsp']);
-});
 
 Route::prefix('v1/reports')->middleware('auth:api')->group(function () {
 
@@ -89,13 +81,21 @@ Route::prefix('v1/reports')->middleware('auth:api')->group(function () {
 });
 
 
+Route::prefix('v1/resources')->group(function () {
+    Route::post('/fsp', [FspResourceController::class,'fetchFsp']);
+});
+
+
 Route::prefix('v1/test')->group(function () {
 
     Route::post('/sms/many', [TestsController::class,'sendSmsToMany']);
     Route::post('/broadcast', [TestsController::class,'testBroadcast']);
-    Route::post('/selcom', [TestsController::class,'selcomOrder']);
-    Route::post('/selcom/push', [TestsController::class,'selcomPush']);
-    Route::post('/selcom/disburse', [TestsController::class,'selcomDisburse']);
+
+    Route::post('/selcom', [SelcomTestsController::class,'selcomOrder']);
+    Route::post('/selcom/push', [SelcomTestsController::class,'selcomPush']);
+    Route::post('/selcom/disburse', [SelcomTestsController::class,'selcomDisburse']);
+    Route::post('/selcom/disburse/agent', [SelcomTestsController::class,'selcomDisburseAgent']);
+    Route::post('/selcom/disburse/mock', [SelcomTestsController::class,'mockDisburse']);
 
 });
 

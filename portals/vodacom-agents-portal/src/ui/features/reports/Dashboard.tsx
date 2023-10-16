@@ -8,6 +8,7 @@ import {HiOutlineCalendarDays} from "react-icons/hi2";
 import {WiDayCloudy} from "react-icons/wi";
 import {ArrowUpOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import {BsArrowUpCircle, BsCashCoin} from "react-icons/bs";
+import {useNavigate} from "react-router-dom";
 
 interface Stats {
     "customersCount": number,
@@ -21,6 +22,7 @@ const Dashboard = () => {
 
     const [, setIsLoading] = useState(true);
     const [stats, setStats] = useState<Stats>();
+    const navigate = useNavigate();
 
     //Fetch products
     useEffect(() => {
@@ -115,6 +117,9 @@ const Dashboard = () => {
                     </HiUserGroup>}
                     title="Customers"
                     subTitle={`${new Intl.NumberFormat('en-US').format(stats?.customersCount ?? 0)}`}
+                    onClick={()=>{
+                        navigate("customers/history");
+                    }}
                 ></StatisticItem>
             </Col>
 

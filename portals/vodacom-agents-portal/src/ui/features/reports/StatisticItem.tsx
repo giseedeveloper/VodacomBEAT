@@ -6,15 +6,17 @@ interface StatsDetails  {
     icon: React.ReactNode,
     title: string,
     subTitle: string,
-    textColor: string
+    textColor: string,
+    onClick?: () => void
 }
 
 
-const StatisticItem  = ({icon,title,subTitle,textColor}: StatsDetails) => {
+const StatisticItem  = ({icon,title,subTitle,textColor,onClick}: StatsDetails) => {
 
     return <>
         <Card
             hoverable={true}
+            onClick={onClick}
         >
             <Space align="end" style={{
                 display: "flex",

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $selcom_token
  * @property string $payment_url
  * @property string $receiver_phone
+ * @property string $remark
  * @property string $qr
  */
 class SelcomTransaction extends Model
@@ -24,11 +25,12 @@ class SelcomTransaction extends Model
 
 
     public static $STATUS_SUCCESS = "SUCCESS";
-    public static $STATUS_FAILURE = "FAILURE";
+    public static $STATUS_FAILED = "FAILED";
     public static $STATUS_PENDING = "PENDING";
 
     public static $TYPE_DEBIT_CUSTOMER = "DEBIT_CUSTOMER";
     public static $TYPE_CREDIT_CUSTOMER = "CREDIT_CUSTOMER";
+    public static $TYPE_AGENT_COMMISSION = "AGENT_COMMISSION_DISBURSEMENT";
 
     protected $fillable = [
         "order_id",
@@ -42,6 +44,7 @@ class SelcomTransaction extends Model
         "receiver_phone",
         "amount",
         "status",
+        "remark",
         "payment_url",
         "qr"
     ];

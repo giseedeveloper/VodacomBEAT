@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string $id
@@ -17,6 +18,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $starts_at
  * @property string $ends_at
  * @property string $paid_at
+ *
+ * @property string $commission_issued_at
+ * @property string $commission_issued_by
+ * @property string $commission_amount
  */
 class TuneSubscription extends Model
 {
@@ -25,6 +30,7 @@ class TuneSubscription extends Model
     protected $with = ['phones'];
 
     protected $casts = [
+        'created_at' => 'datetime:d-M-Y H:i',
         'starts_at' => 'datetime:d-M-Y H:i',
         'ends_at' => 'datetime:d-M-Y H:i',
     ];
@@ -54,6 +60,10 @@ class TuneSubscription extends Model
 
     public function phones(){
         return $this->hasMany(TuneSubscriptionPhone::class,'subscription_id');
+    }
+
+    public function agent(){
+        return $this->belongsTo(ReferralAgent::class,'agent_id');
     }
 
 }

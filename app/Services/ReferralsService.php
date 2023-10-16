@@ -49,6 +49,7 @@ class ReferralsService
         return str_replace($referencePrefix, "", $ledgerTransaction->reference);
     }
 
+    /** @Deprecated */
     public static function giveCommission(Subscription $subscription)
     {
         //Get other subscriptions by same-customer

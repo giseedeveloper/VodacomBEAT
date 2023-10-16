@@ -3,17 +3,10 @@
 namespace App\Http\Controllers\tunes;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Controllers\messages\Subscription;
-use App\Integrations\SelcomTransactionsService;
-use App\Models\BroadcastMessage;
 use App\Models\ReferralAgent;
-use App\Models\SmsHistory;
-
 use App\Models\TuneSubscription;
 use App\Models\TuneSubscriptionPackage;
-use App\Services\SubscriptionsService;
 use App\Services\TunesSubscriptionService;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,7 +65,8 @@ class TunesAgentController extends BaseController
         # Load agent
         $agent = TunesSubscriptionService::getAgent();
         if (!$agent) {
-            return $this->returnError("You are not an agent", [], 412);
+            Log::error("attempted to add subscription by non-agent ".json_encode(Auth::user()));
+            return $this->returnError("You are not an agent", [], 400);
         }
 
         # Load package
@@ -92,6 +86,34 @@ class TunesAgentController extends BaseController
 
     }
 
+
+    public function retryPushInitiation(Request $request): JsonResponse
+    {
+
+        Log::info("retry customer push payment: ".json_encode($request->all()));
+        $request->validate([
+            'subscription_id' => 'required'
+        ]);
+
+        /** @var TuneSubscription | null  $unpaidSubscription */
+        $unpaidSubscription = TuneSubscription::query()->find($request->input('subscription_id'));
+        if($unpaidSubscription==null){
+            Log::info("subscription is invalid".json_encode($request->all()));
+            return $this->returnError('Subscription is invalid', [],400);
+        }
+
+        if($unpaidSubscription->starts_at != null){
+            Log::info("subscription already paid".json_encode($request->all()));
+            return $this->returnError('Subscription already paid', [],400);
+        }
+
+        TunesSubscriptionService::initCharge($unpaidSubscription);
+
+        $responseData['subscription'] = $unpaidSubscription;
+        return $this->returnResponse('Charge request resent', $responseData);
+    }
+
+
     public function getSubscriptions(Request $request): JsonResponse
     {
 
@@ -104,6 +126,7 @@ class TunesAgentController extends BaseController
 
         $agentSubscriptions = TuneSubscription::query()
             ->where('agent_id', $agent->id)
+            ->latest()
             ->paginate();
 
         $responseData['subscriptions'] = $agentSubscriptions;

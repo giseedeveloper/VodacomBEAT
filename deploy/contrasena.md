@@ -17,10 +17,12 @@ cd /var/www/mobiad/mobiad-subscriptions
 cd /var/www/mobiad/mobiad-subscriptions/storage/logs
 >> mv *.* bkp/
 
-
 # Nginx
 cd /etc/nginx/sites-available
 cd /var/log/nginx
+
+0712011332
+989128 
 
 # UI
 cd /var/www/mobiad/mobiad-subscriptions
@@ -28,8 +30,7 @@ cd /var/www/mobiad/mobiad-subscriptions
 # copying configs
 scp admin.panel mobiad@64.226.110.69:~/tmp/  | roman$rev56proto
 scp admin.panel mobiad@64.226.110.69:/etc/nginx/sites-available
-
-
+0712011332
 # php-my-admin
 cd /var/www/mobiad/phpmyadmin
 enlightened

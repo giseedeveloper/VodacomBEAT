@@ -48,6 +48,7 @@ Route::prefix("/v1/tunes/agent")->middleware('auth:api')->group(function(){
 
     Route::get('/stats', [TunesAgentController::class,'getStats']);
     Route::post('/subscription/add', [TunesAgentController::class,'addSubscription']);
+    Route::post('/subscription/retry', [TunesAgentController::class,'retryPushInitiation']);
     Route::get('/subscription/get', [TunesAgentController::class,'getSubscriptions']);
 
 });
