@@ -6,16 +6,9 @@ use App\Http\Controllers\contest\VotesController;
 use App\Http\Controllers\management\NotificationTemplatesManagementController;
 use App\Http\Controllers\management\ReferralsManagementController;
 use App\Http\Controllers\management\SmsGatewaysManagementController;
-use App\Http\Controllers\management\SubscriptionsManagementController;
 use App\Http\Controllers\management\TopicsManagementController;
 use App\Http\Controllers\management\UsersManagementController;
 use App\Http\Controllers\management\VotesWeightManagementController;
-use App\Http\Controllers\messages\MessagesManagementController;
-use App\Http\Controllers\public\PublicVotesController;
-use App\Http\Controllers\reports\ReportsController;
-use App\Http\Controllers\reports\SubscriptionsReportsController;
-use App\Http\Controllers\reports\TransactionsManagementController;
-use App\Http\Controllers\tests\TestsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -69,6 +62,7 @@ Route::prefix('v1/referrals')->middleware('auth:api')->group(function () {
     Route::get('/', [ReferralsManagementController::class,'getReferrals']);
     Route::post('/create', [ReferralsManagementController::class,'addReferral']);
     Route::post('/update', [ReferralsManagementController::class,'updateReferral']);
+    Route::post('/password/reset', [ReferralsManagementController::class,'resetPassword']);
 
 });
 

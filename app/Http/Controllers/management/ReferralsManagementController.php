@@ -80,7 +80,6 @@ class ReferralsManagementController extends BaseController
         return $this->returnResponse('Referral agent created', $responseData);
     }
 
-
     public function getReferrals(Request $request): JsonResponse
     {
         $query = $request->input('query');
@@ -102,7 +101,6 @@ class ReferralsManagementController extends BaseController
         $responseData['subscription'] = "";
         return $this->returnResponse('Subscription update', $responseData);
     }
-
 
     public function updateReferral(Request $request): JsonResponse
     {
@@ -128,6 +126,35 @@ class ReferralsManagementController extends BaseController
 
         $responseData['referral'] = $referral;
         return $this->returnResponse('Referral agent updated', $responseData);
+    }
+
+    public function resetPassword(Request $request): JsonResponse
+    {
+
+        $request->validate([
+            'id' => 'required|numeric',
+            'password' => 'required|min:6'
+        ]);
+
+        /** @var ReferralAgent | null $agent */
+        $agent = ReferralAgent::query()->where([
+            'id' => $request->input('id')
+        ])->first();
+        if(!$agent){
+            return $this->returnError("Agent not found",[],400);
+        }
+
+        /** @var User | null $user */
+        $user = User::query()->find($agent->user_id);
+        if(!$user){
+            return $this->returnError("Agent user not found",[],400);
+        }
+
+        $user->password = Hash::make($request->input("password"));
+        $user->save();
+
+        $responseData['agent'] = $agent;
+        return $this->returnResponse('Referral agent password updated', $responseData);
     }
 
 

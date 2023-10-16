@@ -4,7 +4,7 @@ use App\Adapters\Selcom\SelcomTestsController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\management\CommissionsManagementController;
 use App\Http\Controllers\management\SubscriptionsManagementController;
-use App\Http\Controllers\messages\MessagesManagementController;
+use App\Http\Controllers\public\messages\MessagesManagementController;
 use App\Http\Controllers\reports\ReportsController;
 use App\Http\Controllers\reports\SubscriptionsReportsController;
 use App\Http\Controllers\reports\TransactionsManagementController;

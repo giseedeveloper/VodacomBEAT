@@ -8,7 +8,7 @@ import EyasiContentCard from "../../../templates/cards/EyasiContentCard";
 import customerLoadingIcon from "../../../templates/Loading";
 import {ReferralAgent,MobileNetwork} from "../../../../interfaces/referrals/ReferralsInterfaces";
 import Search from "antd/es/input/Search";
-import {EditOutlined} from "@ant-design/icons";
+import {EditOutlined, ReloadOutlined} from "@ant-design/icons";
 
 
 
@@ -17,13 +17,20 @@ const MessagesComponent = () => {
 
     const [referralsList, updateReferralsList] = useState<ReferralAgent[]>([]);
     const [mobileNetwork, updateFspList] = useState<MobileNetwork[]>([]);
-    const [antdForm] = Form.useForm();
-    const [formModalOpen, setFormModal] = useState(false)
+
     const [totalRecords, updateTotalRecords] = useState(0);
     const [currentPageNo, updateCurrentPageNo] = useState(1);
     const [pageSize, updatePageSize] = useState(10);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, updateSearchQuery] = useState("");
+
+
+    const [antdForm] = Form.useForm();
+    const [formModalOpen, setFormModal] = useState(false)
+
+    const [passwordAntdForm] = Form.useForm();
+    const [passwordModalOpen, togglePasswordModal] = useState(false)
+
 
     //Fetch products
     useEffect(() => {
@@ -69,6 +76,12 @@ const MessagesComponent = () => {
         antdForm.setFieldsValue(record);
     }
 
+    const openPasswordForm = (record = {}) => {
+        togglePasswordModal(true)
+        passwordAntdForm.resetFields();
+        passwordAntdForm.setFieldsValue(record);
+    }
+
     const handleSave = (item: ReferralAgent) => {
         console.log(JSON.stringify(item))
         setIsLoading(true);
@@ -79,6 +92,20 @@ const MessagesComponent = () => {
                 setFormModal(false)
                 fetchRecords();
 
+            }).catch((errorObj) => {
+            notifyHttpError('Operation Failed', errorObj)
+            setIsLoading(false);
+        })
+    }
+
+    const resetPassword = (item: ReferralAgent) => {
+        console.log(JSON.stringify(item))
+        setIsLoading(true);
+        postRequest("/api/v1/referrals/password/reset", item)
+            .then((response) => {
+                setIsLoading(false);
+                notifySuccess("Success", "Psasword updated")
+                togglePasswordModal(false)
             }).catch((errorObj) => {
             notifyHttpError('Operation Failed', errorObj)
             setIsLoading(false);
@@ -132,10 +159,13 @@ const MessagesComponent = () => {
             render: (_, record) => (
                 <Space size="middle">
                     <a onClick={() => showEditForm(record)}><EditOutlined style={{marginRight:'0.8em'}}/>Edit</a>
+                    <a style={{color:'red'}} onClick={() => openPasswordForm(record)}><ReloadOutlined style={{marginRight:'0.8em', color:'red'}}/>Reset</a>
                 </Space>
             )
         }
     ];
+
+
 
     return <EyasiContentCard title="Referrals Agents"
                              iconImage={sectionIcon}
@@ -187,7 +217,7 @@ const MessagesComponent = () => {
 
 
         {/***------------------------------
-         /*  Shipping Category Form
+         /*  Agent Creation
          ***------------------------------*/}
         <Modal title="Referral Agent"
                open={formModalOpen}
@@ -246,6 +276,41 @@ const MessagesComponent = () => {
                 >
                     <Input/>
                 </Form.Item>
+
+            </Form>
+        </Modal>
+
+
+        {/***------------------------------
+         /*  Password reset
+         ***------------------------------*/}
+        <Modal title="Update Password"
+               open={passwordModalOpen}
+               onOk={() => {
+                   passwordAntdForm.submit()
+               }}
+               confirmLoading={isLoading}
+               onCancel={() => {
+                   togglePasswordModal(false)
+               }}>
+
+            <Form
+                form={passwordAntdForm}
+                layout="vertical"
+                onFinish={resetPassword}
+            >
+
+                <Form.Item name="id" hidden>
+                    <Input/>
+                </Form.Item>
+
+                <Form.Item
+                    label="New Password"
+                    name="password"
+                >
+                    <Input/>
+                </Form.Item>
+
 
             </Form>
         </Modal>
