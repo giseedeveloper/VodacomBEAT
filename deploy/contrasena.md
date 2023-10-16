@@ -51,3 +51,5 @@ Database: nbc
 http://admin.mobiadafrica.com
 superuser@system.com
 zxcvbnm
+
+grep -Rnw -e 'agent.mobiadafrica.com'

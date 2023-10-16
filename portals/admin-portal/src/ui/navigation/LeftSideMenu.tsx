@@ -43,7 +43,7 @@ const LeftSideMenu = () => {
                                 paddingLeft: '12px',
                                 color: 'white',
                                 margin: "0px"}}>
-                                MobiAd Africa
+                                Control Panel
                             </h3>}
                     </Col>
 

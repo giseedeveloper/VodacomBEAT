@@ -34,18 +34,12 @@ const items: MenuProps['items'] = [
 
     toMenuItem('Subscriptions', '/subscriptions', <UsergroupAddOutlined/>),
 
-    toMenuItem('SMS Broadcasts', '/messages', <MessageOutlined/>),
-
-    toMenuItem('SMS History', '/sms-history', <ClockCircleOutlined/>),
-
     toMenuItem('Commissions', '/commissions', <PercentageOutlined/>),
 
     toMenuItem('Configurations', 'setting/index', <SettingOutlined/>, [
         toMenuItem('System Users', '/users', <UsergroupAddOutlined/>),
         toMenuItem('Notifications', '/notifications', <MessageOutlined/>),
-        toMenuItem('SMS Gateways', '/sms/gateways', <FaBroadcastTower/>),
-        toMenuItem('Teams/Topics Setup', '/teams', <BiFootball/>),
-        toMenuItem('Referrals Agents', '/referrals', <CiBullhorn/>),
+        toMenuItem('Agents', '/referrals', <CiBullhorn/>),
     ]),
 
     toMenuItem('Logout', '/logout', <LogoutOutlined/>),
