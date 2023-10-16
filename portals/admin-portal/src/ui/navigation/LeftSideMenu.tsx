@@ -28,7 +28,7 @@ const LeftSideMenu = () => {
 
             {/*Text Logo*/}
             <div style={{
-                backgroundColor: "#0582ca",
+                backgroundColor: "#E60000",
                 paddingTop: '12px',
                 paddingBottom: '12px'
             }}>
