@@ -1,4 +1,4 @@
-import {Button, Form, Input, Modal, Pagination, Select, Space, Spin, Table} from 'antd';
+import {Button, Form, Input, Modal, Pagination, Select, Space, Spin, Table, Tag} from 'antd';
 import type {ColumnsType} from 'antd/es/table';
 import React, {useEffect, useState} from 'react';
 import sectionIcon from "../../../../assets/images/icons/agreement.png"
@@ -108,7 +108,8 @@ const MessagesComponent = () => {
         {
             title: 'Payment Channel',
             dataIndex: 'network',
-            render: (_, record) => (<>  {record.phone_number} <br/> {record.network?.name} </>),
+            render: (_, record) => (<>  {record.phone_number}
+                <br/> <Tag style={{fontWeight: 'bold'}} color="blue">{record.network?.name}</Tag> </>),
         },
         {
             title: 'Commission Ref.',
