@@ -82,7 +82,7 @@ Route::prefix('v1/reports')->middleware('auth:api')->group(function () {
 
 
 Route::prefix('v1/resources')->group(function () {
-    Route::post('/fsp', [FspResourceController::class,'fetchFsp']);
+    Route::get('/fsp/list', [FspResourceController::class,'fetchFsp']);
 });
 
 

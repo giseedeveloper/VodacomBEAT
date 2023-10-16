@@ -13,7 +13,7 @@ import RequireAuth from "../services/auth/RequireAuth";
 import TransactionsListComponent from "./features/transactions/TransactionsListComponent";
 import SubscribersListComponent from "./features/subscribers/SubscribersListComponent";
 import MessagesTemplatesComponent from "./features/messages/MessagesTemplatesComponent";
-import ReferralsComponent from "./features/management/referrals/ReferralsComponent";
+import ReferralsComponent from "./features/management/referrals/AgentsComponent";
 import TeamsTopicsComponent from "./features/management/teams/TeamsTopicsComponent";
 import SmsHistoryComponent from "./features/messages/SmsHistoryComponent";
 import NotificationTemplatesComponent from "./features/management/notications/NotificationTemplatesComponent";

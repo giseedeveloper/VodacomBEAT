@@ -42,6 +42,7 @@ class ReferralsManagementController extends BaseController
             'first_name' => 'required',
             'second_name' => 'required',
             'phone_number' => 'required',
+            'mobile_network_id' => 'required|numeric',
             'sales_zone' => 'required'
         ]);
 
@@ -62,6 +63,7 @@ class ReferralsManagementController extends BaseController
         /** @var ReferralAgent $referral */
         $agent = ReferralAgent::query()->create([
             'user_id' => $user->id,
+            'mobile_network_id' => $request->input('mobile_network_id'),
             'first_name' => $request->input('first_name'),
             'second_name' => $request->input('second_name'),
             'phone_number' => $request->input('phone_number'),
@@ -110,12 +112,14 @@ class ReferralsManagementController extends BaseController
             'first_name' => 'required',
             'second_name' => 'required',
             'phone_number' => 'required',
+            'mobile_network_id' => 'required|numeric',
             'sales_zone' => 'required'
         ]);
 
         $referral = ReferralAgent::query()->where([
             'id' => $request->input('id')
         ])->update([
+            'mobile_network_id' => $request->input('mobile_network_id'),
             'first_name' => $request->input('first_name'),
             'second_name' => $request->input('second_name'),
             'phone_number' => $request->input('phone_number'),

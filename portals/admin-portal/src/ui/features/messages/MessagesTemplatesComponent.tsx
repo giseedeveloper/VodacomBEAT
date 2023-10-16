@@ -123,22 +123,6 @@ const MessagesTemplatesComponent = () => {
         })
     }
 
-    const sendMessage = (id: number) => {
-        console.log(JSON.stringify(id))
-        setIsLoading(true);
-        postRequest("/api/v1/messages/send", {
-            "id": id
-        }).then((response) => {
-            notifySuccess("Success", "Message broadcasted")
-            fetchMessages();
-            setIsLoading(false);
-        }).catch((errorObj) => {
-            notifyHttpError('Operation Failed', errorObj)
-            setIsLoading(false);
-        })
-        setMessageModal(false)
-    }
-
     const onSecondCityChange = (value: TeamTopic) => {
         setSecondCity(value);
     };

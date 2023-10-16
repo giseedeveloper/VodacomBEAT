@@ -8,7 +8,8 @@ export interface ReferralAgent {
     "phone_number": string,
     "reference_number": string,
     "sales_zone": string,
-    "created_at": string
+    "created_at": string,
+    network: MobileNetwork
 }
 
 export interface CommissionedReferralAgent {
@@ -22,5 +23,11 @@ export interface CommissionedReferralAgent {
     "commissions_sum_amount": string,
     "commissions_count": string,
     "commissions" : Commission[]
+}
+
+export interface MobileNetwork {
+    id : string,
+    name : string,
+    selcom_code : string,
 }
 
