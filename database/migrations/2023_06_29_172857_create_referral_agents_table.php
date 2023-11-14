@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('referral_agents', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->nullable();
+            $table->bigInteger('mobile_network_id')->nullable();
+            $table->bigInteger('bank_id')->nullable();
+
             $table->string('first_name');
             $table->string('second_name');
             $table->string('phone_number');
@@ -22,6 +25,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

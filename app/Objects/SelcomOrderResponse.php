@@ -11,6 +11,7 @@ class SelcomOrderResponse
 
     public string $extra;
     public string $reference;
+    public string $message;
 
     public string $gatewayBuyerUuid;
     public string $paymentToken;

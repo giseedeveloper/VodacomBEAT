@@ -3,14 +3,14 @@
 namespace App\Services;
 
 
-use App\Integrations\SelcomTransactionsService;
+use App\Adapters\Selcom\SelcomTransactionsService;
 use App\Models\Customer;
-use App\Models\LedgerTransaction;
 use App\Models\ReferralAgent;
 use App\Models\SelcomTransaction;
 use App\Models\TuneSubscription;
 use App\Models\TuneSubscriptionPackage;
 use App\Models\TuneSubscriptionPhone;
+use App\Services\payment\AgentsCommissionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -61,6 +61,8 @@ class TunesSubscriptionService
 
         $totalCost = ($packageConfiguration->price) * count($phones);
 
+        $agentCommission = $packageConfiguration->price * (0.10);
+
         # Create pending subscription
         /** @var TuneSubscription | null $tuneSubscription */
         $tuneSubscription = TuneSubscription::query()->create([
@@ -79,7 +81,7 @@ class TunesSubscriptionService
             'subscription_package_id' => $packageConfiguration->id,
             'amount' => $totalCost,
 
-            'commission_amount' => $packageConfiguration->price * 0.10,
+            'commission_amount' => $agentCommission,
 
             'starts_at' => null,
             'ends_at' => null,
@@ -110,10 +112,11 @@ class TunesSubscriptionService
 
         // 1 - push order to selcom
         $orderSubmissionResults = $selcomTransactionService->submitTransactionToSelcom($pendingSelcomTransaction);
-        $pendingSelcomTransaction->selcom_uuid = $orderSubmissionResults->gatewayBuyerUuid;
-        $pendingSelcomTransaction->selcom_token = $orderSubmissionResults->paymentToken;
-        $pendingSelcomTransaction->qr = $orderSubmissionResults->qr;
-        $pendingSelcomTransaction->payment_url = $orderSubmissionResults->paymentGatewayUrlPlain;
+        $pendingSelcomTransaction->selcom_uuid = $orderSubmissionResults->gatewayBuyerUuid??"";
+        $pendingSelcomTransaction->selcom_token = $orderSubmissionResults->paymentToken??"";
+        $pendingSelcomTransaction->qr = $orderSubmissionResults->qr??"";
+        $pendingSelcomTransaction->payment_url = $orderSubmissionResults->paymentGatewayUrlPlain??"";
+        $pendingSelcomTransaction->remark = $orderSubmissionResults->message??"";
         $pendingSelcomTransaction->save();
 
         // 2 - push order
@@ -126,27 +129,36 @@ class TunesSubscriptionService
         $unpaidSubscription = TuneSubscription::query()->where('subscription_reference', $selcomTransaction->order_id)->first();
         if ($unpaidSubscription == null) {
             Log::error("failed to determine subscription associated with selcom transaction: " . json_encode($selcomTransaction));
-            return null;
+            return;
         }
 
         $paidAmount = $selcomTransaction->amount;
         $requiredAmount = $unpaidSubscription->amount;
-        if (($paidAmount) >= ($requiredAmount)) {
-            self::activateSubscription($unpaidSubscription, $selcomTransaction->id);
-            return $unpaidSubscription;
-        } else {
+        if (($paidAmount) < ($requiredAmount)) {
             Log::error("Amount paid $paidAmount TZS is less that required amount $requiredAmount TZS" . json_encode($unpaidSubscription));
-            return null;
+            return;
         }
+
+
+        //Activate subscription
+        $activeSubscription = self::activateSubscription($unpaidSubscription, $selcomTransaction->id);
+
+        //Send commission to agent
+        $isDisbursementSuccess = AgentsCommissionService::onCommissionDisbursement($activeSubscription);
+        if($isDisbursementSuccess){
+            $activeSubscription->commission_issued_at = Carbon::now();
+            $activeSubscription->save();
+        }
+
     }
 
-    public static function activateSubscription(TuneSubscription $subscription, $transactionId)
+    public static function activateSubscription(TuneSubscription $subscription, $transactionId): ?TuneSubscription
     {
         /** @var  TuneSubscriptionPackage | null $package */
         $package = TuneSubscriptionPackage::query()->find($subscription->subscription_package_id);
         if ($package == null) {
             Log::error("failed to determine subscription package " . json_encode($subscription));
-            return;
+            return null;
         }
 
         $subscription->starts_at = Carbon::now();
@@ -156,6 +168,8 @@ class TunesSubscriptionService
         $subscription->save();
 
         Log::info("activated subscription " . json_encode($subscription));
+
+        return $subscription;
     }
 
 
@@ -164,7 +178,9 @@ class TunesSubscriptionService
         return "M"
             . str_pad($customerId, 3, "0", STR_PAD_LEFT)
             . "C"
-            . str_pad($subscriptionId, 3, "0", STR_PAD_LEFT);
+            . str_pad($subscriptionId, 3, "0", STR_PAD_LEFT)
+            ."T"
+            .dechex(time());
     }
 
 }

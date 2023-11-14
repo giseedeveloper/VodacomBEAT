@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\tunes;
 
 use App\Http\Controllers\BaseController;
-use App\Models\ReferralAgent;
 
 use App\Models\SelcomTransaction;
 use App\Models\TuneSubscription;
@@ -11,7 +10,6 @@ use App\Models\TuneSubscriptionPackage;
 use App\Services\TunesSubscriptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class TunesCustomerController extends BaseController

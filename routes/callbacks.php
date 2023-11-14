@@ -1,8 +1,8 @@
 <?php
 
 
+use App\Adapters\Selcom\SelcomController;
 use App\Http\Controllers\integrations\FasthubController;
-use App\Http\Controllers\integrations\SelcomController;
 use Illuminate\Support\Facades\Route;
 
 /*

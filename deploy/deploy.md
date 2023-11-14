@@ -43,6 +43,7 @@ php artisan db:seed --class=PermissionsSeeder
 php artisan db:seed --class=NotificationTemplateSeeder
 php artisan db:seed --class=SmsGatewaySeeder
 php artisan db:seed --class=TunePackageSeeder
+php artisan db:seed --class=MobileNetworksSeeder
  
 
 #files
@@ -53,4 +54,4 @@ php artisan permission:cache-reset
 
 
 
-
+cp .env /var/www/mobiad/vodacom-caller-tunes/.env

@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string("selcom_transaction_id")->nullable();
             $table->string("selcom_uuid")->nullable();
             $table->string("selcom_token")->nullable();
+            $table->string("remark")->nullable();
             $table->timestamps();
 
         });

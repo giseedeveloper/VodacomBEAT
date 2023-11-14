@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\tests;
 
+use App\Adapters\Selcom\SelcomTransactionsService;
 use App\Http\Controllers\BaseController;
-use App\Integrations\SelcomTransactionsService;
 use App\Models\BroadcastMessage;
 use App\Models\SelcomTransaction;
-
 use App\Services\NotificationServiceService;
-use App\Services\SubscriptionsService;
 use App\Services\sms\MobishatraSmsService;
+use App\Services\SubscriptionsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -118,7 +117,7 @@ class TestsController extends BaseController
         return $this->returnResponse('Initiated message', $responseData);
     }
 
-    public function selcomDisburse(Request $request): JsonResponse
+    public function onGiveCommission(Request $request): JsonResponse
     {
 
         Log::info($request->all());

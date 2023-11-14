@@ -3,19 +3,7 @@
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\contest\ContestantsController;
 use App\Http\Controllers\contest\VotesController;
-use App\Http\Controllers\management\NotificationTemplatesManagementController;
-use App\Http\Controllers\management\ReferralsManagementController;
-use App\Http\Controllers\management\SmsGatewaysManagementController;
-use App\Http\Controllers\management\SubscriptionsManagementController;
-use App\Http\Controllers\management\TopicsManagementController;
-use App\Http\Controllers\management\UsersManagementController;
 use App\Http\Controllers\management\VotesWeightManagementController;
-use App\Http\Controllers\messages\MessagesManagementController;
-use App\Http\Controllers\public\PublicVotesController;
-use App\Http\Controllers\reports\ReportsController;
-use App\Http\Controllers\reports\SubscriptionsReportsController;
-use App\Http\Controllers\reports\TransactionsManagementController;
-use App\Http\Controllers\tests\TestsController;
 use App\Http\Controllers\tunes\TunesAgentController;
 use App\Http\Controllers\tunes\TunesCustomerController;
 use Illuminate\Http\Request;
@@ -48,6 +36,7 @@ Route::prefix("/v1/tunes/agent")->middleware('auth:api')->group(function(){
 
     Route::get('/stats', [TunesAgentController::class,'getStats']);
     Route::post('/subscription/add', [TunesAgentController::class,'addSubscription']);
+    Route::post('/subscription/retry', [TunesAgentController::class,'retryPushInitiation']);
     Route::get('/subscription/get', [TunesAgentController::class,'getSubscriptions']);
 
 });

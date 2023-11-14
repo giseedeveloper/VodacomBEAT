@@ -13,14 +13,16 @@
 > pwd: roman$rev56proto
 
 # Files
-cd /var/www/mobiad/mobiad-subscriptions
-cd /var/www/mobiad/mobiad-subscriptions/storage/logs
+cd /var/www/mobiad/vodacom-caller-tunes
+cd /var/www/mobiad/vodacom-caller-tunes/storage/logs
 >> mv *.* bkp/
-
 
 # Nginx
 cd /etc/nginx/sites-available
 cd /var/log/nginx
+
+0712011332
+989128 
 
 # UI
 cd /var/www/mobiad/mobiad-subscriptions
@@ -28,8 +30,7 @@ cd /var/www/mobiad/mobiad-subscriptions
 # copying configs
 scp admin.panel mobiad@64.226.110.69:~/tmp/  | roman$rev56proto
 scp admin.panel mobiad@64.226.110.69:/etc/nginx/sites-available
-
-
+0712011332
 # php-my-admin
 cd /var/www/mobiad/phpmyadmin
 enlightened
@@ -50,3 +51,5 @@ Database: nbc
 http://admin.mobiadafrica.com
 superuser@system.com
 zxcvbnm
+
+grep -Rnw -e 'agent.mobiadafrica.com'

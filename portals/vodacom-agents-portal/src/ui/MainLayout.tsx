@@ -1,4 +1,4 @@
-import {Image, Layout, MenuProps, Space} from 'antd';
+import {Button, Image, Layout, MenuProps, Space} from 'antd';
 import React, {useEffect, useState} from "react";
 import '../css/custom.css';
 import Dashboard from "./features/reports/Dashboard";
@@ -10,6 +10,8 @@ import {Route, Routes} from "react-router-dom";
 import RequireAuth from "../services/auth/RequireAuth";
 import CustomerForm from "./features/customers/CustomerForm";
 import PopUpMenu from "./PopUpMenu";
+import AgentCustomers from "./features/customers/history/AgentCustomers";
+import {HomeOutlined} from "@ant-design/icons";
 
 const {Content} = Layout;
 
@@ -57,9 +59,12 @@ function MainLayout() {
 
                 <Space align="center">
                     <Image preview={false} width={48} height={48} src={sectionIcon} style={{marginTop: '2px', marginLeft:'8px', marginRight: '6px'}}></Image>
-                    <h3 style={{color: '#ffffff'}}>
+                    <h3 style={{color: '#ffffff', marginLeft:"16px"}}>
                         <span style={{fontWeight: 'lighter'}}>{agent?.first_name ?? ''}</span> ~
                         <span style={{fontWeight: 'bolder'}}>{agent?.reference_number ?? ''}</span></h3>
+
+                    <Button  style={{marginRight:"16px", color:"#E60000", marginLeft:"24px"}} icon={<HomeOutlined/>} href="/">Home</Button>
+
                 </Space>
             </Header>
 
@@ -71,6 +76,7 @@ function MainLayout() {
                     <Route path="customers">
                         <Route index element={<RequireAuth><CustomerForm/></RequireAuth>}/>
                         <Route path="new" element={<RequireAuth><CustomerForm/></RequireAuth>}/>
+                        <Route path="history" element={<RequireAuth><AgentCustomers /></RequireAuth>}/>
                         <Route path="customer/:customerId" element={<RequireAuth><CustomerForm/></RequireAuth>}/>
                     </Route>
 

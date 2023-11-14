@@ -42,6 +42,7 @@ class ReferralsManagementController extends BaseController
             'first_name' => 'required',
             'second_name' => 'required',
             'phone_number' => 'required',
+            'mobile_network_id' => 'required|numeric',
             'sales_zone' => 'required'
         ]);
 
@@ -62,6 +63,7 @@ class ReferralsManagementController extends BaseController
         /** @var ReferralAgent $referral */
         $agent = ReferralAgent::query()->create([
             'user_id' => $user->id,
+            'mobile_network_id' => $request->input('mobile_network_id'),
             'first_name' => $request->input('first_name'),
             'second_name' => $request->input('second_name'),
             'phone_number' => $request->input('phone_number'),
@@ -77,7 +79,6 @@ class ReferralsManagementController extends BaseController
         $responseData['referral'] = $agent;
         return $this->returnResponse('Referral agent created', $responseData);
     }
-
 
     public function getReferrals(Request $request): JsonResponse
     {
@@ -101,7 +102,6 @@ class ReferralsManagementController extends BaseController
         return $this->returnResponse('Subscription update', $responseData);
     }
 
-
     public function updateReferral(Request $request): JsonResponse
     {
 
@@ -110,12 +110,14 @@ class ReferralsManagementController extends BaseController
             'first_name' => 'required',
             'second_name' => 'required',
             'phone_number' => 'required',
+            'mobile_network_id' => 'required|numeric',
             'sales_zone' => 'required'
         ]);
 
         $referral = ReferralAgent::query()->where([
             'id' => $request->input('id')
         ])->update([
+            'mobile_network_id' => $request->input('mobile_network_id'),
             'first_name' => $request->input('first_name'),
             'second_name' => $request->input('second_name'),
             'phone_number' => $request->input('phone_number'),
@@ -124,6 +126,35 @@ class ReferralsManagementController extends BaseController
 
         $responseData['referral'] = $referral;
         return $this->returnResponse('Referral agent updated', $responseData);
+    }
+
+    public function resetPassword(Request $request): JsonResponse
+    {
+
+        $request->validate([
+            'id' => 'required|numeric',
+            'password' => 'required|min:6'
+        ]);
+
+        /** @var ReferralAgent | null $agent */
+        $agent = ReferralAgent::query()->where([
+            'id' => $request->input('id')
+        ])->first();
+        if(!$agent){
+            return $this->returnError("Agent not found",[],400);
+        }
+
+        /** @var User | null $user */
+        $user = User::query()->find($agent->user_id);
+        if(!$user){
+            return $this->returnError("Agent user not found",[],400);
+        }
+
+        $user->password = Hash::make($request->input("password"));
+        $user->save();
+
+        $responseData['agent'] = $agent;
+        return $this->returnResponse('Referral agent password updated', $responseData);
     }
 
 

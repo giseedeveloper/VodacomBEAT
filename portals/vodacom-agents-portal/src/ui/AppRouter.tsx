@@ -8,6 +8,7 @@ import React from "react";
 import Dashboard from "./features/reports/Dashboard";
 import Logout from "../services/auth/Logout";
 import CustomerForm from "./features/customers/CustomerForm";
+import AgentCustomers from "./features/customers/history/AgentCustomers";
 
 function AppRouter() {
     return (
@@ -23,6 +24,7 @@ function AppRouter() {
                         <Route path="customers" >
                             <Route index element={<RequireAuth><CustomerForm/></RequireAuth>} />
                             <Route path="new" element={<RequireAuth><CustomerForm /></RequireAuth>}/>
+                            <Route path="history" element={<RequireAuth><AgentCustomers /></RequireAuth>}/>
                             <Route path=":customerId" element={<RequireAuth><CustomerForm/></RequireAuth>}  />
                         </Route>
 
