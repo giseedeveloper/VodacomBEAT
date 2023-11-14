@@ -5,6 +5,7 @@ namespace App\Http\Controllers\integrations;
 
 use App\Http\Controllers\BaseController;
 use App\Integrations\SelcomTransactionsService;
+use App\Models\LedgerTransaction;
 use App\Objects\SelcomCallback;
 use App\Services\TunesSubscriptionService;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +25,29 @@ class SelcomController extends BaseController
         $existingSelcomTransaction = $selcomTransactionService->completeTransaction($callbackObject);
 
         if($existingSelcomTransaction!=null){
-            TunesSubscriptionService::onPaymentComplete($existingSelcomTransaction);
+
+            $tuneSubscription = TunesSubscriptionService::onPaymentComplete($existingSelcomTransaction);
+
+            //Create ledger transaction
+            LedgerTransaction::query()->create([
+                "order_id"=>$existingSelcomTransaction->order_id,
+
+                "selcom_reference"=>$existingSelcomTransaction->selcom_reference,
+                "selcom_uuid"=>$existingSelcomTransaction->selcom_uuid,
+                "selcom_token"=>$existingSelcomTransaction->selcom_token,
+
+                "subscription_id"=>$tuneSubscription->id,
+                "subscriber_id"=>$tuneSubscription->customer_id,
+                "payer_phone"=>$tuneSubscription->payment_phone,
+                "amount"=>$tuneSubscription->amount,
+                "status"=>LedgerTransaction::$STATUS_SUCCESS,
+                "payment_url",
+
+                "receipt"=>$existingSelcomTransaction->rec,
+                "reference"=>$existingSelcomTransaction->id,
+                "txid"=>$existingSelcomTransaction->selcom_transaction_id,
+                "third_party"=>"Selcom"
+            ]);
         }
 
         $responseEntity['success'] = $existingSelcomTransaction != null;

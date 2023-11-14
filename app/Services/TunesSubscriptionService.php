@@ -126,17 +126,18 @@ class TunesSubscriptionService
         $unpaidSubscription = TuneSubscription::query()->where('subscription_reference', $selcomTransaction->order_id)->first();
         if ($unpaidSubscription == null) {
             Log::error("failed to determine subscription associated with selcom transaction: " . json_encode($selcomTransaction));
-            return;
+            return null;
         }
 
         $paidAmount = $selcomTransaction->amount;
         $requiredAmount = $unpaidSubscription->amount;
         if (($paidAmount) >= ($requiredAmount)) {
             self::activateSubscription($unpaidSubscription, $selcomTransaction->id);
+            return $unpaidSubscription;
         } else {
             Log::error("Amount paid $paidAmount TZS is less that required amount $requiredAmount TZS" . json_encode($unpaidSubscription));
+            return null;
         }
-
     }
 
     public static function activateSubscription(TuneSubscription $subscription, $transactionId)

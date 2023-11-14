@@ -123,7 +123,7 @@ class SelcomTransactionsService
         return $selcomTransaction;
     }
 
-    public function completeTransaction(SelcomCallback $selcomCallback)
+    public function completeTransaction(SelcomCallback $selcomCallback): ?SelcomTransaction
     {
 
         /** @var SelcomTransaction | null  $selcomTransaction */

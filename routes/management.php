@@ -88,3 +88,9 @@ Route::prefix('v1/management/sms/gateways')->middleware('auth:api')->group(funct
     Route::post('/update', [SmsGatewaysManagementController::class,'updateGateway']);
 
 });
+
+
+Route::prefix('v1/transactions')->middleware('auth:api')->group(function () {
+    Route::get('/', [TransactionsManagementController::class,'getTransactions']);
+});
+
