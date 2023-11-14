@@ -41,14 +41,6 @@ Route::prefix('v1/auth')->group(function () {
 });
 
 
-
-Route::prefix('v1/transactions')->middleware('auth:api')->group(function () {
-
-    Route::get('/', [TransactionsManagementController::class,'getTransactions']);
-
-});
-
-
 Route::prefix('v1/messages')->middleware('auth:api')->group(function () {
 
     Route::get('/', [MessagesManagementController::class,'getMessages']);
