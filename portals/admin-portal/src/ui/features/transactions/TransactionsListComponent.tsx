@@ -68,7 +68,7 @@ const TransactionsListComponent = () => {
             ),
         },
         {
-            title: 'Reference ',
+            title: 'Subscription Id ',
             dataIndex: 'reference',
             key: 'reference',
             render: (_, record) => (
@@ -80,14 +80,13 @@ const TransactionsListComponent = () => {
             ),
         },
         {
-            title: 'Subscriber Phone',
+            title: 'Phone Number',
             dataIndex: 'payer_phone',
             key: 'payer_phone',
             render: (_, record) => (
                 <>
-                    <Space size="middle">
-                        {record.payer_phone}
-                    </Space>
+                    {record.payer_phone} <br/>
+                    <span style={{fontWeight: 'lighter'}}>Via: {record.third_party}</span>
                 </>
             )
 

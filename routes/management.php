@@ -9,6 +9,7 @@ use App\Http\Controllers\management\SmsGatewaysManagementController;
 use App\Http\Controllers\management\TopicsManagementController;
 use App\Http\Controllers\management\UsersManagementController;
 use App\Http\Controllers\management\VotesWeightManagementController;
+use App\Http\Controllers\reports\TransactionsManagementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -57,30 +58,24 @@ Route::prefix('v1/management/templates')->middleware('auth:api')->group(function
 
 
 Route::prefix('v1/referrals')->middleware('auth:api')->group(function () {
-
     Route::get('/agent', [ReferralsManagementController::class,'getAgent']);
     Route::get('/', [ReferralsManagementController::class,'getReferrals']);
     Route::post('/create', [ReferralsManagementController::class,'addReferral']);
     Route::post('/update', [ReferralsManagementController::class,'updateReferral']);
     Route::post('/password/reset', [ReferralsManagementController::class,'resetPassword']);
-
 });
 
 
 Route::prefix('v1/topics')->middleware('auth:api')->group(function () {
-
     Route::get('/', [TopicsManagementController::class,'getTopics']);
     Route::post('/create', [TopicsManagementController::class,'addTopic']);
     Route::post('/update', [TopicsManagementController::class,'updateTopic']);
-
 });
 
 
 Route::prefix('v1/management/sms/gateways')->middleware('auth:api')->group(function () {
-
     Route::get('/', [SmsGatewaysManagementController::class,'getGateways']);
     Route::post('/update', [SmsGatewaysManagementController::class,'updateGateway']);
-
 });
 
 

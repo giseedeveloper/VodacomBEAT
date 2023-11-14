@@ -36,7 +36,8 @@ class LedgerTransaction extends Model
     ];
 
     protected $fillable = [
-        "order_id",
+        "subscription_id",
+        "subscriber_id",
 
         "selcom_reference",
         "selcom_uuid",

@@ -112,44 +112,56 @@ class TunesSubscriptionService
 
         // 1 - push order to selcom
         $orderSubmissionResults = $selcomTransactionService->submitTransactionToSelcom($pendingSelcomTransaction);
-        $pendingSelcomTransaction->selcom_uuid = $orderSubmissionResults->gatewayBuyerUuid??"";
-        $pendingSelcomTransaction->selcom_token = $orderSubmissionResults->paymentToken??"";
-        $pendingSelcomTransaction->qr = $orderSubmissionResults->qr??"";
-        $pendingSelcomTransaction->payment_url = $orderSubmissionResults->paymentGatewayUrlPlain??"";
-        $pendingSelcomTransaction->remark = $orderSubmissionResults->message??"";
+        $pendingSelcomTransaction->selcom_uuid = $orderSubmissionResults->gatewayBuyerUuid ?? "";
+        $pendingSelcomTransaction->selcom_token = $orderSubmissionResults->paymentToken ?? "";
+        $pendingSelcomTransaction->qr = $orderSubmissionResults->qr ?? "";
+        $pendingSelcomTransaction->payment_url = $orderSubmissionResults->paymentGatewayUrlPlain ?? "";
+        $pendingSelcomTransaction->remark = $orderSubmissionResults->message ?? "";
         $pendingSelcomTransaction->save();
 
         // 2 - push order
         $selcomTransactionService->initiatePushUssd($pendingSelcomTransaction);
     }
 
-    public static function onPaymentComplete(SelcomTransaction $selcomTransaction)
+    public static function onPaymentComplete(SelcomTransaction $selcomTransaction): ?TuneSubscription
     {
         /** @var  $unpaidSubscription TuneSubscription | null */
         $unpaidSubscription = TuneSubscription::query()->where('subscription_reference', $selcomTransaction->order_id)->first();
         if ($unpaidSubscription == null) {
             Log::error("failed to determine subscription associated with selcom transaction: " . json_encode($selcomTransaction));
-            return;
+            return null;
         }
 
         $paidAmount = $selcomTransaction->amount;
         $requiredAmount = $unpaidSubscription->amount;
         if (($paidAmount) < ($requiredAmount)) {
             Log::error("Amount paid $paidAmount TZS is less that required amount $requiredAmount TZS" . json_encode($unpaidSubscription));
-            return;
+            return $unpaidSubscription;
         }
 
 
         //Activate subscription
-        $activeSubscription = self::activateSubscription($unpaidSubscription, $selcomTransaction->id);
-
-        //Send commission to agent
-        $isDisbursementSuccess = AgentsCommissionService::onCommissionDisbursement($activeSubscription);
-        if($isDisbursementSuccess){
-            $activeSubscription->commission_issued_at = Carbon::now();
-            $activeSubscription->save();
+        try {
+            $activeSubscription = self::activateSubscription($unpaidSubscription, $selcomTransaction->id);
+        } catch (\Exception $e) {
+            Log::error("Encountered an error while activating subscription. selcomTransaction: ".json_encode($selcomTransaction));
+            Log::error($e);
         }
 
+
+        //Send commission to agent
+        try {
+            $isDisbursementSuccess = AgentsCommissionService::onCommissionDisbursement($activeSubscription);
+            if ($isDisbursementSuccess) {
+                $activeSubscription->commission_issued_at = Carbon::now();
+                $activeSubscription->save();
+            }
+        } catch (\Exception $e) {
+            Log::error("Encountered an error while disbursing commission. subscription: ".json_encode($activeSubscription));
+            Log::error($e);
+        }
+
+        return $unpaidSubscription;
     }
 
     public static function activateSubscription(TuneSubscription $subscription, $transactionId): ?TuneSubscription
@@ -179,8 +191,8 @@ class TunesSubscriptionService
             . str_pad($customerId, 3, "0", STR_PAD_LEFT)
             . "C"
             . str_pad($subscriptionId, 3, "0", STR_PAD_LEFT)
-            ."T"
-            .dechex(time());
+            . "T"
+            . dechex(time());
     }
 
 }
