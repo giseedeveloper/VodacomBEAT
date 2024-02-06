@@ -61,7 +61,8 @@ class TunesSubscriptionService
 
         $totalCost = ($packageConfiguration->price) * count($phones);
 
-        $agentCommission = $packageConfiguration->price * (0.10);
+        $singleNumberCommission = $packageConfiguration->price * (0.20);
+        $agentCommission = $singleNumberCommission * count($phones);
 
         # Create pending subscription
         /** @var TuneSubscription | null $tuneSubscription */
