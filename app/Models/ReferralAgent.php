@@ -33,7 +33,10 @@ class ReferralAgent extends Model
         'phone_number',
         'sales_zone',
 
-        'reference_number'
+        'reference_number',
+        'commission_percentage',
+        'commission_amount'
+
     ];
 
 
