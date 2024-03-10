@@ -14,12 +14,12 @@ Hi Richy. here are the key things we discussed and we can term these as scope of
 - ✅ Service price rates are 10,000 for one month, 30,000 for 3 months, 50,000 for 6 months and 100,000 for 12 months
 
 4. Self Subscription (Priority)
-- Correct the price calculation formula to  10,000 for one month, 30,000 for 3 months, 50,000 for 6 months and 100,000 for 12 months
+- ✅ Correct the price calculation formula to  10,000 for one month, 30,000 for 3 months, 50,000 for 6 months and 100,000 for 12 months
 
 5. Admin Portal (Priority)
-- Data extraction feature in excel 
 - ✅ Ability to see Agent credentials (Password and Username)
- 
+- Data extraction feature in excel
+
 
 https://yatosha.com/
 Domain: mobiadafrica.co.tz
