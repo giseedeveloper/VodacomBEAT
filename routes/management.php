@@ -6,6 +6,7 @@ use App\Http\Controllers\contest\VotesController;
 use App\Http\Controllers\management\NotificationTemplatesManagementController;
 use App\Http\Controllers\management\ReferralsManagementController;
 use App\Http\Controllers\management\SmsGatewaysManagementController;
+use App\Http\Controllers\management\SubscriptionPackagesManagementController;
 use App\Http\Controllers\management\TopicsManagementController;
 use App\Http\Controllers\management\UsersManagementController;
 use App\Http\Controllers\management\VotesWeightManagementController;
@@ -53,6 +54,13 @@ Route::prefix('v1/management/templates')->middleware('auth:api')->group(function
 
     Route::get('/notifications', [NotificationTemplatesManagementController::class,'fetchNotificationTemplates']);
     Route::post('/notifications/update', [NotificationTemplatesManagementController::class,'updateNotificationTemplate']);
+
+});
+
+Route::prefix('v1/management/config/packages')->middleware('auth:api')->group(function () {
+
+    Route::get('/list', [SubscriptionPackagesManagementController::class,'fetchPackages']);
+    Route::post('/update', [SubscriptionPackagesManagementController::class,'updatePackage']);
 
 });
 

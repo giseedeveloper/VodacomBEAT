@@ -8,11 +8,12 @@ import EyasiContentCard from "../../../templates/cards/EyasiContentCard";
 import customerLoadingIcon from "../../../templates/Loading";
 import {ReferralAgent,MobileNetwork} from "../../../../interfaces/referrals/ReferralsInterfaces";
 import Search from "antd/es/input/Search";
-import {EditOutlined, ReloadOutlined} from "@ant-design/icons";
+import {EditOutlined, PercentageOutlined, PhoneOutlined, ReloadOutlined, UserOutlined} from "@ant-design/icons";
+import {isNotEmpty} from "../../../../utils/helpers";
 
 
 
-const MessagesComponent = () => {
+const AgentsComponent = () => {
 
 
     const [referralsList, updateReferralsList] = useState<ReferralAgent[]>([]);
@@ -42,7 +43,7 @@ const MessagesComponent = () => {
     }, [referralsList]);
 
     const fetchRecords = () => {
-        console.log("Fetching referrals...")
+        console.log("Fetching agents...")
         setIsLoading(true)
         getRequest(`/api/v1/referrals?query=${searchQuery}`).then((response) => {
             updateReferralsList(response.data.payload.referrals.data);
@@ -85,7 +86,7 @@ const MessagesComponent = () => {
     const handleSave = (item: ReferralAgent) => {
         console.log(JSON.stringify(item))
         setIsLoading(true);
-        postRequest(item.id? "/api/v1/referrals/update" : "/api/v1/referrals/create", item)
+        postRequest(item.id? "/api/v1/referrals/update" : "/api/v1/agents/create", item)
             .then((response) => {
                 notifySuccess("Success", "Referral Agent Added")
                 setIsLoading(false);
@@ -130,23 +131,24 @@ const MessagesComponent = () => {
         {
             title: 'Name',
             dataIndex: 'first_name',
-            render: (_, record) => (<> {record.first_name} {record.second_name} </>),
+            render: (_, record) => (<>
+                <span style={{fontWeight: 'bold'}}>{record.first_name} {record.second_name}</span> <br/>
+                {record.sales_zone}
+            </>),
         },
         {
-            title: 'Payment Channel',
+            title: 'Send Commission To',
             dataIndex: 'network',
             render: (_, record) => (<>  {record.phone_number}
                 <br/> <Tag style={{fontWeight: 'bold'}} color="blue">{record.network?.name}</Tag> </>),
         },
         {
-            title: 'Commission Ref.',
+            title: 'Commission',
             dataIndex: 'reference_number',
-            render: (_, record) => (<> {record.reference_number} </>),
-        },
-        {
-            title: 'Sales Zone',
-            dataIndex: 'sales_zone',
-            render: (_, record) => (<> {record.sales_zone} </>),
+            render: (_, record) => (<>
+                Ref: {record.reference_number} <br/>
+                Percentage: {record.commission_percentage??'Not set'}{isNotEmpty(record.commission_percentage)?'%':''} <br/>
+            </>),
         },
         {
             title: 'Created',
@@ -158,8 +160,10 @@ const MessagesComponent = () => {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <a onClick={() => showEditForm(record)}><EditOutlined style={{marginRight:'0.8em'}}/>Edit</a>
-                    <a style={{color:'red'}} onClick={() => openPasswordForm(record)}><ReloadOutlined style={{marginRight:'0.8em', color:'red'}}/>Reset</a>
+                    <a style={{border:'1px solid blue', padding:'4px 8px'}}
+                       onClick={() => showEditForm(record)}><EditOutlined style={{marginRight:'0.8em'}}/>Edit</a>
+                    <a style={{color:'red',border:'1px solid red', padding:'4px 8px'}}
+                       onClick={() => openPasswordForm(record)}><ReloadOutlined style={{marginRight:'0.8em', color:'red'}}/>Reset Password</a>
                 </Space>
             )
         }
@@ -243,21 +247,31 @@ const MessagesComponent = () => {
                     label="First Name"
                     name="first_name"
                 >
-                    <Input/>
+                    <Input prefix={<UserOutlined/>}/>
                 </Form.Item>
 
                 <Form.Item
                     label="Last Name"
                     name="second_name"
                 >
+                    <Input prefix={<UserOutlined/>}/>
+                </Form.Item>
+
+                <Form.Item
+                    label="Sales Zone"
+                    name="sales_zone"
+                >
                     <Input/>
                 </Form.Item>
 
+
+
+                <h3> Commission & Authentication </h3>
                 <Form.Item
                     label="Phone Number"
                     name="phone_number"
                 >
-                    <Input/>
+                    <Input prefix={<PhoneOutlined/>}/>
                 </Form.Item>
 
                 <Form.Item
@@ -271,11 +285,13 @@ const MessagesComponent = () => {
                 </Form.Item>
 
                 <Form.Item
-                    label="Sales Zone"
-                    name="sales_zone"
+                    label="Commission Percentage"
+                    name="commission_percentage"
                 >
-                    <Input/>
+                    <Input  prefix={<PercentageOutlined/>}/>
                 </Form.Item>
+
+
 
             </Form>
         </Modal>
@@ -320,5 +336,5 @@ const MessagesComponent = () => {
 
 }
 
-export default MessagesComponent
+export default AgentsComponent
 

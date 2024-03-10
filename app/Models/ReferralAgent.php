@@ -36,7 +36,6 @@ class ReferralAgent extends Model
         'reference_number',
         'commission_percentage',
         'commission_amount'
-
     ];
 
 

@@ -7,6 +7,8 @@ export interface ReferralAgent {
     "second_name": string,
     "phone_number": string,
     "reference_number": string,
+    "commission_percentage": string,
+    "commission_amount": string,
     "sales_zone": string,
     "created_at": string,
     network: MobileNetwork

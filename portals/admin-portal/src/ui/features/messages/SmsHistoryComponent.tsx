@@ -61,7 +61,7 @@ const MessagesComponent = () => {
     }, [referralsList]);
 
     const fetchRecords = () => {
-        console.log("Fetching referrals...")
+        console.log("Fetching agents...")
         setIsLoading(true)
         getRequest(`/api/v1/messages/history?query=${searchQuery}`).then((response) => {
             updateReferralsList(response.data.payload.history.data);

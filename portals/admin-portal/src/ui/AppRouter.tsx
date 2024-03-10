@@ -13,7 +13,7 @@ import Logout from "../services/auth/Logout";
 import ContestantComponent from "./system/users/ContestantComponent";
 import SubscribersListComponent from "./features/subscribers/SubscribersListComponent";
 import MessagesTemplatesComponent from "./features/messages/MessagesTemplatesComponent";
-import ReferralsComponent from "./features/management/referrals/AgentsComponent";
+import ReferralsComponent from "./features/management/agents/AgentsComponent";
 import TeamsTopicsComponent from "./features/management/teams/TeamsTopicsComponent";
 import SmsHistoryComponent from "./features/messages/SmsHistoryComponent";
 import NotificationTemplatesComponent from "./features/management/notications/NotificationTemplatesComponent";
@@ -50,7 +50,7 @@ function AppRouter() {
                             <Route index element={<RequireAuth><SmsHistoryComponent/></RequireAuth>}/>
                         </Route>
 
-                        <Route path="referrals">
+                        <Route path="agents">
                             <Route index element={<RequireAuth><ReferralsComponent/></RequireAuth>}/>
                         </Route>
 

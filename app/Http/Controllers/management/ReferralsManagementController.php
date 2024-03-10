@@ -67,7 +67,10 @@ class ReferralsManagementController extends BaseController
             'first_name' => $request->input('first_name'),
             'second_name' => $request->input('second_name'),
             'phone_number' => $request->input('phone_number'),
-            'sales_zone' => $request->input('sales_zone')
+            'sales_zone' => $request->input('sales_zone'),
+
+            'commission_percentage' => $request->input('commission_percentage'),
+            'commission_amount' => $request->input('commission_amount')
         ]);
 
         $reference = ReferralsService::generateReferenceNumber($agent);
@@ -121,6 +124,8 @@ class ReferralsManagementController extends BaseController
             'first_name' => $request->input('first_name'),
             'second_name' => $request->input('second_name'),
             'phone_number' => $request->input('phone_number'),
+            'commission_percentage' => $request->input('commission_percentage'),
+            'commission_amount' => $request->input('commission_amount'),
             'sales_zone' => $request->input('sales_zone')
         ]);
 

@@ -4,15 +4,13 @@ import {
     SettingOutlined,
     LogoutOutlined,
     UsergroupAddOutlined,
-    MessageOutlined, ClockCircleOutlined, PercentageOutlined
+    MessageOutlined, PercentageOutlined
 } from '@ant-design/icons';
 import type {MenuProps} from 'antd';
 import {Menu} from 'antd';
 import React from 'react';
 import {useNavigate} from "react-router-dom";
 import {CiBullhorn} from "react-icons/ci";
-import {BiFootball} from "react-icons/bi";
-import {FaBroadcastTower} from "react-icons/fa";
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -39,7 +37,7 @@ const items: MenuProps['items'] = [
     toMenuItem('Configurations', 'setting/index', <SettingOutlined/>, [
         toMenuItem('System Users', '/users', <UsergroupAddOutlined/>),
         toMenuItem('Notifications', '/notifications', <MessageOutlined/>),
-        toMenuItem('Agents', '/referrals', <CiBullhorn/>),
+        toMenuItem('Agents', '/agents', <CiBullhorn/>),
     ]),
 
     toMenuItem('Logout', '/logout', <LogoutOutlined/>),
