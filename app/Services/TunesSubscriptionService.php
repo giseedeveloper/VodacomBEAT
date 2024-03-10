@@ -12,6 +12,7 @@ use App\Models\TuneSubscriptionPackage;
 use App\Models\TuneSubscriptionPhone;
 use App\Services\payment\AgentsCommissionService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -35,7 +36,7 @@ class TunesSubscriptionService
         return $agent;
     }
 
-    public static function addPendingSubscription(Request $request, TuneSubscriptionPackage $packageConfiguration, $agent): ?TuneSubscription
+    public static function addPendingSubscription(Request $request, TuneSubscriptionPackage $packageConfiguration,?ReferralAgent $agent): ?TuneSubscription
     {
 
         $contactPersonName = $request->input('contact_person_name');
@@ -61,8 +62,15 @@ class TunesSubscriptionService
 
         $totalCost = ($packageConfiguration->price) * count($phones);
 
-        $singleNumberCommission = $packageConfiguration->price * (0.20);
-        $agentCommission = $singleNumberCommission * count($phones);
+        /// Determine commission percentage
+        if($agent!=null && is_numeric($agent->commission_percentage)){
+            $commissionPercentage = $agent->commission_percentage;
+        }else{
+            $commissionPercentage = $packageConfiguration->commission_percentage;
+        }
+        $singleSubscriberCommission = $packageConfiguration->price * ($commissionPercentage);
+        $agentCommission = $singleSubscriberCommission * count($phones);
+
 
         # Create pending subscription
         /** @var TuneSubscription | null $tuneSubscription */
@@ -144,7 +152,7 @@ class TunesSubscriptionService
         //Activate subscription
         try {
             $activeSubscription = self::activateSubscription($unpaidSubscription, $selcomTransaction->id);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Encountered an error while activating subscription. selcomTransaction: ".json_encode($selcomTransaction));
             Log::error($e);
         }
@@ -157,7 +165,7 @@ class TunesSubscriptionService
                 $activeSubscription->commission_issued_at = Carbon::now();
                 $activeSubscription->save();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Encountered an error while disbursing commission. subscription: ".json_encode($activeSubscription));
             Log::error($e);
         }

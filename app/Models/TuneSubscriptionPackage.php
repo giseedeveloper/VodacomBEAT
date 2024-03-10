@@ -9,15 +9,19 @@ use Illuminate\Database\Eloquent\Model;
  * @property string package
  * @property string duration
  * @property string price
+ * @property string commission_percentage
+ * @property string commission_amount
  */
 class TuneSubscriptionPackage extends Model
 {
-    use HasFactory;
 
     protected $fillable = [
         'package',
         'duration',
-        'price'
+        'price',
+        'commission_percentage',
+        'commission_amount'
     ];
+
 
 }

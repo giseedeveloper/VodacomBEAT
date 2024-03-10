@@ -1,6 +1,15 @@
 import {PaymentTransaction} from "../PaymentTransactions";
 
 
+export interface SubscriptionPackage {
+    "id": number,
+    "package": string,
+    "duration": string,
+    "price": string,
+    "commission_percentage": string,
+    "commission_amount": string
+}
+
 export interface Subscription {
     "id": number,
     "include": boolean,

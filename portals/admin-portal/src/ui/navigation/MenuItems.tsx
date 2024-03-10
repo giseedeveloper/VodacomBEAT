@@ -35,9 +35,10 @@ const items: MenuProps['items'] = [
     toMenuItem('Commissions', '/commissions', <PercentageOutlined/>),
 
     toMenuItem('Configurations', 'setting/index', <SettingOutlined/>, [
+        toMenuItem('Packages', '/packages', <CiBullhorn/>),
+        toMenuItem('Agents', '/agents', <CiBullhorn/>),
         toMenuItem('System Users', '/users', <UsergroupAddOutlined/>),
         toMenuItem('Notifications', '/notifications', <MessageOutlined/>),
-        toMenuItem('Agents', '/agents', <CiBullhorn/>),
     ]),
 
     toMenuItem('Logout', '/logout', <LogoutOutlined/>),

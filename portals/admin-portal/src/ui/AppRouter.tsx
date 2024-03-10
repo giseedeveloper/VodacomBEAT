@@ -19,6 +19,7 @@ import SmsHistoryComponent from "./features/messages/SmsHistoryComponent";
 import NotificationTemplatesComponent from "./features/management/notications/NotificationTemplatesComponent";
 import SmsGatewayManagementComponent from "./features/management/sms_gateways/SmsGatewayManagementComponent";
 import CommissionsListComponent from "./features/commissions/CommissionsListComponent";
+import SubscriptionPackagesComponent from "./features/management/packages/SubscriptionPackagesComponent";
 
 function AppRouter() {
     return (
@@ -48,6 +49,10 @@ function AppRouter() {
 
                         <Route path="sms-history">
                             <Route index element={<RequireAuth><SmsHistoryComponent/></RequireAuth>}/>
+                        </Route>
+
+                        <Route path="packages">
+                            <Route index element={<RequireAuth><SubscriptionPackagesComponent/></RequireAuth>}/>
                         </Route>
 
                         <Route path="agents">

@@ -63,6 +63,7 @@ class TunesAgentController extends BaseController
         $packageNumber = $request->input('subscription_package');
 
         # Load agent
+        /** @var ReferralAgent | null $agent */
         $agent = TunesSubscriptionService::getAgent();
         if (!$agent) {
             Log::error("attempted to add subscription by non-agent ".json_encode(Auth::user()));

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $reference_number
  * @property string $mobile_network_id
  * @property string $bank_id
+ * @property string $commission_percentage
  */
 class ReferralAgent extends Model
 {

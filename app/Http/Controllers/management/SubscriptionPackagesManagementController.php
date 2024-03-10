@@ -44,7 +44,8 @@ class SubscriptionPackagesManagementController extends BaseController
         ])->update([
             'package' => $request->input('package'),
             'duration' => $request->input('duration'),
-            'price' => $request->input('price')
+            'price' => $request->input('price'),
+            'commission_percentage' => $request->input('commission_percentage')
         ]);
 
         $responseData['record'] = $record;
