@@ -4,6 +4,7 @@ import {Content} from "antd/es/layout/layout";
 import {LockFilled, UserOutlined} from "@ant-design/icons";
 import loginIcon from "../../assets/images/auth/login_icon.png";
 import logo from "../../assets/images/mobiad-rectangle.png"
+import logoVoda from "../../assets/images/voda.png"
 import {useSelector, useDispatch} from "react-redux";
 import {postRequest} from "../../services/rest/RestService";
 import {setToken} from "../../state/auth/authStore";
@@ -58,8 +59,13 @@ const LoginPage = () => {
                         size="small"
                         style={{width: 540, marginTop: 140, paddingLeft: 64, paddingRight: 64}}>
                         <Row>
-                            <Col className="gutter-row" span={6} offset={8}>
+                            <Col className="gutter-row" span={6} offset={4}>
                                 <Image preview={false} src={logo} style={{width: 100, marginTop: 10}}/>
+                            </Col>
+                            <Col className="gutter-row" span={1} >
+                            </Col>
+                            <Col className="gutter-row" span={6} >
+                                <Image preview={false} src={logoVoda} style={{width: 64, marginTop: 10}}/>
                             </Col>
                         </Row>
 

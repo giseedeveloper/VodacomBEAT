@@ -1,6 +1,9 @@
 
-# APIs & Features
+# LINKS
 =======================
+https://agent.mobiadafrica.co.tz
+https://tunes-portal.mobiadafrica.co.tz
+https://vodacom-tunes-api.mobiadafrica.co.tz
 
 System: Users
 ==================
@@ -13,14 +16,7 @@ System: Permissions
 =====================
 -> fetch available system permissions  ✅
 -> assign permissions to users  ✅
- 
-Feature: Subscriptions
-=======================
--> add contestant ✅
--> update contestant [change status] ✅
--> fetch contestants with their votes counts ✅
--> view contestant votes (who-voted)  ✅
-
+  
 
 Feature: Transactions
 ========================
@@ -28,17 +24,4 @@ Feature: Transactions
 -> fetch transactions by contestant ✅
 -> fetch transactions by status ✅
 -> search transaction by phone ✅
-
-Feature: Dashboard stats
-========================
--> Total votes casted
--> Votes by contestants
-
--> Total ussd interactions
--> Total whatsapp interactions
-
--> Total transaction attempts
--> Total successful transactions
--> Total failed transactions
-
--> [Add other relevant stats]
+ 
