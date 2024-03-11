@@ -73,6 +73,10 @@ Route::prefix('v1/referrals')->middleware('auth:api')->group(function () {
     Route::post('/password/reset', [AgentsManagementController::class,'resetPassword']);
 });
 
+Route::prefix('v1/agents')->middleware('auth:api')->group(function () {
+    Route::post('/create', [AgentsManagementController::class,'addReferral']);
+});
+
 
 Route::prefix('v1/topics')->middleware('auth:api')->group(function () {
     Route::get('/', [TopicsManagementController::class,'getTopics']);
