@@ -3,7 +3,7 @@
 Hi Richy. here are the key things we discussed and we can term these as scope of work.
 
 1. Improving the brand of the two portals
-- We’ll share the designs for you to impliment
+- 🗓️We’ll share the designs for you to impliment
 
 2. Migrate the Portals to the new Domain (Priority)
   - ✅ To increase reliability
@@ -18,7 +18,7 @@ Hi Richy. here are the key things we discussed and we can term these as scope of
 
 5. Admin Portal (Priority)
 - ✅ Ability to see Agent credentials (Password and Username)
-- Data extraction feature in excel
+- 🗓️ Data extraction feature in excel
 
 
 https://yatosha.com/
