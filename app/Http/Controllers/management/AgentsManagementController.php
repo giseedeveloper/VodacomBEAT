@@ -7,6 +7,7 @@ use App\Models\ReferralAgent;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Models\VoteWeight;
+use App\Services\NotificationServiceService;
 use App\Services\ReferralsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Testing\Fluent\Concerns\Has;
 
 
-class ReferralsManagementController extends BaseController
+class AgentsManagementController extends BaseController
 {
 
     public function __construct()
@@ -141,6 +142,8 @@ class ReferralsManagementController extends BaseController
             'password' => 'required|min:6'
         ]);
 
+        $password = $request->input("password");
+
         /** @var ReferralAgent | null $agent */
         $agent = ReferralAgent::query()->where([
             'id' => $request->input('id')
@@ -155,9 +158,10 @@ class ReferralsManagementController extends BaseController
             return $this->returnError("Agent user not found",[],400);
         }
 
-        $user->password = Hash::make($request->input("password"));
+        $user->password = Hash::make($password);
         $user->save();
 
+        NotificationServiceService::sendOneSms("Your new password is $password. Don't share it with anyone",$agent->phone_number);
         $responseData['agent'] = $agent;
         return $this->returnResponse('Referral agent password updated', $responseData);
     }

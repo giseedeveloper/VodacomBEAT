@@ -4,7 +4,7 @@ use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\contest\ContestantsController;
 use App\Http\Controllers\contest\VotesController;
 use App\Http\Controllers\management\NotificationTemplatesManagementController;
-use App\Http\Controllers\management\ReferralsManagementController;
+use App\Http\Controllers\management\AgentsManagementController;
 use App\Http\Controllers\management\SmsGatewaysManagementController;
 use App\Http\Controllers\management\SubscriptionPackagesManagementController;
 use App\Http\Controllers\management\TopicsManagementController;
@@ -66,11 +66,11 @@ Route::prefix('v1/management/config/packages')->middleware('auth:api')->group(fu
 
 
 Route::prefix('v1/referrals')->middleware('auth:api')->group(function () {
-    Route::get('/agent', [ReferralsManagementController::class,'getAgent']);
-    Route::get('/', [ReferralsManagementController::class,'getReferrals']);
-    Route::post('/create', [ReferralsManagementController::class,'addReferral']);
-    Route::post('/update', [ReferralsManagementController::class,'updateReferral']);
-    Route::post('/password/reset', [ReferralsManagementController::class,'resetPassword']);
+    Route::get('/agent', [AgentsManagementController::class,'getAgent']);
+    Route::get('/', [AgentsManagementController::class,'getReferrals']);
+    Route::post('/create', [AgentsManagementController::class,'addReferral']);
+    Route::post('/update', [AgentsManagementController::class,'updateReferral']);
+    Route::post('/password/reset', [AgentsManagementController::class,'resetPassword']);
 });
 
 
