@@ -14,10 +14,36 @@ export interface Subscription {
     "id": number,
     "include": boolean,
     "phone_number": string,
-    "topic_code": string,
     "amount": number,
-    "package": string,
+    "payment_phone": string,
+
+    "contact_phone": string,
+    "contact_person_name": string,
+    "business_name": string,
+    "voice_script": string,
+    "voice_type": string,
+
+    "commission_amount": number,
+    "commission_issued_at": string,
+
     "starts_at": string,
     "expires_at": string,
-    "transaction" : PaymentTransaction
+    "transaction" : PaymentTransaction,
+    "package" : SubscriptionPackage,
+    "phones" : Phone[],
+}
+
+
+export interface Phone {
+    "id": number,
+    "subscription_id": string,
+    "customer_id": string,
+    "phone_number": string
+}
+
+export interface Phone {
+    "id": number,
+    "subscription_id": string,
+    "customer_id": string,
+    "phone_number": string
 }

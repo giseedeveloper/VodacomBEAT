@@ -29,7 +29,7 @@ const SubscriptionListComponent = () => {
     const fetchSubscribersList = () => {
 
         setIsLoading(true);
-        const url = `/api/v1/reports/subscriptions/active?phone=${searchQuery}&perPage=${pageSize}&page=${currentPageNo}`;
+        const url = `/api/v1/management/subscriptions/list?phone=${searchQuery}&perPage=${pageSize}&page=${currentPageNo}`;
         console.log(`Fetching subscriptions... ${url}`)
 
         getRequest(url)
@@ -83,37 +83,48 @@ const SubscriptionListComponent = () => {
 
     const columns: ColumnsType<Subscription> = [
         {
-            title: 'Subscriber Phone',
-            dataIndex: 'phone_number',
-            key: 'phone_number',
+            title: 'Business',
+            dataIndex: 'business_name',
+            key: 'business_name',
             render: (_, record) => (
                 <>
                     <Space size="middle">
-                        {record.phone_number}
+                        {record.business_name} <br/>
                     </Space>
                 </>
             ),
         },
         {
-            title: 'Topic',
+            title: 'Contacts',
+            dataIndex: 'business_name',
+            key: 'business_name',
+            render: (_, record) => (
+                <>
+                    {record.contact_person_name} <br/>
+                    {record.contact_phone} <br/>
+                </>
+            ),
+        },
+        {
+            title: 'Paid Amount',
             dataIndex: 'topic_code',
             key: 'topic_code',
             render: (_, record) => (
                 <>
                     <Space size="middle">
-                        <Tag color="processing">{record.topic_code}</Tag>
+                        <Tag color="processing">{record.amount}</Tag>
                     </Space>
                 </>
             ),
         },
         {
-            title: 'Reference',
-            dataIndex: 'reference',
-            key: 'reference',
+            title: 'Package',
+            dataIndex: 'topic_code',
+            key: 'topic_code',
             render: (_, record) => (
                 <>
                     <Space size="middle">
-                         {record.transaction?.reference??'N/A'}
+                        <Tag color="processing">{record?.package?.duration}</Tag>
                     </Space>
                 </>
             ),
@@ -130,34 +141,13 @@ const SubscriptionListComponent = () => {
             )
         },
         {
-            title: 'Package',
-            dataIndex: 'package',
-            key: 'package',
+            title: 'Commissions',
+            dataIndex: 'commission',
+            key: 'reference',
             render: (_, record) => (
                 <>
-                    <Space size="middle">
-                        {record.package}
-                    </Space>
+                    {record.commission_amount} TZS
                 </>
-            ),
-        },
-        {
-            title: 'Amount',
-            dataIndex: 'amount',
-            key: 'starts_at',
-            render: (_, record) => (
-                <>
-                    <Space size="middle">
-                        {record.amount}
-                    </Space>
-                </>
-            )
-        },
-        {
-            title: 'Status',
-            key: 'status',
-            render: (_, record) => (
-                <Tag  color={record.include?'#87d068':'#cd201f'}> {record.include?'Included':'Excluded'} </Tag>
             ),
         },
         {
@@ -165,7 +155,7 @@ const SubscriptionListComponent = () => {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button type="primary" onClick={()=>{updateSubscription(record)}}> {record.include?'Exclude':'Include'} </Button>
+                    <Button type="primary" >  View </Button>
                 </Space>
             ),
         },
