@@ -95,7 +95,7 @@ class AgentsManagementController extends BaseController
                 ->orWhere('second_name', 'like', "%$query%");
         }
 
-        $referrals = $referralsQueryBuilder->paginate(50);
+        $referrals = $referralsQueryBuilder->latest()->paginate(50);
         $responseData['referrals'] = $referrals;
         return $this->returnResponse('Referrals', $responseData);
     }

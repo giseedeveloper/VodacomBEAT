@@ -29,7 +29,10 @@ class AuthController extends BaseController
             return $this->returnError($validator->errors()->first(), ["Validation failed"], 422);
         }
 
-        $user = User::query()->where(['email' => $request->input('email')])->first();
+        $phone = $this->cleanPhone($request->input('email'));
+
+
+        $user = User::query()->where(['email' => $phone])->first();
         if (!$user) {
             return $this->returnError('User does not exist', ["User does not exist"], 400);
         }
@@ -42,6 +45,12 @@ class AuthController extends BaseController
         $responseData['user'] = $user;
         return $this->returnResponse('Logged In Successfully', $responseData);
 
+    }
+
+
+    public function cleanPhone($rwaPhone)
+    {
+        return $rwaPhone;
     }
 
 
