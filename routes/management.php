@@ -1,15 +1,12 @@
 <?php
 
 use App\Http\Controllers\auth\AuthController;
-use App\Http\Controllers\contest\ContestantsController;
-use App\Http\Controllers\contest\VotesController;
 use App\Http\Controllers\management\NotificationTemplatesManagementController;
 use App\Http\Controllers\management\AgentsManagementController;
 use App\Http\Controllers\management\SmsGatewaysManagementController;
 use App\Http\Controllers\management\SubscriptionPackagesManagementController;
 use App\Http\Controllers\management\TopicsManagementController;
 use App\Http\Controllers\management\UsersManagementController;
-use App\Http\Controllers\management\VotesWeightManagementController;
 use App\Http\Controllers\reports\SubscriptionsManagementController;
 use App\Http\Controllers\reports\TransactionsManagementController;
 use Illuminate\Http\Request;

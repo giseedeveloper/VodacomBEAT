@@ -24,9 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class TuneSubscription extends Model
 {
-    use HasFactory;
 
-    protected $with = ['phones','package'];
+    protected $with = ['phones','package','agent'];
 
     protected $casts = [
         'created_at' => 'datetime:d-M-Y H:i',
