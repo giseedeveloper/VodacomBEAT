@@ -67,7 +67,8 @@ class TunesSubscriptionService
         }else{
             $commissionPercentage = $packageConfiguration->commission_percentage;
         }
-        $singleSubscriberCommission = $packageConfiguration->price * ($commissionPercentage);
+
+        $singleSubscriberCommission = round($packageConfiguration->price * ($commissionPercentage/100));
         $agentCommission = $singleSubscriberCommission * count($phones);
 
 
@@ -191,7 +192,6 @@ class TunesSubscriptionService
 
         return $subscription;
     }
-
 
     public static function generateReference($customerId, $subscriptionId)
     {

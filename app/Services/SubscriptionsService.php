@@ -93,13 +93,6 @@ class SubscriptionsService
 
     }
 
-    public static function getActiveSubscribersCount()
-    {
-        return Subscription::query()
-            ->where('expires_at', ">", Carbon::now())
-            ->count();
-    }
-
     public static function broadcastToActiveSubscribers(BroadcastMessage $broadcastMessage)
     {
 
