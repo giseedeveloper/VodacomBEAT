@@ -26,8 +26,10 @@ export interface Subscription {
     "commission_amount": number,
     "commission_issued_at": string,
 
+    "paid_at": string,
     "starts_at": string,
     "expires_at": string,
+    "agent" : Agent,
     "transaction" : PaymentTransaction,
     "package" : SubscriptionPackage,
     "phones" : Phone[],
@@ -41,9 +43,9 @@ export interface Phone {
     "phone_number": string
 }
 
-export interface Phone {
+export interface Agent {
     "id": number,
-    "subscription_id": string,
-    "customer_id": string,
+    "first_name": string,
+    "second_name": string,
     "phone_number": string
 }

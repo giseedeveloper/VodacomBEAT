@@ -7,8 +7,9 @@ import {notifyHttpError} from "../../../services/notification/notifications";
 import {getRequest, postRequest} from "../../../services/rest/RestService";
 import EyasiContentCard from "../../templates/cards/EyasiContentCard";
 import customerLoadingIcon from "../../templates/Loading";
-import {Subscription} from "../../../interfaces/subscriptions/SubscriptionsInterfaces";
+import {Phone, Subscription} from "../../../interfaces/subscriptions/SubscriptionsInterfaces";
 import sectionIcon from "../../../assets/images/icons/subscription.png"
+import {isEmpty, isNotEmpty} from "../../../utils/helpers";
 
 const SubscriptionListComponent = () => {
 
@@ -83,14 +84,33 @@ const SubscriptionListComponent = () => {
 
     const columns: ColumnsType<Subscription> = [
         {
+            title: 'Serial',
+            dataIndex: 'id',
+            key: 'id',
+            render: (_, record) => (
+                <>
+                    MVT{record.id}
+                </>
+            ),
+        },
+        {
             title: 'Business',
             dataIndex: 'business_name',
             key: 'business_name',
             render: (_, record) => (
                 <>
-                    <Space size="middle">
-                        {record.business_name} <br/>
-                    </Space>
+                    <span style={{fontWeight:'bold'}}>{record.business_name} </span><br/>
+                </>
+            ),
+        },
+        {
+            title: 'Package',
+            dataIndex: 'topic_code',
+            key: 'topic_code',
+            render: (_, record) => (
+                <>
+                    {record.amount.toLocaleString()} TZS <br/>
+                    <Tag color="processing">{record?.package?.duration}. {record.phones.length} Numbers</Tag>
                 </>
             ),
         },
@@ -106,39 +126,29 @@ const SubscriptionListComponent = () => {
             ),
         },
         {
-            title: 'Paid Amount',
-            dataIndex: 'topic_code',
-            key: 'topic_code',
+            title: 'Details',
+            dataIndex: 'id',
+            key: 'id',
             render: (_, record) => (
                 <>
-                    <Space size="middle">
-                        <Tag color="processing">{record.amount}</Tag>
-                    </Space>
+                    Voice: {record.voice_type} <br/>
+                    <span style={{fontWeight:'bold'}}> Numbers:</span> <br/>
+                    {record.phones.map((item:Phone,index)=>{
+                        return <>{index+1}. {item.phone_number}<br/></>
+                    })}
                 </>
             ),
         },
         {
-            title: 'Package',
+            title: 'Payment Status',
             dataIndex: 'topic_code',
             key: 'topic_code',
             render: (_, record) => (
                 <>
-                    <Space size="middle">
-                        <Tag color="processing">{record?.package?.duration}</Tag>
-                    </Space>
+                    {record.starts_at}<br/>
+                    <Tag color={isEmpty(record.paid_at) ? `red` : `green`}>{isEmpty(record.paid_at) ? `PENDING` : `PAID`}</Tag>
                 </>
             ),
-        },
-        {
-            title: 'Starts at',
-            dataIndex: 'starts_at',
-            key: 'starts_at',
-            render: (_, record) => (
-                <>
-                    Starts: {record.starts_at}<br/>
-                    Ends: {record.expires_at}
-                </>
-            )
         },
         {
             title: 'Commissions',
@@ -146,7 +156,14 @@ const SubscriptionListComponent = () => {
             key: 'reference',
             render: (_, record) => (
                 <>
-                    {record.commission_amount} TZS
+                    { isNotEmpty(record.commission_amount) && <>
+                        {record.commission_amount?.toLocaleString()} TZS <br/>
+                        <Tag color={isEmpty(record.commission_issued_at) ? `red` : `green`}>
+                            {isEmpty(record.commission_issued_at) ? `Not Issued` : `Issued`}
+                        </Tag> <br/>
+                        Agent: {record.agent?.phone_number} <br/>
+                    </>}
+
                 </>
             ),
         },
