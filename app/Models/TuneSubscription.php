@@ -27,7 +27,7 @@ class TuneSubscription extends Model
 {
     use HasFactory;
 
-    protected $with = ['phones'];
+    protected $with = ['phones','package'];
 
     protected $casts = [
         'created_at' => 'datetime:d-M-Y H:i',
@@ -64,6 +64,10 @@ class TuneSubscription extends Model
 
     public function agent(){
         return $this->belongsTo(ReferralAgent::class,'agent_id');
+    }
+
+    public function package(){
+        return $this->belongsTo(TuneSubscriptionPackage::class,'subscription_package_id');
     }
 
 }

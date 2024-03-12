@@ -4,10 +4,12 @@ namespace App\Http\Controllers\reports;
 
 use App\Http\Controllers\BaseController;
 use App\Models\LedgerTransaction;
+use App\Models\Subscription;
+use App\Models\TuneSubscription;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class TransactionsManagementController extends BaseController
+class SubscriptionsManagementController extends BaseController
 {
 
     public function __construct()
@@ -15,13 +17,13 @@ class TransactionsManagementController extends BaseController
 
     }
 
-    public function getTransactions(Request $request): JsonResponse
+    public function getSubscriptions(Request $request): JsonResponse
     {
 
         $perPage = $request->input('perPage');
-        $transactionQueryBuilder = LedgerTransaction::query();
+        $transactionQueryBuilder = TuneSubscription::query();
 
-        $appliedFilter = "All Transactions";
+        $appliedFilter = "All Subscriptions";
 
         # filter by status
         $status = $request->input('status');
@@ -37,7 +39,7 @@ class TransactionsManagementController extends BaseController
             $appliedFilter = "Transactions by phone: {$phone}";
         }
 
-        $responseData['transactions'] = $transactionQueryBuilder->latest()->paginate($perPage);
+        $responseData['subscriptions'] = $transactionQueryBuilder->latest()->paginate($perPage);
         return $this->returnResponse($appliedFilter, $responseData);
     }
 
