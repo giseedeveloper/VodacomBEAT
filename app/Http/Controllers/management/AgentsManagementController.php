@@ -36,7 +36,7 @@ class AgentsManagementController extends BaseController
 
     }
 
-    public function addReferral(Request $request): JsonResponse
+    public function addAgent(Request $request): JsonResponse
     {
 
         $request->validate([
@@ -47,20 +47,23 @@ class AgentsManagementController extends BaseController
             'sales_zone' => 'required'
         ]);
 
+        $password = rand(111111, 999999);
+
         $user = User::query()->where('email',$request->input('phone_number'))->first();
-        if($user){
-            return $this->returnError("User already exists",[],400);
+        if(!$user){
+            $user = User::query()->create([
+                'name' => $request->input('first_name'),
+                'email' => $request->input('phone_number'),
+                'password' => Hash::make($password),
+                'is_active' => true
+            ]);
         }
 
-        $password = rand(111111, 999999);
-        $user = User::query()->create([
-            'name' => $request->input('first_name'),
-            'email' => $request->input('phone_number'),
-            'password' => Hash::make($password),
-            'is_active' => true
-        ]);
+        $user->is_active = true;
+        $user->save();
 
 
+        // Create new agent
         /** @var ReferralAgent $referral */
         $agent = ReferralAgent::query()->create([
             'user_id' => $user->id,

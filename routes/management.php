@@ -66,14 +66,14 @@ Route::prefix('v1/management/config/packages')->middleware('auth:api')->group(fu
 Route::prefix('v1/referrals')->middleware('auth:api')->group(function () {
     Route::get('/', [AgentsManagementController::class,'getAgents']);
     Route::get('/agent', [AgentsManagementController::class,'getAgent']);
-    Route::post('/create', [AgentsManagementController::class,'addReferral']);
+    Route::post('/create', [AgentsManagementController::class,'addAgent']);
     Route::post('/update', [AgentsManagementController::class,'updateReferral']);
     Route::post('/remove', [AgentsManagementController::class,'removeAgent']);
     Route::post('/password/reset', [AgentsManagementController::class,'resetPassword']);
 });
 
 Route::prefix('v1/agents')->middleware('auth:api')->group(function () {
-    Route::post('/create', [AgentsManagementController::class,'addReferral']);
+    Route::post('/create', [AgentsManagementController::class,'addAgent']);
 });
 
 Route::prefix('v1/management/sms/gateways')->middleware('auth:api')->group(function () {
