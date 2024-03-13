@@ -8,7 +8,14 @@ import EyasiContentCard from "../../../templates/cards/EyasiContentCard";
 import customerLoadingIcon from "../../../templates/Loading";
 import {ReferralAgent,MobileNetwork} from "../../../../interfaces/referrals/ReferralsInterfaces";
 import Search from "antd/es/input/Search";
-import {EditOutlined, PercentageOutlined, PhoneOutlined, ReloadOutlined, UserOutlined} from "@ant-design/icons";
+import {
+    DeleteFilled,
+    EditOutlined,
+    PercentageOutlined,
+    PhoneOutlined,
+    ReloadOutlined,
+    UserOutlined
+} from "@ant-design/icons";
 import {isNotEmpty} from "../../../../utils/helpers";
 
 
@@ -24,6 +31,7 @@ const AgentsComponent = () => {
     const [pageSize, updatePageSize] = useState(10);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, updateSearchQuery] = useState("");
+    const [selectedAgent, setSelectedAgent] = useState<ReferralAgent>();
 
 
     const [antdForm] = Form.useForm();
@@ -31,6 +39,7 @@ const AgentsComponent = () => {
 
     const [passwordAntdForm] = Form.useForm();
     const [passwordModalOpen, togglePasswordModal] = useState(false)
+    const [deletionConfirmationModal, toggleDeletionConfirmationModal] = useState(false)
 
 
     //Fetch products
@@ -83,6 +92,27 @@ const AgentsComponent = () => {
         passwordAntdForm.setFieldsValue(record);
     }
 
+    const openDeletionConfirmation= (record: ReferralAgent ) => {
+        setSelectedAgent(record)
+        toggleDeletionConfirmationModal(true)
+    }
+
+    const deleteAgent = () => {
+        console.log(JSON.stringify(selectedAgent))
+        setIsLoading(true);
+        postRequest("/api/v1/referrals/remove", selectedAgent)
+            .then((response) => {
+                setIsLoading(false);
+                notifySuccess("Success", "Success")
+                toggleDeletionConfirmationModal(false)
+                fetchRecords()
+            }).catch((errorObj) => {
+            notifyHttpError('Operation Failed', errorObj)
+            setIsLoading(false);
+        })
+    }
+
+
     const handleSave = (item: ReferralAgent) => {
         console.log(JSON.stringify(item))
         setIsLoading(true);
@@ -112,6 +142,7 @@ const AgentsComponent = () => {
             setIsLoading(false);
         })
     }
+
 
 
     const onPageChange = (page: number, pageSize: number) => {
@@ -162,8 +193,12 @@ const AgentsComponent = () => {
                 <Space size="middle">
                     <a style={{border:'1px solid blue', padding:'4px 8px'}}
                        onClick={() => showEditForm(record)}><EditOutlined style={{marginRight:'0.8em'}}/>Edit</a>
+
+                    <a style={{color:'red',border:'1px solid amber', padding:'4px 8px'}}
+                       onClick={() => openPasswordForm(record)}><ReloadOutlined style={{marginRight:'0.8em', color:'amber'}}/>Reset</a>
+
                     <a style={{color:'red',border:'1px solid red', padding:'4px 8px'}}
-                       onClick={() => openPasswordForm(record)}><ReloadOutlined style={{marginRight:'0.8em', color:'red'}}/>Reset Password</a>
+                       onClick={() => openDeletionConfirmation(record)}><DeleteFilled style={{marginRight:'0.8em', color:'red'}}/>Delete</a>
                 </Space>
             )
         }
@@ -309,7 +344,6 @@ const AgentsComponent = () => {
                onCancel={() => {
                    togglePasswordModal(false)
                }}>
-
             <Form
                 form={passwordAntdForm}
                 layout="vertical"
@@ -329,6 +363,26 @@ const AgentsComponent = () => {
 
 
             </Form>
+
+        </Modal>
+
+        {/***------------------------------
+         /*  Agent Deletion Confirmation
+         ***------------------------------*/}
+        <Modal title="Delete Agent"
+               open={deletionConfirmationModal}
+               onOk={deleteAgent}
+               confirmLoading={isLoading}
+               onCancel={() => {
+                   toggleDeletionConfirmationModal(false)
+               }}>
+
+            <>
+                {selectedAgent?.first_name}<br/>
+                {selectedAgent?.second_name}<br/>
+                {selectedAgent?.phone_number}
+            </>
+
         </Modal>
 
 

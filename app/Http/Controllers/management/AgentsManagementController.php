@@ -151,7 +151,7 @@ class AgentsManagementController extends BaseController
         ]);
 
         $referral = ReferralAgent::query()->find($request->input('id'));
-        if(!$$referral){
+        if(!$referral){
             return $this->returnError("Agent not found",[],412);
         }
 
