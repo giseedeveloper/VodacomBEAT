@@ -64,24 +64,17 @@ Route::prefix('v1/management/config/packages')->middleware('auth:api')->group(fu
 
 
 Route::prefix('v1/referrals')->middleware('auth:api')->group(function () {
+    Route::get('/', [AgentsManagementController::class,'getAgents']);
     Route::get('/agent', [AgentsManagementController::class,'getAgent']);
-    Route::get('/', [AgentsManagementController::class,'getReferrals']);
     Route::post('/create', [AgentsManagementController::class,'addReferral']);
     Route::post('/update', [AgentsManagementController::class,'updateReferral']);
+    Route::post('/remove', [AgentsManagementController::class,'removeAgent']);
     Route::post('/password/reset', [AgentsManagementController::class,'resetPassword']);
 });
 
 Route::prefix('v1/agents')->middleware('auth:api')->group(function () {
     Route::post('/create', [AgentsManagementController::class,'addReferral']);
 });
-
-
-Route::prefix('v1/topics')->middleware('auth:api')->group(function () {
-    Route::get('/', [TopicsManagementController::class,'getTopics']);
-    Route::post('/create', [TopicsManagementController::class,'addTopic']);
-    Route::post('/update', [TopicsManagementController::class,'updateTopic']);
-});
-
 
 Route::prefix('v1/management/sms/gateways')->middleware('auth:api')->group(function () {
     Route::get('/', [SmsGatewaysManagementController::class,'getGateways']);

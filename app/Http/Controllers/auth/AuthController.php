@@ -34,7 +34,11 @@ class AuthController extends BaseController
 
         $user = User::query()->where(['email' => $phone])->first();
         if (!$user) {
-            return $this->returnError('User does not exist', ["User does not exist"], 400);
+            return $this->returnError('User does not exist', ["User does not exist"], 412);
+        }
+
+        if(!$user->is_active){
+            return $this->returnError('Your account has been deactivated. Please contact our support people', ["User does not exist"], 412);
         }
 
         if (!(Hash::check($request->input('password'), $user->password))) {

@@ -84,7 +84,7 @@ class AgentsManagementController extends BaseController
         return $this->returnResponse('Referral agent created', $responseData);
     }
 
-    public function getReferrals(Request $request): JsonResponse
+    public function getAgents(Request $request): JsonResponse
     {
         $query = $request->input('query');
 
@@ -94,6 +94,8 @@ class AgentsManagementController extends BaseController
                 ->orWhere('first_name', 'like', "%$query%")
                 ->orWhere('second_name', 'like', "%$query%");
         }
+
+        $referralsQueryBuilder->where('status',ReferralAgent::$STATUS_ACTIVE);
 
         $referrals = $referralsQueryBuilder->latest()->paginate(50);
         $responseData['referrals'] = $referrals;
@@ -131,6 +133,36 @@ class AgentsManagementController extends BaseController
         ]);
 
         $responseData['referral'] = $referral;
+        return $this->returnResponse('Referral agent updated', $responseData);
+    }
+
+    public function removeAgent(Request $request): JsonResponse
+    {
+        $request->validate([
+            'id' => 'required|numeric'
+        ]);
+
+
+
+        $referral = ReferralAgent::query()->where([
+            'id' => $request->input('id')
+        ])->update([
+            'status' => ReferralAgent::$STATUS_NOT_ACTIVE
+        ]);
+
+        $referral = ReferralAgent::query()->find($request->input('id'));
+        if(!$$referral){
+            return $this->returnError("Agent not found",[],412);
+        }
+
+        $userUpdate = User::query()->where([
+            'id' => $referral->user_id
+        ])->update([
+            'is_active' => false
+        ]);
+
+        $responseData['referral'] = $referral;
+        $responseData['userUpdate'] = $userUpdate;
         return $this->returnResponse('Referral agent updated', $responseData);
     }
 

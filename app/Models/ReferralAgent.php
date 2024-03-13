@@ -18,6 +18,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class ReferralAgent extends Model
 {
+
+    public static $STATUS_ACTIVE = "active";
+    public static $STATUS_NOT_ACTIVE = "not_active";
+
     protected $casts = [
         'created_at' => 'datetime:d-M-Y H:i',
     ];
@@ -36,7 +40,8 @@ class ReferralAgent extends Model
 
         'reference_number',
         'commission_percentage',
-        'commission_amount'
+        'commission_amount',
+        'status'
     ];
 
 
