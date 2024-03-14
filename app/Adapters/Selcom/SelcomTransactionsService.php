@@ -30,7 +30,6 @@ class SelcomTransactionsService
     public function __construct()
     {
         $this->selcomRestClient = new SelcomRestClient();
-
         $this->vendorCode = Config::get('selcom.auth.vendor');
         $this->pin = Config::get('selcom.auth.pin');
         $this->orderCallbackUrl = Config::get('selcom.urls.webhook');
@@ -38,9 +37,9 @@ class SelcomTransactionsService
         $this->orderCancellationUrl = Config::get('selcom.urls.cancel');
     }
 
+
     public function getFloatBalance(): SelcomOrderResponse
     {
-
         /** @var [] $selcomDisbursementDetails */
         $balanceRequestDetails = array(
             "vendor" => $this->vendorCode,
