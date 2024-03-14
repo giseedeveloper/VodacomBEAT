@@ -25,6 +25,7 @@ class SelcomTransactionsService
     protected string $orderCancellationUrl = "/checkout/create-order";
 
     protected string $walletDisbursementUrl = "/walletcashin/process";
+    protected string $balanceCheckUrl = "/vendor/balance";
 
     public function __construct()
     {
@@ -48,7 +49,7 @@ class SelcomTransactionsService
 
         Log::info("float balance- sent request" . json_encode($balanceRequestDetails));
 
-        $url = $this->walletDisbursementUrl; //Todo: uncomment
+        $url = $this->balanceCheckUrl; //Todo: uncomment
         return $this->selcomRestClient->post($url, $balanceRequestDetails, false);
     }
 

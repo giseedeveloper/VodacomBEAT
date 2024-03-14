@@ -13,7 +13,7 @@
 > pwd: roman$rev56proto
 
 # Files
-cd /var/www/mobiad/vodacom-caller-tunes
+`cd /var/www/mobiad/vodacom-caller-tunes`
 cd /var/www/mobiad/vodacom-caller-tunes/storage/logs
 >> mv *.* bkp/
 
