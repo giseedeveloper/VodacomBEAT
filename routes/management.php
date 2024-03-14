@@ -3,6 +3,7 @@
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\management\NotificationTemplatesManagementController;
 use App\Http\Controllers\management\AgentsManagementController;
+use App\Http\Controllers\management\SelcomManagementController;
 use App\Http\Controllers\management\SmsGatewaysManagementController;
 use App\Http\Controllers\management\SubscriptionPackagesManagementController;
 use App\Http\Controllers\management\TopicsManagementController;
@@ -80,6 +81,12 @@ Route::prefix('v1/management/sms/gateways')->middleware('auth:api')->group(funct
     Route::get('/', [SmsGatewaysManagementController::class,'getGateways']);
     Route::post('/update', [SmsGatewaysManagementController::class,'updateGateway']);
 });
+
+
+Route::prefix('v1/management/selcom')->middleware('auth:api')->group(function () {
+    Route::get('/balance', [SelcomManagementController::class,'getFloatBalance']);
+});
+
 
 
 Route::prefix('v1/transactions')->middleware('auth:api')->group(function () {

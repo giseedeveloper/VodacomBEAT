@@ -37,6 +37,21 @@ class SelcomTransactionsService
         $this->orderCancellationUrl = Config::get('selcom.urls.cancel');
     }
 
+    public function getFloatBalance(): SelcomOrderResponse
+    {
+
+        /** @var [] $selcomDisbursementDetails */
+        $balanceRequestDetails = array(
+            "vendor" => $this->vendorCode,
+            "pin" => $this->pin
+        );
+
+        Log::info("float balance- sent request" . json_encode($balanceRequestDetails));
+
+        $url = $this->walletDisbursementUrl; //Todo: uncomment
+        return $this->selcomRestClient->post($url, $balanceRequestDetails, false);
+    }
+
     public function submitTransactionToSelcom(SelcomTransaction $transaction): SelcomOrderResponse
     {
 

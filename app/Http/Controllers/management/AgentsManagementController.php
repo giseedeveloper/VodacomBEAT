@@ -4,16 +4,13 @@ namespace App\Http\Controllers\management;
 
 use App\Http\Controllers\BaseController;
 use App\Models\ReferralAgent;
-use App\Models\Subscription;
 use App\Models\User;
-use App\Models\VoteWeight;
 use App\Services\NotificationServiceService;
 use App\Services\ReferralsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Testing\Fluent\Concerns\Has;
 
 
 class AgentsManagementController extends BaseController
