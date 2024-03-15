@@ -19,6 +19,9 @@ class AgentsCommissionService
     public static function onCommissionDisbursement(TuneSubscription $tuneSubscription): ?bool
     {
 
+        Log::info('');
+
+
         /** @var ReferralAgent | null $agent */
         $agent = $tuneSubscription->agent;
         if ($agent == null) {
@@ -32,6 +35,8 @@ class AgentsCommissionService
             Log::debug("Failed to disburse funds to agent, agent has no network".json_encode($tuneSubscription));
             return false;
         }
+
+        Log::info('beneficiary agent: Agent'. json_encode($agent));
 
         $mobiadPhone = Config::get('selcom.auth.mobiad_phone');
         $commissionReceiverPhone = PhoneNumberUtil::formatPhoneNumberTZ($agent->phone_number);

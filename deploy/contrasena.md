@@ -1,5 +1,4 @@
 
-
 [ Server-1 ]
 > ssh mobiadi@159.89.8.177   //IP-No.1
 > ssh mobiadi@138.68.113.110 //IP-No.3
@@ -13,7 +12,7 @@
 > pwd: roman$rev56proto
 
 # Files
-`cd /var/www/mobiad/vodacom-caller-tunes`
+cd /var/www/mobiad/vodacom-caller-tunes`
 cd /var/www/mobiad/vodacom-caller-tunes/storage/logs
 >> mv *.* bkp/
 
