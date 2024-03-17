@@ -28,8 +28,11 @@ class SelcomProxyTestsController extends BaseController
     /*** Proxy tests  **/
     public function proxyOrderRequest(Request $request)
     {
-        Log::info("....");
+        Log::info(" " );
+        Log::info(" ");
+        Log::info(".... ".json_encode($request->input()));
         $selcomOrderUrl = 'https://apigw.selcommobile.com/v1/checkout/create-order';
+//        $selcomOrderUrl = 'http://vodacom-tunes.io/api/v1/test/selcom/proxy/checker';
         Log::info("redirecting to order endpoint $selcomOrderUrl");
         return $this->redirectPost($selcomOrderUrl,$request);
     }
