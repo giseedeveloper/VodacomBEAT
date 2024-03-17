@@ -89,6 +89,7 @@ class SelcomTestsController extends BaseController
         $request->validate([
             'payer_phone' => 'required|numeric',
             'receiver_phone' => 'required|numeric',
+            'amount' => 'required|numeric',
             'network' => 'required',
         ]);
 
@@ -107,7 +108,7 @@ class SelcomTestsController extends BaseController
             "selcom_token" => null,
             "payer_phone" => $payerPhone,
             "receiver_phone" => $receiverPhone,
-            "amount" => 33000,
+            "amount" => $request->input('amount'),
             "status" => SelcomTransaction::$STATUS_PENDING
         ]);
 
