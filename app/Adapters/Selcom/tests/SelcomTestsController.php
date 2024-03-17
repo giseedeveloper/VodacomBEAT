@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Adapters\Selcom;
+namespace App\Adapters\Selcom\tests;
 
+use App\Adapters\Selcom\SelcomTransactionsService;
 use App\Http\Controllers\BaseController;
 use App\Models\SelcomTransaction;
 use App\Models\TuneSubscription;
@@ -12,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redirect;
 
 class SelcomTestsController extends BaseController
 {

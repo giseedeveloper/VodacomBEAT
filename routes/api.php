@@ -1,6 +1,7 @@
 <?php
 
-use App\Adapters\Selcom\SelcomTestsController;
+use App\Adapters\Selcom\tests\SelcomProxyTestsController;
+use App\Adapters\Selcom\tests\SelcomTestsController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\management\CommissionsManagementController;
 use App\Http\Controllers\management\SubscriptionsManagementController;
@@ -97,9 +98,9 @@ Route::prefix('v1/test')->group(function () {
     Route::post('/selcom/disburse/agent', [SelcomTestsController::class,'selcomDisburseAgent']);
     Route::post('/selcom/disburse/mock', [SelcomTestsController::class,'mockDisburse']);
 
-    Route::post('/selcom/proxy/checker', [SelcomTestsController::class,'redirectionChecker']);
-    Route::post('/selcom/proxy/order', [SelcomTestsController::class,'proxyOrderRequest']);
-    Route::post('/selcom/proxy/push', [SelcomTestsController::class,'proxyPushRequest']);
+    Route::post('/selcom/proxy/checker', [SelcomProxyTestsController::class,'redirectionChecker']);
+    Route::post('/selcom/proxy/order', [SelcomProxyTestsController::class,'proxyOrderRequest']);
+    Route::post('/selcom/proxy/push', [SelcomProxyTestsController::class,'proxyPushRequest']);
 
 });
 
