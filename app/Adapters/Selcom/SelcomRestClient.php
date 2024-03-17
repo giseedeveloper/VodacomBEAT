@@ -26,11 +26,14 @@ class SelcomRestClient
     {
         date_default_timezone_set('Africa/Dar_es_Salaam');
         $requestTimestamp = date('c');
+        Log::info("requestTimestamp $requestTimestamp");
 
         $endpointUrl = $this->baseUrl . $url;
          Log::debug('Url: ' . $endpointUrl);
 
         $signed_fields = implode(',', array_keys($params));
+        Log::info("signed_fields = $signed_fields");
+
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json;charset=\"utf-8\"',
@@ -165,6 +168,7 @@ class SelcomRestClient
             $signParams .= "&$key=" . $params[$key];
         }
 
+        Log::info("signParams $signParams");
         return base64_encode(hash_hmac('sha256', $signParams, $this->apiSecret, true));
     }
 }

@@ -10,7 +10,9 @@ use App\Services\payment\AgentsCommissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
 
 class SelcomTestsController extends BaseController
 {
@@ -42,10 +44,10 @@ class SelcomTestsController extends BaseController
         $selcomClient = new  SelcomTransactionsService();
         $orderResults = $selcomClient->submitTransactionToSelcom($selcomTransaction);
 
-        $selcomTransaction->selcom_uuid = $orderResults->gatewayBuyerUuid??"";
-        $selcomTransaction->selcom_token = $orderResults->paymentToken??"";
-        $selcomTransaction->qr = $orderResults->qr??"";
-        $selcomTransaction->remark = $orderResults->message??"";
+        $selcomTransaction->selcom_uuid = $orderResults->gatewayBuyerUuid ?? "";
+        $selcomTransaction->selcom_token = $orderResults->paymentToken ?? "";
+        $selcomTransaction->qr = $orderResults->qr ?? "";
+        $selcomTransaction->remark = $orderResults->message ?? "";
         $selcomTransaction->save();
 
         //Init push
@@ -140,9 +142,44 @@ class SelcomTestsController extends BaseController
 
     public function mockDisburse(Request $request)
     {
-        $resp =  '{"reference":"0700993782","transid":61,"resultcode":"000","result":"SUCCESS","message":"Vodacom M-pesa Cash-in\nTo RICHARD UNGANI\nReference 0700993782\nPhone 0763328665\nAmount TZS 1,000.00\nReceipt AJD4AZ0DHEK","data":[]}';
+        $resp = '{"reference":"0700993782","transid":61,"resultcode":"000","result":"SUCCESS","message":"Vodacom M-pesa Cash-in\nTo RICHARD UNGANI\nReference 0700993782\nPhone 0763328665\nAmount TZS 1,000.00\nReceipt AJD4AZ0DHEK","data":[]}';
         return json_decode($resp);
     }
+
+
+    /*** Proxy tests  **/
+    public function proxyOrderRequest(Request $request)
+    {
+        return $this->redirectPost('https://apigw.selcommobile.com/v1/checkout/create-order',$request);
+    }
+
+    public function proxyPushRequest(Request $request)
+    {
+        return $this->redirectPost('https://apigw.selcommobile.com/v1/checkout/wallet-payment',$request);
+    }
+
+
+    public function redirectPost(string $url, Request $request)
+    {
+        $originalHeaders = $request->headers->all();
+        $response = Http::withHeaders($originalHeaders)->post($url, $request->all());
+        return $response;
+    }
+
+
+    public function redirectionChecker(Request $request)
+    {
+        Log::info("Received a Redirection");
+        Log::info("headers ".json_encode($request->headers->all()));
+        Log::info("content ".json_encode($request->all()));
+
+        $resp['content'] = $request->input();
+        return $this->returnResponse('accepted', $resp);
+
+    }
+
+    /*** [END] Proxy tests  **/
+
 
 
 }

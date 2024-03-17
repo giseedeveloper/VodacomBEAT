@@ -97,6 +97,10 @@ Route::prefix('v1/test')->group(function () {
     Route::post('/selcom/disburse/agent', [SelcomTestsController::class,'selcomDisburseAgent']);
     Route::post('/selcom/disburse/mock', [SelcomTestsController::class,'mockDisburse']);
 
+    Route::post('/selcom/proxy/checker', [SelcomTestsController::class,'redirectionChecker']);
+    Route::post('/selcom/proxy/order', [SelcomTestsController::class,'proxyOrderRequest']);
+    Route::post('/selcom/proxy/push', [SelcomTestsController::class,'proxyPushRequest']);
+
 });
 
 
