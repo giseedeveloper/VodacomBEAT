@@ -8,6 +8,8 @@ use App\Models\SelcomTransaction;
 use App\Models\TuneSubscription;
 use App\Services\NotificationServiceService;
 use App\Services\payment\AgentsCommissionService;
+use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,20 +30,26 @@ class SelcomProxyTestsController extends BaseController
     {
         Log::info("....");
         $selcomOrderUrl = 'https://apigw.selcommobile.com/v1/checkout/create-order';
-        Log::info("redirecting to $selcomOrderUrl");
+        Log::info("redirecting to order endpoint $selcomOrderUrl");
         return $this->redirectPost($selcomOrderUrl,$request);
     }
 
     public function proxyPushRequest(Request $request)
     {
-        return $this->redirectPost('https://apigw.selcommobile.com/v1/checkout/wallet-payment',$request);
+        $selcomPushUrl = "https://apigw.selcommobile.com/v1/checkout/wallet-payment";
+        Log::info("redirecting to selcom push ussd $selcomPushUrl");
+        return $this->redirectPost($selcomPushUrl,$request);
     }
 
-    public function redirectPost(string $url, Request $request)
+
+    public function redirectPost(string $url, Request $request): PromiseInterface|Response
     {
         $originalHeaders = $request->headers->all();
-        $response = Http::withHeaders($originalHeaders)->post($url, $request->all());
-        return $response;
+        unset($originalHeaders['host']);
+
+        Log::info("sanitized original headers ".json_encode($originalHeaders));
+        Log::info("original contents ".json_encode($request->all()));
+        return Http::withHeaders($originalHeaders)->post($url, $request->all());
     }
 
 
