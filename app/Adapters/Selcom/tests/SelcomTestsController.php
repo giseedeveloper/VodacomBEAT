@@ -107,7 +107,7 @@ class SelcomTestsController extends BaseController
             "selcom_token" => null,
             "payer_phone" => $payerPhone,
             "receiver_phone" => $receiverPhone,
-            "amount" => 1000,
+            "amount" => 33000,
             "status" => SelcomTransaction::$STATUS_PENDING
         ]);
 

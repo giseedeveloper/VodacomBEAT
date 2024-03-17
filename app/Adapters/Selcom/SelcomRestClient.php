@@ -29,7 +29,7 @@ class SelcomRestClient
         Log::info("requestTimestamp $requestTimestamp");
 
         $endpointUrl = $this->baseUrl . $url;
-         Log::debug('Url: ' . $endpointUrl);
+        Log::debug('Url: ' . $endpointUrl);
 
         $signed_fields = implode(',', array_keys($params));
         Log::info("signed_fields = $signed_fields");
@@ -169,7 +169,12 @@ class SelcomRestClient
         }
 
         Log::info("signParams $signParams");
-        return base64_encode(hash_hmac('sha256', $signParams, $this->apiSecret, true));
+        $hash = hash_hmac('sha256', $signParams, $this->apiSecret, true);
+        Log::info("hash $hash");
+
+        $hasString = base64_encode($hash);
+        Log::info("hasString $hasString");
+        return $hasString;
     }
 }
 
