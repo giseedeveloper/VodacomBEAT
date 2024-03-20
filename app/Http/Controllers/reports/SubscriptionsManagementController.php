@@ -47,8 +47,12 @@ class SubscriptionsManagementController extends BaseController
     public function exportSubscriptions(Request $request)
     {
         $fileName = "subscriptions-" . Carbon::now()->format('dd-m-Y-H-i-s') . ".xlsx";
-        $binaryFileResponse = Excel::download(new SubscriptionsExport, $fileName, null, ['time' => 'today']);
-        return $binaryFileResponse->send();
+        $binaryFileResponse = Excel::download(new SubscriptionsExport,
+            $fileName,
+            null,
+            ['Access-Control-Allow-Origin' => '*']
+        );
+        return  $binaryFileResponse->send();
     }
 
 

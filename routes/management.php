@@ -95,6 +95,8 @@ Route::prefix('v1/transactions')->middleware('auth:api')->group(function () {
 
 Route::prefix('v1/management/subscriptions')->middleware('auth:api')->group(function () {
     Route::get('/list', [SubscriptionsManagementController::class,'getSubscriptions']);
-    Route::post('/export', [SubscriptionsManagementController::class,'exportSubscriptions']);
+    Route::get('/export', [SubscriptionsManagementController::class,'exportSubscriptions']);
 });
+
+Route::get('/v1/subscriptions/export', [SubscriptionsManagementController::class,'exportSubscriptions']);
 

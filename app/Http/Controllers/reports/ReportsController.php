@@ -5,8 +5,8 @@ namespace App\Http\Controllers\reports;
 use App\Http\Controllers\BaseController;
 use App\Models\LedgerTransaction;
 use App\Models\SmsHistory;
-use App\Models\Subscription;
 use App\Models\SubscriptionTopic;
+use App\Models\TuneSubscription;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -55,27 +55,27 @@ class ReportsController extends BaseController
 
 
         # Subscriptions Today
-        $responseData['daySubscriptionsCount'] =  Subscription::query()
+        $responseData['daySubscriptionsCount'] =  TuneSubscription::query()
             ->whereBetween('created_at',[Carbon::now()->startOfDay(),Carbon::now()->endOfDay()])
             ->count();
 
         # Active subscriptions
-        $responseData['activeSubscriptions'] =  Subscription::query()
-            ->where('expires_at',">",Carbon::now())
+        $responseData['activeSubscriptions'] =  TuneSubscription::query()
+            ->where('ends_at',">",Carbon::now())
             ->count();
 
         # Last 7-Days Subscriptions
-        $responseData['weekSubscriptions'] =  Subscription::query()
+        $responseData['weekSubscriptions'] =  TuneSubscription::query()
             ->whereBetween('created_at',[$startOfWeek,$endOfWeek])
             ->count();
 
         # Last 30-Days Subscriptions
-        $responseData['monthSubscriptions'] =  Subscription::query()
+        $responseData['monthSubscriptions'] =  TuneSubscription::query()
             ->whereBetween('created_at',[$startOfMonth,$endOfMonth])
             ->count();
 
         # All Time subscriptions
-        $responseData['allTimeSubscriptions'] =  Subscription::query()
+        $responseData['allTimeSubscriptions'] =  TuneSubscription::query()
             ->count();
 
         # Sent SMS counters
@@ -104,15 +104,7 @@ class ReportsController extends BaseController
         /** @var SubscriptionTopic[] $teams */
         $teams = SubscriptionTopic::all();
 
-        foreach ($teams as $teamTopic){
-            # Active subscriptions
-            $teamTopic->subscribersCount =  Subscription::query()
-                ->where('topic_code',$teamTopic->code)
-                ->where('expires_at',">",Carbon::now())
-                ->count();
-        }
-
-        $responseData['teams'] = $teams;
+        $responseData['teams'] =[];
         return $this->returnResponse('Stats', $responseData);
     }
 
