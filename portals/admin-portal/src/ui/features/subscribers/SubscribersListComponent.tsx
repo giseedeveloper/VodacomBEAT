@@ -1,7 +1,7 @@
 import {Button, Pagination, Space, Spin, Table, Tag} from 'antd';
 import type {ColumnsType} from 'antd/es/table';
 import React, {useEffect, useState} from 'react';
-import {UndoOutlined} from "@ant-design/icons";
+import {ExportOutlined, UndoOutlined} from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import {notifyHttpError} from "../../../services/notification/notifications";
 import {getRequest, postRequest} from "../../../services/rest/RestService";
@@ -10,6 +10,7 @@ import customerLoadingIcon from "../../templates/Loading";
 import {Phone, Subscription} from "../../../interfaces/subscriptions/SubscriptionsInterfaces";
 import sectionIcon from "../../../assets/images/icons/subscription.png"
 import {isEmpty, isNotEmpty} from "../../../utils/helpers";
+import axiosClient from "../../../services/rest/axios";
 
 const SubscriptionListComponent = () => {
 
@@ -49,15 +50,21 @@ const SubscriptionListComponent = () => {
         })
     }
 
-    const updateSubscription = (subscription:Subscription) => {
+    const exportSubscribers = () => {
+       const downloadUrl= axiosClient.defaults.baseURL + '/api/v1/subscriptions/export'
+        const newTab = window.open(downloadUrl, '_blank');
+        newTab?.focus();
+    }
 
-        const url:string = `/api/v1/subscriptions/update`;
+    const updateSubscription = (subscription: Subscription) => {
+
+        const url: string = `/api/v1/subscriptions/update`;
         console.log(`Updating subscriptions... ${url}`)
 
         setIsLoading(true);
-        postRequest(url,{
-            "id" :subscription.id,
-            "include" : !(subscription.include)
+        postRequest(url, {
+            "id": subscription.id,
+            "include": !(subscription.include)
         })
             .then((response) => {
                 console.log(response.data.payload);
@@ -99,7 +106,7 @@ const SubscriptionListComponent = () => {
             key: 'business_name',
             render: (_, record) => (
                 <>
-                    <span style={{fontWeight:'bold'}}>{record.business_name} </span><br/>
+                    <span style={{fontWeight: 'bold'}}>{record.business_name} </span><br/>
                 </>
             ),
         },
@@ -132,9 +139,9 @@ const SubscriptionListComponent = () => {
             render: (_, record) => (
                 <>
                     Voice: {record.voice_type} <br/>
-                    <span style={{fontWeight:'bold'}}> Numbers:</span> <br/>
-                    {record.phones.map((item:Phone,index)=>{
-                        return <>{index+1}. {item.phone_number}<br/></>
+                    <span style={{fontWeight: 'bold'}}> Numbers:</span> <br/>
+                    {record.phones.map((item: Phone, index) => {
+                        return <>{index + 1}. {item.phone_number}<br/></>
                     })}
                 </>
             ),
@@ -146,7 +153,8 @@ const SubscriptionListComponent = () => {
             render: (_, record) => (
                 <>
                     {record.starts_at}<br/>
-                    <Tag color={isEmpty(record.paid_at) ? `red` : `green`}>{isEmpty(record.paid_at) ? `PENDING` : `PAID`}</Tag>
+                    <Tag
+                        color={isEmpty(record.paid_at) ? `red` : `green`}>{isEmpty(record.paid_at) ? `PENDING` : `PAID`}</Tag>
                 </>
             ),
         },
@@ -156,7 +164,7 @@ const SubscriptionListComponent = () => {
             key: 'reference',
             render: (_, record) => (
                 <>
-                    { isNotEmpty(record.commission_amount) && <>
+                    {isNotEmpty(record.commission_amount) && <>
                         {record.commission_amount?.toLocaleString()} TZS <br/>
                         <Tag color={isEmpty(record.commission_issued_at) ? `red` : `green`}>
                             {isEmpty(record.commission_issued_at) ? `Not Issued` : `Issued`}
@@ -172,7 +180,7 @@ const SubscriptionListComponent = () => {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button type="primary" >  View </Button>
+                    <Button type="primary"> View </Button>
                 </Space>
             ),
         },
@@ -183,7 +191,8 @@ const SubscriptionListComponent = () => {
                              iconImage={sectionIcon}
                              extraHeaderItems={[
                                  isLoading && <Spin indicator={customerLoadingIcon}></Spin>,
-                                 <Button style={{marginRight: 16}} icon={<UndoOutlined/>} onClick={fetchSubscribersList} key="2"
+                                 <Button style={{marginRight: 16}} icon={<UndoOutlined/>} onClick={fetchSubscribersList}
+                                         key="2"
                                          type="default">Refresh</Button>,
                                  //  <Button href="/products/instance/new" key="1" type="primary">Add Order</Button>
                              ]}>
@@ -197,9 +206,14 @@ const SubscriptionListComponent = () => {
                         onSearch={onSearch}
                         allowClear/>
 
-                <h3 style={{ width: "420px", marginTop:0, paddingTop:0, marginLeft:24 }}>
+                <h3 style={{width: "420px", marginTop: 0, paddingTop: 0, marginLeft: 24}}>
                     Total Active Subscribers: {activeSubscribers}
                 </h3>
+
+                <Button style={{marginRight: 16}} icon={<ExportOutlined/>}
+                       onClick={exportSubscribers}
+                      type="primary">Export</Button>
+
             </Space.Compact>
         </Space>
 
