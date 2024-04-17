@@ -7,7 +7,7 @@ const axiosClient = axios.create();
 axiosClient.defaults.baseURL = (!process.env.NODE_ENV
     || process.env.NODE_ENV === 'development'
     || process.env.NODE_ENV === 'dev'
-    || process.env.NODE_ENV === 'local') ? 'http://mobiad.io' : 'http://159.89.8.177:8083';
+    || process.env.NODE_ENV === 'local') ? 'http://mobiad-vodacom.io' :  'https://vodacom-tunes-api.mobiadafrica.co.tz';
 
 const userToken = getStoredUserToken();
 
