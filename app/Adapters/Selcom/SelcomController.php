@@ -56,18 +56,12 @@ class SelcomController extends BaseController
 
     public function finalizeTransaction(Request $request): JsonResponse
     {
-
-        Log::debug("selcom-redirection:" . json_encode($request->all()));
-        return $this->returnResponse('Transaction completed', []);
-
+        return "You payment was successfull. Thank you";
     }
 
     public function cancelTransaction(Request $request): JsonResponse
     {
-
-        Log::debug("selcom-cancellation:" . json_encode($request->all()));
-        return $this->returnResponse('Transaction cancelled', []);
-
+        return "Your payment was cancelled. Thank you";
     }
 
 
