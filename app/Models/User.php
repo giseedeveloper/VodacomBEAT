@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -15,7 +14,7 @@ class User extends Authenticatable
 
     use HasApiTokens, HasFactory, Notifiable, HasRoles, HasPermissions;
 
-    protected $appends = ['assigned_permissions'];
+//    protected $appends = ['assigned_permissions'];
 
     protected $guard_name = 'api';
 
@@ -60,7 +59,7 @@ class User extends Authenticatable
     {
         foreach ($permissions as $permission) {
             $namesArray = explode(":", $permission->name);
-            $permission->description = ucwords($namesArray[1]) . " " . ucwords($namesArray[0]);
+            $permission->description = ucwords($namesArray[1]??'') . " " . ucwords($namesArray[0]??'');
 
             # hide unrequired info
             unset($permission->id);

@@ -3,34 +3,24 @@ ssh eyasi@194.163.147.240
 > cd ~/.ssh
 > ssh-keygen
 
-# hesabu_rsa
-# --------------------------------
-vim ~/.ssh/config
-# --------------------------------
-    Host github-hesabu-app
-    HostName github.com
-    User git
-    IdentityFile ~/.ssh/hesabu_rsa
-    IdentitiesOnly yes
-# ---------------------------------
-git clone git@github-hesabu-app:Rixar-Technologies-LTD/app.hesabu.co.git
-# ---------------------------------
+ 
 
-
-# market_rsa
-> ssh eyasi@194.163.147.240
+# vodacom-tune
+> ssh mobiad@38.242.229.179
 > cd ~/.ssh
 > ssh-keygen
-> name/location --> market_rsa
-> vim ~/.ssh/market_rsa.pub
+> name/location --> vodacom_tune
+> vim ~/.ssh/vodacom_tune.pub
 # --------------------------------
 > vim ~/.ssh/config
 # --------------------------------
-    Host github-market
-    HostName github.com
-    User git
-    IdentityFile ~/.ssh/market_rsa
-    IdentitiesOnly yes
+Host vodacom-tune
+HostName github.com
+User git
+IdentityFile ~/.ssh/vodacom_tune
+IdentitiesOnly yes
 # ---------------------------------
-git clone git@github.com:Rixar-Technologies-LTD/dar.co.tz.git
+git clone git@vodacom-tune:Mobiad-Africa/vodacom-caller-tunes.git
+git pull git@vodacom-tune:Mobiad-Africa/vodacom-caller-tunes.git
 # ---------------------------------
+https://github.com/

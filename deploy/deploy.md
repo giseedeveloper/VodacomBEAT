@@ -4,6 +4,8 @@
 >> sudo ln -s /etc/nginx/sites-available/agents.vodacom /etc/nginx/sites-enabled/ ::6969
 >> sudo ln -s /etc/nginx/sites-available/phpmyadmin /etc/nginx/sites-enabled/ ::9972
 
+
+
 [Extensions]
 >> sudo apt-get update
 >> sudo apt install php-zip
@@ -22,14 +24,6 @@
 >> sudo chmod -R 775 storage
 >> sudo chmod -R 775 bootstrap/cache
 
-[PermissionsOnMac]
->> sudo chown -R $USER:_www storage
->> sudo chown -R $USER:_www bootstrap/cache
->> sudo chmod -R 775 storage
->> sudo chmod -R 775 bootstrap/cache
-
-sudo chown -R $USER:www-data  /var/www/mobiad/mobiad-subscriptions/referrals-agents-portal/build
-sudo chmod -R 775             /var/www/mobiad/mobiad-subscriptions/referrals-agents-portal/build
 
 [migration]
 >> php artisan migrate
