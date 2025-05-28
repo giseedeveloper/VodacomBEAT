@@ -11,7 +11,6 @@ const  removeLoggedUser = () => {
 }
 
 
-
 const toErrorObject = (error) => {
 
     let errorObject = {
