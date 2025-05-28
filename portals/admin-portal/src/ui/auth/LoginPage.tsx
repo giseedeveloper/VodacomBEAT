@@ -6,7 +6,7 @@ import loginIcon from "../../assets/images/auth/login_icon.png";
 import logo from "../../assets/images/mobiad-rectangle.png"
 import logoVoda from "../../assets/images/voda.png"
 import {useSelector, useDispatch} from "react-redux";
-import {postRequest} from "../../services/rest/RestService";
+import {postRequest} from "../../http/RestService";
 import {setToken} from "../../state/auth/authStore";
 import {useNavigate} from "react-router-dom";
 import {notifyHttpError} from "../../services/notification/notifications";

@@ -4,13 +4,13 @@ import React, {useEffect, useState} from 'react';
 import {ExportOutlined, UndoOutlined} from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import {notifyHttpError} from "../../../services/notification/notifications";
-import {getRequest, postRequest} from "../../../services/rest/RestService";
+import {getRequest, postRequest} from "../../../http/RestService";
 import EyasiContentCard from "../../templates/cards/EyasiContentCard";
 import customerLoadingIcon from "../../templates/Loading";
 import {Phone, Subscription} from "../../../interfaces/subscriptions/SubscriptionsInterfaces";
 import sectionIcon from "../../../assets/images/icons/subscription.png"
 import {isEmpty, isNotEmpty} from "../../../utils/helpers";
-import axiosClient from "../../../services/rest/axios";
+import axiosClient from "../../../http/axios";
 
 const SubscriptionListComponent = () => {
 

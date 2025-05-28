@@ -18,7 +18,7 @@ import React, {useEffect, useState} from 'react';
 import {EditOutlined, EyeOutlined, MessageOutlined, UndoOutlined} from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import {notifyHttpError} from "../../../services/notification/notifications";
-import {getRequest, postRequest} from "../../../services/rest/RestService";
+import {getRequest, postRequest} from "../../../http/RestService";
 import EyasiContentCard from "../../templates/cards/EyasiContentCard";
 import customerLoadingIcon from "../../templates/Loading";
 import {Subscription} from "../../../interfaces/subscriptions/SubscriptionsInterfaces";

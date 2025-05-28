@@ -5,7 +5,7 @@ import {CiDollar} from "react-icons/ci";
 import {HiCash, HiOutlineHashtag, HiUserGroup} from "react-icons/hi";
 import {AiOutlineUsergroupAdd} from "react-icons/ai";
 import StatisticsGroup from "./StatisticsGroup";
-import {getRequest} from "../../services/rest/RestService";
+import {getRequest} from "../../http/RestService";
 import {notifyHttpError} from "../../services/notification/notifications";
 import {SubscriptionStats, TeamTopic} from "../../interfaces/MessagesInterfaces";
 import {GiSoccerBall} from "react-icons/gi";

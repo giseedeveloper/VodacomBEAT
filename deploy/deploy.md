@@ -28,7 +28,6 @@
 >> sudo chmod -R 775 storage
 >> sudo chmod -R 775 bootstrap/cache
 
-
 [migration]
 >> php artisan migrate
 >> php artisan passport:install

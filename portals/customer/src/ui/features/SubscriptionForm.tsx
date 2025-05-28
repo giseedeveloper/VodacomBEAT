@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {getRequest, postRequest} from "../../services/rest/RestService";
+import {getRequest, postRequest} from "../../http/RestService";
 import {notifyHttpError} from "../../services/notification/notifications";
 import {Button, Card, Checkbox, Col, Form, Image, Input, Radio, RadioChangeEvent, Row, Space} from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -156,7 +156,7 @@ const SubscriptionForm = () => {
             onValuesChange={onValueChange}
             onFinish={handleCustomerSave}>
 
-            <Row gutter={16}>
+            <Row gutter={16} justify="center">
 
 
                 {/***--------------
@@ -351,19 +351,11 @@ const SubscriptionForm = () => {
                         </Form.Item>
                     </Card>
 
-                    <div style={{justifyContent: 'center', display: 'flex', marginTop: '24px', marginBottom: '24p'}}>
-                        <Image preview={false} width={72} height={72} src={sectionIcon}
-                               style={{marginTop: '2px', marginLeft: '8px', marginRight: '24'}}></Image>
-                    </div>
+
 
                 </Col>
 
-                {/***--------------
-                 /* Right column
-                 *---------------***/}
-                <Col className="gutter-row" sm={24} md={24} lg={8} style={{marginTop: '2em'}}>
 
-                </Col>
 
             </Row>
 

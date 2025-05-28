@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getStoredUserToken } from "../../state/auth/authStore";
+import { getStoredUserToken } from "../state/auth/authStore";
 
 const axiosClient = axios.create();
 
@@ -7,7 +7,7 @@ const axiosClient = axios.create();
 axiosClient.defaults.baseURL = (!process.env.NODE_ENV
     || process.env.NODE_ENV === 'development'
     || process.env.NODE_ENV === 'dev'
-    || process.env.NODE_ENV === 'local') ? 'http://vodacom-tunes.io' : 'https://vodacom-tunes-api.mobiadafrica.co.tz';
+    || process.env.NODE_ENV === 'local') ? 'http://127.0.0.1:8000' :  'https://buztune-api.mobiadafrica.co.tz';
 
 const userToken = getStoredUserToken();
 

@@ -2,7 +2,7 @@ import {Button, Col, Row, Space} from 'antd';
 import React, {useState, useEffect} from 'react';
 import StatisticItem from "./StatisticItem";
 import { HiUserGroup} from "react-icons/hi";
-import {getRequest} from "../../../services/rest/RestService";
+import {getRequest} from "../../../http/RestService";
 import {notifyHttpError} from "../../../services/notification/notifications";
 import {HiOutlineCalendarDays} from "react-icons/hi2";
 import {WiDayCloudy} from "react-icons/wi";

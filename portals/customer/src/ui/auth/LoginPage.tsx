@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {LockFilled, UserOutlined} from "@ant-design/icons";
 import logo from "../../assets/images/voda.png"
 import {useSelector, useDispatch} from "react-redux";
-import {postRequest} from "../../services/rest/RestService";
+import {postRequest} from "../../http/RestService";
 import {setToken} from "../../state/auth/authStore";
 import {useNavigate} from "react-router-dom";
 import {notifyHttpError} from "../../services/notification/notifications";

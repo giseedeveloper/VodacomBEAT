@@ -1,6 +1,6 @@
 import axiosClient from "./axios";
-import {isNotEmpty} from "../../utils/helpers";
-import {getStoredUserToken} from "../../state/auth/authStore";
+import {isNotEmpty} from "../utils/helpers";
+import {getStoredUserToken} from "../state/auth/authStore";
 
 
 
@@ -66,9 +66,8 @@ export function getRequest(uri) {
             .then(response => {
                 resolve(response);
             }).catch(error => {
-
                 const customErrorObject = toErrorObject(error);
-                if(customErrorObject.errorHttpCode===401 || error.response?.status===401){
+                if(customErrorObject.errorHttpCode===401){
                     removeLoggedUser();
                 }
                 reject(customErrorObject);
@@ -97,7 +96,7 @@ export function postRequest(uri, payload) {
                 resolve(response);
             }).catch(error => {
             const customErrorObject = toErrorObject(error);
-            if(customErrorObject.errorHttpCode===401 || error.response.status===401){
+            if(customErrorObject.errorHttpCode===401){
                 removeLoggedUser();
             }
             reject(customErrorObject);

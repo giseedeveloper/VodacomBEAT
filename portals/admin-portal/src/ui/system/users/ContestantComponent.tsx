@@ -3,7 +3,7 @@ import type {ColumnsType} from 'antd/es/table';
 import React, {useEffect, useState} from 'react';
 import EyasiContentCard from "../../templates/cards/EyasiContentCard";
 import sectionIcon from "../../../assets/images/icons/people.png"
-import {getRequest, postRequest} from "../../../services/rest/RestService";
+import {getRequest, postRequest} from "../../../http/RestService";
 import {notifyHttpError, notifySuccess} from "../../../services/notification/notifications";
 import {Contenstant} from "../../../interfaces/system/AuthInterfaces";
 import customerLoadingIcon from "../../templates/Loading";
@@ -20,7 +20,7 @@ const getStatusColor =(status:string)=>{
     }
     return "grey"
 }
- 
+
 
 
 const ContestantComponent = () => {
@@ -31,7 +31,7 @@ const ContestantComponent = () => {
             title: 'Name',
             dataIndex: 'name',
             render: (_,record) => ( <> {record.name}</>),
-        }, 
+        },
         {
             title: 'Club',
             dataIndex: 'club_name',
@@ -46,7 +46,7 @@ const ContestantComponent = () => {
             title: 'Created',
             dataIndex: 'createdDate',
             render: (_,record) => ( <> {record.created_at} </>),
-    
+
         },
         {
             title: 'Updated',
@@ -86,7 +86,7 @@ const ContestantComponent = () => {
     const fetchStaff = () => {
         console.log("Fetching staff...")
         setIsLoading(true)
-        getRequest("/api/v1/contestants").then((response) => {  
+        getRequest("/api/v1/contestants").then((response) => {
             updateOrdersList(response.data.payload.users.data);
         }).catch((errorObj) => {
             notifyHttpError('Operation Failed', errorObj)
@@ -121,7 +121,7 @@ const ContestantComponent = () => {
         setShippingCategoryModal(false)
     }
 
-    const handleResetPasswordSave = (staff : Contenstant) => {  
+    const handleResetPasswordSave = (staff : Contenstant) => {
         staff.id = userID;
         console.log(JSON.stringify(staff))
         postRequest("/api/v1/management/users/password/reset", staff)
@@ -176,14 +176,14 @@ const ContestantComponent = () => {
                     label="Name"
                 >
                     <Input/>
-                </Form.Item> 
+                </Form.Item>
 
                 <Form.Item
                     name="email"
                     label="Login Email"
                 >
                     <Input/>
-                </Form.Item>  
+                </Form.Item>
 
                 <Form.Item
                     name="password"
@@ -217,7 +217,7 @@ const ContestantComponent = () => {
 
                 <Form.Item
                     name="new_password"
-                    label="New Password"  > 
+                    label="New Password"  >
                     <Input type="password"/>
                 </Form.Item>
 

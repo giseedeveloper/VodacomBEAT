@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {postRequest} from "../../services/rest/RestService";
+import {postRequest} from "../../http/RestService";
 import {notifyHttpError} from "../../services/notification/notifications";
 import {Button, Card, Col, Form, Image, Row, Space, Tag} from "antd";
 import {useParams} from "react-router-dom";
