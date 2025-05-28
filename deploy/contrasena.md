@@ -1,9 +1,9 @@
 
 [ Server-1 ]
-> ssh mobiad@38.242.229.179
-> ssh mobiad@38.242.229.179
-> pwd: OlAYW7OdL863yeK
-> pwd: OlAYW7OdL863yeK
+> ssh mobiad@167.86.75.163  [May, 2025]
+> ssh mobiad@167.86.75.163
+> pwd: 3WLD5BzW6kS56Oaq
+> pwd: 3WLD5BzW6kS56Oaq
 
 # Files
 cd /var/www/mobiad/vodacom-caller-tunes

@@ -1,9 +1,10 @@
 
 # LINKS
 =======================
-https://agent.mobiadafrica.co.tz
-https://tunes-portal.mobiadafrica.co.tz
-https://vodacom-tunes-api.mobiadafrica.co.tz
+https://vodacom-tunes-api.mobiadafrica.co.tz | APIs
+https://agent.mobiadafrica.co.tz | Agent
+https://tunes-portal.mobiadafrica.co.tz | Admin
+https://subscriptions.mobiadafrica.co.tz | Customer
 
 System: Users
 ==================

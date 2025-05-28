@@ -4,13 +4,17 @@
 >> sudo ln -s /etc/nginx/sites-available/agents.vodacom /etc/nginx/sites-enabled/ ::6969
 >> sudo ln -s /etc/nginx/sites-available/phpmyadmin /etc/nginx/sites-enabled/ ::9972
 
-
-
 [Extensions]
->> sudo apt-get update
->> sudo apt install php-zip
->> sudo apt install -y php7.4 php7.4-cli php7.4-common php7.4-fpm
->> sudo apt install -y php7.4-mysql php7.4-dom php7.4-simplexml php7.4-ssh2 php7.4-xml php7.4-xmlreader php7.4-curl  php7.4-exif  php7.4-ftp php7.4-gd  php7.4-iconv php7.4-imagick php7.4-json  php7.4-mbstring php7.4-posix php7.4-sockets php7.4-tokenizer
+>> sudo apt install lsb-release ca-certificates apt-transport-https software-properties-common -y
+>> sudo add-apt-repository ppa:ondrej/php
+>> sudo apt-get update 
+// 8.1
+>> sudo apt install -y php-mysql php8.1-dom php8.1-fpm php8.1-cli php8.1-simplexml php8.1-ssh2 php8.1-xml php8.1-xmlreader php8.1-curl  php8.1-exif  php8.1-ftp php8.1-gd  php8.1-iconv php8.1-imagick   php8.1-mbstring php8.1-posix php8.1-sockets php8.1-tokenizer
+>> sudo apt install -y php8.1-mysqli php8.1-pdo  php8.1-ctype php8.1-fileinfo php8.1-zip php8.1-exif php8.1-intl
+
+// 8.2
+>> sudo apt install -y php-mysql php8.2-dom php8.2-fpm php8.2-cli php8.2-simplexml php8.2-ssh2 php8.2-xml php8.2-xmlreader php8.2-curl  php8.2-exif  php8.2-ftp php8.2-gd  php8.2-iconv php8.2-imagick   php8.2-mbstring php8.2-posix php8.2-sockets php8.2-tokenizer
+>> sudo apt install -y php8.2-mysqli php8.2-pdo  php8.2-ctype php8.2-fileinfo php8.2-zip php8.2-exif php8.2-intl
 
 [env-key]
 >> composer install --no-dev
