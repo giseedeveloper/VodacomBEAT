@@ -10,18 +10,9 @@ import {
     PlusOutlined,
     UserOutlined
 } from "@ant-design/icons";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {isEmpty} from "../../utils/helpers";
-import sectionIcon from "../../assets/images/mobiad.png";
-import callIcon from "../../assets/images/icons/call.png";
-
-interface Stats {
-    "weekTransactionsCount": number,
-    "weekTransactionsAmount": number,
-    "monthTransactionsAmount": number,
-    "daySubscriptionsCount": number,
-    "activeSubscriptions": number
-}
+import callIcon from "../../assets/images/logo-white.png";
 
 interface TunePackage {
     package: string,
