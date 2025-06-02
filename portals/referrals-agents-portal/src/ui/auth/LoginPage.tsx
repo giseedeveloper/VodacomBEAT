@@ -1,9 +1,7 @@
-import {Avatar, Button, Card, Form, Input, Layout, Row, Space, Image, Col} from "antd";
+import { Button, Card, Form, Input, Row, Space, Image, Col} from "antd";
 import React, {useState} from "react";
-import {Content} from "antd/es/layout/layout";
 import {LockFilled, UserOutlined} from "@ant-design/icons";
-import loginIcon from "../../assets/images/auth/login_icon.png";
-import logo from "../../assets/images/mobiad-rectangle.png"
+import logo from "../../assets/images/voda-red.png"
 import {useSelector, useDispatch} from "react-redux";
 import {postRequest} from "../../services/rest/RestService";
 import {setToken} from "../../state/auth/authStore";

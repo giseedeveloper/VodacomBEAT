@@ -1,5 +1,5 @@
-import axios from 'src/services/rest/axios';
 import { getStoredUserToken } from "../../state/auth/authStore";
+import axios from "axios";
 
 const axiosClient = axios.create();
 
