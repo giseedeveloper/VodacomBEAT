@@ -14,6 +14,8 @@ import {useNavigate} from "react-router-dom";
 import {isEmpty} from "../../utils/helpers";
 import callIcon from "../../assets/images/logo-white.png";
 
+import stockIcon from "../../assets/images/mobiad-rectangle.png";
+
 interface TunePackage {
     package: string,
     price: number,
@@ -341,15 +343,13 @@ const SubscriptionForm = () => {
                             </Button>
                         </Form.Item>
                     </Card>
-
-
-
                 </Col>
-
-
-
             </Row>
 
+
+            <Row justify="center">
+                <img style={{marginTop: '64px'}} src={stockIcon} width={64} alt=""/>
+            </Row>
 
         </Form>
 
@@ -358,4 +358,3 @@ const SubscriptionForm = () => {
 }
 
 export default SubscriptionForm
-

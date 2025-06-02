@@ -6,6 +6,7 @@ import {Header} from "antd/es/layout/layout";
 import {getRequest} from "../services/rest/RestService";
 import {notifyHttpError} from "../services/notification/notifications";
 import sectionIcon from "../assets/images/voda.png";
+import vodacomIcon from "../assets/images/voda-red.png";
 import {Route, Routes} from "react-router-dom";
 import RequireAuth from "../services/auth/RequireAuth";
 import CustomerForm from "./features/customers/CustomerForm";
@@ -58,11 +59,10 @@ function MainLayout() {
             <Header style={{padding: 0, display: 'flex', alignItems: 'center', background: '#E60000'}}>
 
                 <Space align="center">
-                    <Image preview={false} width={48} height={48} src={sectionIcon} style={{marginTop: '2px', marginLeft:'8px', marginRight: '6px'}}></Image>
+                    <Image preview={false} width={48} height={48} src={vodacomIcon} style={{marginTop: '2px', marginLeft:'8px', marginRight: '6px'}}></Image>
                     <h3 style={{color: '#ffffff', marginLeft:"16px"}}>
                         <span style={{fontWeight: 'lighter'}}>{agent?.first_name ?? ''}</span> ~
                         <span style={{fontWeight: 'bolder'}}>{agent?.reference_number ?? ''}</span></h3>
-
                     <Button  style={{marginRight:"16px", color:"#E60000", marginLeft:"24px"}} icon={<HomeOutlined/>} href="/">Home</Button>
 
                 </Space>
