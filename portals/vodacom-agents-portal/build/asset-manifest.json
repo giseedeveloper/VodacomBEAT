@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.bac87321.css",
-    "main.js": "/static/js/main.ba287b88.js",
+    "main.js": "/static/js/main.b7ef482a.js",
     "static/js/787.349b0e60.chunk.js": "/static/js/787.349b0e60.chunk.js",
-    "static/media/voda-red.png": "/static/media/voda-red.93dcaea5088df3a1e3d5.png",
+    "static/media/voda-transparent.png": "/static/media/voda-transparent.653a4d0a0e54c801fbfd.png",
     "index.html": "/index.html",
     "main.bac87321.css.map": "/static/css/main.bac87321.css.map",
-    "main.ba287b88.js.map": "/static/js/main.ba287b88.js.map",
+    "main.b7ef482a.js.map": "/static/js/main.b7ef482a.js.map",
     "787.349b0e60.chunk.js.map": "/static/js/787.349b0e60.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.bac87321.css",
-    "static/js/main.ba287b88.js"
+    "static/js/main.b7ef482a.js"
   ]
 }

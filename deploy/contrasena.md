@@ -1,6 +1,6 @@
 
 [ Server-1 ]
-> ssh mobiad@167.86.75.163  [May, 2025]
+> ssh mobiad@q  [May, 2025]
 > ssh mobiad@167.86.75.163
 > pwd: 3WLD5BzW6kS56Oaq
 > pwd: 3WLD5BzW6kS56Oaq

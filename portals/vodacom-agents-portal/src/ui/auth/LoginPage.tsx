@@ -1,7 +1,7 @@
 import {Button, Card, Form, Input, Row, Space, Image, Col} from "antd";
 import React, {useState} from "react";
 import {LockFilled, UserOutlined} from "@ant-design/icons";
-import logoWhite from "../../assets/images/voda-red.png"
+import logoWhite from "../../assets/images/voda-transparent.png"
 import {useSelector, useDispatch} from "react-redux";
 import {postRequest} from "../../services/rest/RestService";
 import {setToken} from "../../state/auth/authStore";
@@ -49,7 +49,7 @@ const LoginPage = () => {
         <>
         <Row style={{ marginTop: 64}}>
             <Col className="gutter-row" span={6} offset={8}>
-                <img  src={logoWhite} style={{width: 100, marginTop: 10}} alt=""/>
+                <img  src={logoWhite} style={{width: 64, marginTop: 10, backgroundColor:'#E60000', padding:'12px', borderRadius:'16px'}} alt=""/>
             </Col>
         </Row>
 
