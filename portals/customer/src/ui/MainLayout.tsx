@@ -17,7 +17,7 @@ function MainLayout() {
 
             <Header style={{padding: 0, display: 'flex', alignItems: 'center', background: '#E60000'}}>
                 <Space className="container" align="center">
-                    <Image preview={false} width={48} height={48} src={vodaRedIcon} style={{marginTop: '2px', marginLeft:'8px', marginRight: '24'}}></Image>
+                    <Image preview={false} width={32} height={32} src={vodaRedIcon} style={{marginTop: '2px', marginLeft:'8px', marginRight: '24'}}></Image>
                     <h2 style={{color: '#ffffff', padding: '16px'}}>
                         <span style={{fontWeight: 'bolder'}}>BizTune</span></h2>
                 </Space>
