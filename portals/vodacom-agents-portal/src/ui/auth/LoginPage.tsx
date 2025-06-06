@@ -36,7 +36,7 @@ const LoginPage = () => {
     };
 
     const onValidationFailed = (values: any) => {
-        console.log(`values ${JSON.stringify(values)}`);
+        console.log(`the values ${JSON.stringify(values)}`);
     };
 
     const loginTitle = (
