@@ -16,14 +16,14 @@ sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
 sed -i 's|^DB_DATABASE=.*|DB_DATABASE=vodacom-caller-tunes|' .env
 sed -i 's/^# DB_USERNAME=.*/DB_USERNAME=root/' .env
 sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
-sed -i 's/^# DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
-sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
+sed -i 's/^# DB_PASSWORD=.*/DB_PASSWORD='"${DB_PASSWORD:-secret}"'/' .env
+sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD='"${DB_PASSWORD:-secret}"'/' .env
+
+composer install --no-interaction --ignore-platform-reqs --no-dev --optimize-autoloader
 
 if [ -z "$(grep '^APP_KEY=base64:' .env 2>/dev/null || true)" ]; then
     php artisan key:generate --force --no-interaction
 fi
-
-composer install --no-interaction --ignore-platform-reqs
 
 echo "Waiting for database..."
 until php -r "new PDO('mysql:host=${DB_HOST:-mysql};port=${DB_PORT:-3306}', '${DB_USERNAME:-root}', '${DB_PASSWORD:-secret}');" 2>/dev/null; do
