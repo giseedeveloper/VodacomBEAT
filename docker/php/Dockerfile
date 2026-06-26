@@ -1,14 +1,7 @@
 FROM php:8.2-cli-alpine
 
-RUN apk add --no-cache \
-    curl \
-    curl-dev \
-    libzip-dev \
-    oniguruma-dev \
-    icu-dev \
-    && docker-php-ext-configure curl \
-    && docker-php-ext-install pdo pdo_mysql zip mbstring intl curl \
-    && apk del curl-dev
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions pdo_mysql zip mbstring intl curl
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 /storage/logs/
 /portals/admin-dashboard/node_modules/
+/deploy/dist

@@ -1,0 +1,34 @@
+#!/bin/bash
+# Fast deploy: expects deploy/dist/ to exist (run scripts/build-portals.sh first).
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+if [ ! -d deploy/dist/customer ] || [ ! -d deploy/dist/admin ]; then
+  echo "ERROR: deploy/dist/ is missing. Run: ./scripts/build-portals.sh"
+  exit 1
+fi
+
+if [ ! -f .env.production ]; then
+  cp .env.production.example .env.production
+fi
+
+set -a
+source .env.production
+set +a
+
+echo "Starting fast deploy (pre-built portals)..."
+docker compose -f docker-compose.prod.fast.yml --env-file .env.production up -d --build
+
+echo ""
+echo "Vodacom Caller Tunes is running:"
+echo "  Customer:  https://${SERVER_IP}:443"
+echo "  Admin:     https://${SERVER_IP}:3332/login"
+echo "  Agents:    https://${SERVER_IP}:3001/login"
+echo "  Referrals: https://${SERVER_IP}:3002/login"
+echo "  API:       https://${SERVER_IP}:8000"
+echo ""
+echo "Demo login password: Demo@12345"
+echo "  Admin: admin@demo.com"
+echo "  Agents: 0711111111"
+echo "  Referrals: 0722222222"

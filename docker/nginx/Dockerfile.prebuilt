@@ -1,0 +1,13 @@
+# Serves pre-built portal assets from deploy/dist/ (no yarn on server).
+FROM nginx:1.27-alpine
+
+RUN apk add --no-cache openssl
+
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx/entrypoint.sh /docker-entrypoint.d/40-generate-ssl.sh
+RUN chmod +x /docker-entrypoint.d/40-generate-ssl.sh
+
+COPY deploy/dist/customer /usr/share/nginx/html/customer
+COPY deploy/dist/admin /usr/share/nginx/html/admin
+COPY deploy/dist/agents /usr/share/nginx/html/agents
+COPY deploy/dist/referrals /usr/share/nginx/html/referrals
