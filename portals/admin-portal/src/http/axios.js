@@ -3,10 +3,11 @@ import axios from "axios";
 
 const axiosClient = axios.create();
 
-axiosClient.defaults.baseURL = (!process.env.NODE_ENV
+axiosClient.defaults.baseURL = process.env.REACT_APP_API_URL
+    || ((!process.env.NODE_ENV
     || process.env.NODE_ENV === 'development'
     || process.env.NODE_ENV === 'dev'
-    || process.env.NODE_ENV === 'local') ? 'http://127.0.0.1:8000' : 'https://biztune-api.mobiadafrica.co.tz';
+    || process.env.NODE_ENV === 'local') ? 'http://127.0.0.1:8000' : 'https://biztune-api.mobiadafrica.co.tz');
 
 const userToken = getStoredUserToken();
 
