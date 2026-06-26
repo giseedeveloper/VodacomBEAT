@@ -11,10 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('referral_agents', function (Blueprint $table) {
-            $table->bigInteger('mobile_network_id')->nullable();
-            $table->bigInteger('bank_id')->nullable();
-        });
+        if (! Schema::hasColumn('referral_agents', 'mobile_network_id')) {
+            Schema::table('referral_agents', function (Blueprint $table) {
+                $table->bigInteger('mobile_network_id')->nullable();
+            });
+        }
+
+        if (! Schema::hasColumn('referral_agents', 'bank_id')) {
+            Schema::table('referral_agents', function (Blueprint $table) {
+                $table->bigInteger('bank_id')->nullable();
+            });
+        }
     }
 
     /**

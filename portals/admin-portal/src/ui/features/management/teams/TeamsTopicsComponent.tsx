@@ -8,7 +8,6 @@ import EyasiContentCard from "../../../templates/cards/EyasiContentCard";
 import customerLoadingIcon from "../../../templates/Loading";
 import {EditOutlined} from "@ant-design/icons";
 import {TeamTopic} from "../../../../interfaces/MessagesInterfaces";
-import {is} from "cheerio/lib/api/traversing";
 
 
 const MessagesComponent = () => {

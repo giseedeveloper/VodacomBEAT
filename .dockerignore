@@ -1,0 +1,11 @@
+vendor
+node_modules
+portals/*/node_modules
+portals/*/build
+.git
+.env
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+database/database.sqlite
