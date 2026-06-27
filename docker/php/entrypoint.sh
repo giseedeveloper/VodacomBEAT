@@ -25,6 +25,23 @@ if [ -z "$(grep '^APP_KEY=base64:' .env 2>/dev/null || true)" ]; then
     php artisan key:generate --force --no-interaction
 fi
 
+# Ensure Docker env overrides mounted .env
+if [ -n "${DB_HOST:-}" ]; then
+    sed -i "s/^DB_HOST=.*/DB_HOST=${DB_HOST}/" .env
+fi
+if [ -n "${DB_PASSWORD:-}" ]; then
+    sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD}/" .env
+fi
+if [ -n "${APP_URL:-}" ]; then
+    sed -i "s|^APP_URL=.*|APP_URL=${APP_URL}|" .env
+fi
+if [ -n "${APP_ENV:-}" ]; then
+    sed -i "s/^APP_ENV=.*/APP_ENV=${APP_ENV}/" .env
+fi
+if [ -n "${APP_DEBUG:-}" ]; then
+    sed -i "s/^APP_DEBUG=.*/APP_DEBUG=${APP_DEBUG}/" .env
+fi
+
 echo "Waiting for database..."
 until php -r "new PDO('mysql:host=${DB_HOST:-mysql};port=${DB_PORT:-3306}', '${DB_USERNAME:-root}', '${DB_PASSWORD:-secret}');" 2>/dev/null; do
     sleep 2
@@ -32,6 +49,6 @@ done
 
 php artisan config:clear --no-interaction
 php artisan migrate --force --no-interaction
-php artisan db:seed --force --no-interaction
+php artisan db:seed --force --no-interaction || true
 
-exec php artisan serve --host=0.0.0.0 --port=8000
+exec php -S 0.0.0.0:8000 -t public public/index.php

@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.369f288d.css",
-    "main.js": "/static/js/main.f340bc7d.js",
+    "main.js": "/static/js/main.78549742.js",
     "static/js/453.9b41687b.chunk.js": "/static/js/453.9b41687b.chunk.js",
     "static/media/mobiad-rectangle.png": "/static/media/mobiad-rectangle.1bd3ab8f1dd134ddc4a5.png",
     "static/media/voda-transparent.png": "/static/media/voda-transparent.653a4d0a0e54c801fbfd.png",
@@ -10,11 +10,11 @@
     "static/media/ussd.png": "/static/media/ussd.be86048a3616499ea6a9.png",
     "index.html": "/index.html",
     "main.369f288d.css.map": "/static/css/main.369f288d.css.map",
-    "main.f340bc7d.js.map": "/static/js/main.f340bc7d.js.map",
+    "main.78549742.js.map": "/static/js/main.78549742.js.map",
     "453.9b41687b.chunk.js.map": "/static/js/453.9b41687b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.369f288d.css",
-    "static/js/main.f340bc7d.js"
+    "static/js/main.78549742.js"
   ]
 }
