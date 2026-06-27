@@ -48,6 +48,7 @@ services:
     container_name: vodacom-web
     restart: unless-stopped
     ports:
+      - "80:80"
       - "443:443"
       - "3332:3332"
       - "3001:3001"
@@ -57,6 +58,9 @@ services:
       - api
     environment:
       SERVER_IP: ${SERVER_IP:-165.22.124.111}
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
     networks:
       - vodacom
 
