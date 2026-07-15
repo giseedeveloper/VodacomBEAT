@@ -1,0 +1,44 @@
+---
+description: Core architecture and layout of the Vodacom Caller Tunes (BizTune) platform
+alwaysApply: true
+---
+
+# Vodacom Caller Tunes (BizTune) — Project Overview
+
+Business caller-tune subscription platform: customers pay via Selcom USSD push,
+ops manually produce the audio "beat" and install it on Vodacom.
+
+## Architecture
+
+- **Backend:** Laravel 10 API (repo root). Entry: `routes/api.php`, `routes/tunes.php`,
+  `routes/callbacks.php`, `routes/management.php`.
+- **Frontends:** 4 CRA React portals under `portals/`:
+  - `customer/` — public subscription form (no login)
+  - `admin-portal/` — admin panel
+  - `vodacom-agents-portal/` — agents
+  - `referrals-agents-portal/` — referrals/commission portal
+- **Payments:** Selcom (`app/Adapters/Selcom/`). Config in `config/selcom.php`.
+- **Core domain:** `app/Services/TunesSubscriptionService.php`,
+  models `TuneSubscription`, `TuneSubscriptionPhone`, `TuneSubscriptionPackage`,
+  `SelcomTransaction`, `Customer`, `ReferralAgent`.
+
+## Environments
+
+- **Local:** `php artisan serve` on 127.0.0.1:8000; portals via `yarn start`.
+- **Production VPS:** DigitalOcean `165.22.124.111` (2GB RAM), Docker Compose
+  (`docker-compose.prod.fast.yml`): `vodacom-mysql`, `vodacom-api`, `vodacom-web` (nginx).
+- **IMPORTANT:** In production Laravel reads `.env.production` (because APP_ENV=production
+  makes Laravel prefer `.env.production` over `.env`). New env vars MUST be added there.
+- Subdomains (Cloudflare → VPS): admin.biztune.co.tz, agent.biztune.co.tz,
+  referrals.biztune.co.tz. Customer portal: https://165.22.124.111 (port 443 default).
+
+## Git
+
+- Primary remote: `vodacombeat` → github.com/giseedeveloper/VodacomBEAT (branch `main`).
+- Never commit `.env`, `.env.production`, or Selcom secrets.
+
+## Known legacy issues (do not replicate)
+
+- Two subscription systems coexist: legacy `subscriptions` table vs `tune_subscriptions`.
+- `tune_subscriptions` has NO status column — state is inferred from nullable timestamps.
+- Selcom webhook has no idempotency; commission can double-disburse on duplicate callbacks.

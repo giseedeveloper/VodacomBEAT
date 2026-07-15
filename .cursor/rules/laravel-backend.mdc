@@ -1,0 +1,39 @@
+---
+description: Laravel backend conventions for the BizTune API
+globs: app/**/*.php,routes/*.php,database/**/*.php,config/*.php
+alwaysApply: false
+---
+
+# Laravel Backend Conventions
+
+## Structure
+
+- Controllers extend `BaseController`; respond with `$this->returnResponse($message, $data)`
+  or `$this->returnError($message, $data, $httpCode)`. Never return raw arrays.
+- Business logic lives in `app/Services/`; third-party integrations in `app/Adapters/`
+  (e.g. `app/Adapters/Selcom/`). Controllers stay thin.
+- External API configs go in `config/*.php` reading from `env()`. Never call `env()`
+  outside config files.
+
+## Migrations
+
+- Guard against duplicate columns with `Schema::hasColumn()` when altering tables
+  (production DB has drifted before — see `2023_10_13_193842_update_referral_agents.php`).
+- All new columns nullable or with defaults; production data already exists.
+
+## Seeders
+
+- Seeders run on EVERY container boot (`entrypoint.sh` runs `db:seed || true`).
+  They MUST be idempotent: use `firstOrCreate`/`updateOrCreate`, never bare `create`.
+  Spatie permissions: wrap in existence checks (PermissionAlreadyExists crashes boot).
+
+## Logging
+
+- Log with context; a request-id is auto-attached by `RequestReferenceMiddleware`.
+- Never log Selcom API secrets, full card data, or APP_KEY.
+
+## PHP runtime
+
+- Production container serves via `php -S 0.0.0.0:8000 -t public public/index.php`
+  (NOT `artisan serve` — it returned 500s behind the nginx proxy). Don't change this
+  in `docker/php/entrypoint.sh` without testing through nginx.

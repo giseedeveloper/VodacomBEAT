@@ -1,0 +1,39 @@
+---
+description: Payment safety rules for Selcom integration, webhooks, and commissions
+globs: app/Adapters/Selcom/**/*.php,app/Services/payment/**/*.php,app/Services/TunesSubscriptionService.php,routes/callbacks.php
+alwaysApply: false
+---
+
+# Selcom Payments — Safety Rules
+
+## Webhook handling
+
+- Payment state changes ONLY from the Selcom webhook — never from a frontend
+  "Nimeshalipa" button (that button may only re-query current status).
+- Every webhook handler MUST be idempotent: check `paid_at` / transaction status
+  before activating, disbursing commission, or creating ledger rows. Duplicate
+  callbacks from Selcom are normal and must be no-ops the second time.
+- Verify: matching order_id, matching amount (paid >= required), and signature
+  when available. Log and reject mismatches; never partially activate.
+
+## Commission rules
+
+- Commission disbursement is money leaving the company. It must be guarded by
+  `commission_issued_at IS NULL` checks and recorded before external calls.
+- In the new BEAT flow: commission moves to INSTALLED status, not PAID.
+
+## Subscription dates
+
+- `starts_at`/`ends_at` represent the SERVICE period. In the new flow they are set
+  at installation time (INSTALLED), not payment time. Do not reset dates on
+  repeated webhook deliveries.
+
+## Environment
+
+- Selcom credentials live in `.env.production` on the VPS (Laravel reads that file
+  in production, not `.env`). Required keys: SELCOM_API_KEY, SELCOM_API_SECRET,
+  SELCOM_VENDOR, SELCOM_PIN, SELCOM_BASE_URL, SELCOM_WEBHOOK_URL,
+  SELCOM_REDIRECT_URL, SELCOM_CANCEL_URL.
+- Selcom whitelists the server IP. New server = request whitelist BEFORE go-live
+  (error signature: `Authentication failed. Source IP not whitelisted (4032)`).
+- Never hard-code credentials; never log secrets or full signatures.

@@ -1,0 +1,31 @@
+---
+description: Conventions for the four React portals (customer, admin, agents, referrals)
+globs: portals/**
+alwaysApply: false
+---
+
+# React Portals Conventions
+
+## API base URL
+
+- Every portal's axios client resolves baseURL as:
+  `process.env.REACT_APP_API_URL || (dev ? 'http://127.0.0.1:8000' : window.location.origin)`.
+- NEVER hard-code production API hosts or ports in portal code. Production serves
+  API on the same origin via nginx `/api/` proxy — same-origin avoids the
+  self-signed-cert and CORS failures we hit before.
+
+## Build system
+
+- All portals use Yarn 4 via corepack EXCEPT `admin-portal` (Yarn 1.22 classic,
+  see its `packageManager` field). Run `corepack enable` before building.
+- Build all portals with `./scripts/build-portals.sh` (sequential, one at a time,
+  outputs to `deploy/dist/{customer,admin,agents,referrals}`).
+- Builds must run with `CI=false` and `DISABLE_ESLINT_PLUGIN=true` — the codebase
+  has ESLint warnings that CRA treats as errors when CI=true.
+- NEVER build React portals on the production VPS (2GB RAM — it hangs for 30+ min).
+  Build locally on the Mac, then deploy the compiled `deploy/dist/`.
+
+## Error notifications
+
+- Use `notifyHttpError(title, errorObj)` from the portal's notification service
+  for API errors — don't roll custom alert handling.
