@@ -390,9 +390,9 @@ const VoicePreviewStep: React.FC<Props> = ({
           <h2 className="beat-section-title">
             <SoundOutlined /> Chagua sauti + hakiki jina
           </h2>
-          <p className="beat-hint">
-            Hatua 1/3 — chagua Kike au Kiume, gusa sauti ili isikike. Halafu hakiki jina la biashara.{' '}
-            {remainingPronunciation}/{pronunciationLimit} majaribio ya jina yamebaki.
+  <p className="beat-hint">
+            Hatua 1/3 — chagua Kike au Kiume kwanza, gusa sauti ili isikike. Halafu hakiki jina la
+            biashara. {remainingPronunciation}/{pronunciationLimit} majaribio ya jina yamebaki.
           </p>
 
           <label className="good-label">Aina ya sauti</label>
