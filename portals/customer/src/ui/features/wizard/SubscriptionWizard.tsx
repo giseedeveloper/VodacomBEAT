@@ -62,7 +62,9 @@ const SubscriptionWizard: React.FC = () => {
   const [scriptVersion, setScriptVersion] = useState<ScriptVersion | null>(null);
   const [scriptText, setScriptText] = useState('');
   const [voices, setVoices] = useState<TtsVoice[]>([]);
-  const [musicTracks, setMusicTracks] = useState<{ id: string; label: string; mood?: string }[]>([]);
+  const [musicTracks, setMusicTracks] = useState<
+    { id: string; label: string; mood?: string; preview_url?: string | null }[]
+  >([]);
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>();
   const [selectedMusicId, setSelectedMusicId] = useState<string>('warm_pad');
   const [speakingSpeed, setSpeakingSpeed] = useState<'slow' | 'normal' | 'fast'>('normal');
@@ -229,7 +231,6 @@ const SubscriptionWizard: React.FC = () => {
         'business_name',
         'business_description',
         'subscription_package',
-        'voice_type',
         'selectedPhones',
       ]);
       const values = businessForm.getFieldsValue(true);
@@ -260,7 +261,7 @@ const SubscriptionWizard: React.FC = () => {
         must_exclude_words: values.must_exclude_words,
         offer_text: values.offer_text,
         subscription_package: values.subscription_package,
-        voice_type: values.voice_type || 'FEMALE',
+        voice_type: 'FEMALE',
         subscription_phones: phones,
       });
 

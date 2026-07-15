@@ -50,7 +50,7 @@ class TunesSubscriptionService
         $paymentPhone = $rawPaymentPhone
             ? NotificationServiceService::formatPhoneNumberTZ($rawPaymentPhone)
             : null;
-        $voiceType = $request->input('voice_type');
+        $voiceType = $request->input('voice_type') ?: 'FEMALE';
         $voiceScript = $request->input('voice_script');
 
         $phones = $request->input('subscription_phones');

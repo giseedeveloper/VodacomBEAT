@@ -181,6 +181,56 @@
   margin-top: 2px;
 }
 
+.beat-music-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.beat-music-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.beat-music-option:hover {
+  border-color: #ffb3b3;
+}
+
+.beat-music-option.is-selected {
+  border-color: #e60000;
+  background: #fff5f5;
+  box-shadow: 0 0 0 1px rgba(230, 0, 0, 0.08);
+}
+
+.beat-music-option.is-playing {
+  border-color: #e60000;
+}
+
+.beat-music-option-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.beat-music-option-action {
+  flex-shrink: 0;
+  font-size: 1.45em;
+  color: #e60000;
+  line-height: 1;
+}
+
 .beat-preview-player {
   margin-top: 8px;
   padding: 16px;

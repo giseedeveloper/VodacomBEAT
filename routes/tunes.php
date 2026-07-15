@@ -57,7 +57,9 @@ Route::prefix("/v1/tunes/customer")->group(function(){
     Route::post('/subscription/script/select', [CustomerBeatController::class,'selectScriptVariant']);
     Route::post('/subscription/script/approve', [CustomerBeatController::class,'approveScript']);
     Route::get('/tts/voices', [CustomerBeatController::class,'listVoices']);
+    Route::get('/tts/voices/{voiceId}/sample', [CustomerBeatController::class,'previewVoiceSample']);
     Route::get('/music/tracks', [CustomerBeatController::class,'listMusicTracks']);
+    Route::get('/music/tracks/{trackId}/preview', [CustomerBeatController::class,'previewMusicTrack']);
     Route::post('/subscription/audio/preview', [CustomerBeatController::class,'generatePreview']);
     Route::post('/subscription/audio/pronunciation-test', [CustomerBeatController::class,'generatePronunciationTest']);
     Route::post('/subscription/audio/pronunciation', [CustomerBeatController::class,'updatePronunciation']);

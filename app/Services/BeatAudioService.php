@@ -28,10 +28,44 @@ class BeatAudioService
     {
         $response = BeatAiWorkerClient::get('/v1/tts/voices');
         if (isset($response[0])) {
-            return $response;
+            $voices = $response;
+        } else {
+            $voices = $response['voices'] ?? [];
         }
 
-        return $response['voices'] ?? [];
+        return array_map(static function (array $voice): array {
+            $id = (string) ($voice['id'] ?? $voice['slug'] ?? '');
+            if ($id !== '') {
+                $voice['sample_url'] = url('/api/v1/tunes/customer/tts/voices/' . rawurlencode($id) . '/sample');
+            } else {
+                $voice['sample_url'] = null;
+            }
+
+            return $voice;
+        }, $voices);
+    }
+
+    public static function streamVoiceSample(string $voiceId): \Symfony\Component\HttpFoundation\Response
+    {
+        $voiceId = trim($voiceId);
+        if ($voiceId === '') {
+            abort(404, 'Voice sample not available');
+        }
+
+        $cachePath = 'private/beat/voice-samples/' . preg_replace('/[^a-zA-Z0-9_-]/', '', $voiceId) . '.mp3';
+        if (! Storage::disk('local')->exists($cachePath)) {
+            $raw = BeatAiWorkerClient::getRaw('/v1/tts/voices/' . rawurlencode($voiceId) . '/sample', 90);
+            if (! ($raw['ok'] ?? false) || ($raw['body'] ?? '') === '') {
+                abort((int) ($raw['status'] ?? 502), $raw['message'] ?? 'Voice sample unavailable');
+            }
+            Storage::disk('local')->put($cachePath, $raw['body']);
+        }
+
+        return response(Storage::disk('local')->get($cachePath), 200, [
+            'Content-Type' => 'audio/mpeg',
+            'Cache-Control' => 'public, max-age=86400',
+            'Accept-Ranges' => 'bytes',
+        ]);
     }
 
     public static function canGeneratePreview(TuneSubscription $subscription): bool
@@ -118,6 +152,11 @@ class BeatAudioService
 
         $subscription->pronunciation_test_count = (int) ($subscription->pronunciation_test_count ?? 0) + 1;
         $subscription->preferred_voice_profile = $voiceId;
+        if (str_starts_with(strtolower((string) $voiceId), 'daudi')) {
+            $subscription->voice_type = 'MALE';
+        } elseif (str_starts_with(strtolower((string) $voiceId), 'rehema')) {
+            $subscription->voice_type = 'FEMALE';
+        }
         $subscription->save();
 
         return $asset;
@@ -179,6 +218,11 @@ class BeatAudioService
 
         $subscription->voice_preview_count = (int) $subscription->voice_preview_count + 1;
         $subscription->preferred_voice_profile = $voiceId;
+        if (str_starts_with(strtolower((string) $voiceId), 'daudi')) {
+            $subscription->voice_type = 'MALE';
+        } elseif (str_starts_with(strtolower((string) $voiceId), 'rehema')) {
+            $subscription->voice_type = 'FEMALE';
+        }
         $subscription->preferred_music_track_id = $musicTrackId;
         $subscription->speaking_speed = $speakingSpeed;
         $subscription->music_intensity = $musicIntensity;
@@ -246,16 +290,49 @@ class BeatAudioService
     {
         $response = BeatAiWorkerClient::get('/v1/music/tracks');
         if (isset($response[0])) {
-            return $response;
+            $tracks = $response;
+        } else {
+            $tracks = $response['tracks'] ?? [
+                ['id' => 'none', 'label' => 'Bila Muziki / No Music', 'mood' => 'none'],
+                ['id' => 'warm_pad', 'label' => 'Warm Soft Pad', 'mood' => 'calm'],
+                ['id' => 'piano_glow', 'label' => 'Mountain Piano', 'mood' => 'warm'],
+                ['id' => 'mountain_soft', 'label' => 'Mountain Soft Bed', 'mood' => 'calm'],
+                ['id' => 'soft_ambient', 'label' => 'Soft Ambient Groove', 'mood' => 'friendly'],
+                ['id' => 'afro_light', 'label' => 'Afro Light Groove', 'mood' => 'upbeat'],
+                ['id' => 'marimba_glow', 'label' => 'Marimba Glow', 'mood' => 'friendly'],
+                ['id' => 'corporate_clean', 'label' => 'Corporate Clean', 'mood' => 'professional'],
+            ];
         }
 
-        return $response['tracks'] ?? [
-            ['id' => 'none', 'label' => 'Bila Muziki / No Music', 'mood' => 'none'],
-            ['id' => 'warm_pad', 'label' => 'Warm Soft Pad', 'mood' => 'calm'],
-            ['id' => 'afro_light', 'label' => 'Afro Light Groove', 'mood' => 'upbeat'],
-            ['id' => 'marimba_glow', 'label' => 'Marimba Glow', 'mood' => 'friendly'],
-            ['id' => 'corporate_clean', 'label' => 'Corporate Clean', 'mood' => 'professional'],
-        ];
+        return array_map(static function (array $track): array {
+            $id = (string) ($track['id'] ?? '');
+            if ($id !== '' && $id !== 'none') {
+                $track['preview_url'] = url('/api/v1/tunes/customer/music/tracks/' . rawurlencode($id) . '/preview');
+            } else {
+                $track['preview_url'] = null;
+            }
+
+            return $track;
+        }, $tracks);
+    }
+
+    public static function streamMusicPreview(string $trackId): \Symfony\Component\HttpFoundation\Response
+    {
+        $trackId = trim($trackId);
+        if ($trackId === '' || $trackId === 'none') {
+            abort(404, 'Music track preview not available');
+        }
+
+        $raw = BeatAiWorkerClient::getRaw('/v1/music/tracks/' . rawurlencode($trackId) . '/preview', 45);
+        if (! ($raw['ok'] ?? false) || ($raw['body'] ?? '') === '') {
+            abort((int) ($raw['status'] ?? 502), $raw['message'] ?? 'Music preview unavailable');
+        }
+
+        return response($raw['body'], 200, [
+            'Content-Type' => $raw['content_type'] ?: 'audio/mpeg',
+            'Cache-Control' => 'public, max-age=86400',
+            'Accept-Ranges' => 'bytes',
+        ]);
     }
 
     protected static function synthesizeAndStore(

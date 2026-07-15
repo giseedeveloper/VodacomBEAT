@@ -147,7 +147,8 @@ return [
                 'sample_rate' => 16000,
                 'channels' => 1,
                 'bit_depth' => 16,
-                'max_duration_seconds' => 15,
+                // Same ceiling as final — customer must hear the full script before paying
+                'max_duration_seconds' => 40,
                 'watermark' => true,
                 'intro_delay_ms' => 1200,
                 'outro_duration_ms' => 2500,

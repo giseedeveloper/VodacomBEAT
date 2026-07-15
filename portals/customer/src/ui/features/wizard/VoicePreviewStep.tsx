@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Button, Card, Col, Input, Radio, Row, Spin, Steps, Tag } from 'antd';
 import {
   AudioOutlined,
   CheckCircleOutlined,
   CustomerServiceOutlined,
+  PauseCircleOutlined,
+  PlayCircleOutlined,
   ReloadOutlined,
   SoundOutlined,
 } from '@ant-design/icons';
@@ -12,11 +14,13 @@ import {
   TuneSubscription,
   TtsVoice,
 } from '../../../interfaces/BeatWizardInterfaces';
+import { musicTrackPreviewUrl, voiceSampleUrl } from '../../../services/beat/CustomerBeatApi';
 
 export interface MusicTrackOption {
   id: string;
   label: string;
   mood?: string;
+  preview_url?: string | null;
 }
 
 interface Props {
@@ -61,6 +65,13 @@ function customerVoices(voices: TtsVoice[]): TtsVoice[] {
   return azure.length ? azure : voices.slice(0, 4);
 }
 
+function resolvePreviewSrc(track: MusicTrackOption): string {
+  if (track.id === 'none') {
+    return '';
+  }
+  return track.preview_url || musicTrackPreviewUrl(track.id);
+}
+
 const VoicePreviewStep: React.FC<Props> = ({
   subscription,
   voices,
@@ -87,18 +98,39 @@ const VoicePreviewStep: React.FC<Props> = ({
   const [subStep, setSubStep] = useState<SubStep>(previewAsset ? 2 : 0);
   const [replacement, setReplacement] = useState(subscription.business_name || '');
   const [savingHint, setSavingHint] = useState(false);
+  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
+  const [bedLoading, setBedLoading] = useState(false);
+  const [genderFilter, setGenderFilter] = useState<'female' | 'male'>('female');
+  const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+  const [voiceLoading, setVoiceLoading] = useState(false);
+  const bedAudioRef = useRef<HTMLAudioElement | null>(null);
+  const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const visibleVoices = useMemo(() => customerVoices(voices), [voices]);
-  const compactTracks = useMemo(() => {
+  const genderedVoices = useMemo(() => {
+    const filtered = visibleVoices.filter((voice) => {
+      const gender = (voice.gender || '').toLowerCase();
+      if (genderFilter === 'male') {
+        return gender === 'male' || (voice.slug || voice.id || '').toLowerCase().startsWith('daudi');
+      }
+      return gender === 'female' || (voice.slug || voice.id || '').toLowerCase().startsWith('rehema');
+    });
+    return filtered.length ? filtered : visibleVoices;
+  }, [visibleVoices, genderFilter]);
+  const selectableTracks = useMemo(() => {
     const source = musicTracks.length
       ? musicTracks
       : [
           { id: 'none', label: 'Bila muziki' },
           { id: 'warm_pad', label: 'Warm Soft' },
+          { id: 'piano_glow', label: 'Mountain Piano' },
+          { id: 'mountain_soft', label: 'Mountain Soft' },
+          { id: 'soft_ambient', label: 'Soft Ambient' },
           { id: 'afro_light', label: 'Afro Light' },
           { id: 'marimba_glow', label: 'Marimba' },
+          { id: 'corporate_clean', label: 'Corporate' },
         ];
-    return source.slice(0, 5);
+    return source;
   }, [musicTracks]);
 
   const previewLimit = 3;
@@ -112,6 +144,187 @@ const VoicePreviewStep: React.FC<Props> = ({
   const canApprove = subscription.status === 'PREVIEW_READY' && !!previewAsset;
   const pronunciationSrc = pronunciationAsset?.play_url;
   const previewSrc = previewAsset?.play_url;
+
+  const stopBedPreview = () => {
+    const audio = bedAudioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    setPlayingTrackId(null);
+    setBedLoading(false);
+  };
+
+  const stopVoiceSample = () => {
+    const audio = voiceAudioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    setPlayingVoiceId(null);
+    setVoiceLoading(false);
+  };
+
+  const playVoiceSample = async (voice: TtsVoice) => {
+    const id = voice.slug || voice.id || '';
+    if (!id) {
+      return;
+    }
+    const src = voice.sample_url || voiceSampleUrl(id);
+    if (!src) {
+      return;
+    }
+
+    stopBedPreview();
+    if (!voiceAudioRef.current) {
+      voiceAudioRef.current = new Audio();
+      voiceAudioRef.current.preload = 'auto';
+      voiceAudioRef.current.addEventListener('ended', () => {
+        setPlayingVoiceId(null);
+        setVoiceLoading(false);
+      });
+      voiceAudioRef.current.addEventListener('error', () => {
+        setPlayingVoiceId(null);
+        setVoiceLoading(false);
+      });
+    }
+
+    const audio = voiceAudioRef.current;
+    if (playingVoiceId === id && !audio.paused) {
+      stopVoiceSample();
+      return;
+    }
+
+    setVoiceLoading(true);
+    setPlayingVoiceId(id);
+    try {
+      audio.src = src;
+      audio.currentTime = 0;
+      await audio.play();
+    } catch {
+      setPlayingVoiceId(null);
+    } finally {
+      setVoiceLoading(false);
+    }
+  };
+
+  const handleVoiceSelect = (voiceId: string) => {
+    onVoiceChange(voiceId);
+    const voice = genderedVoices.find((item) => (item.slug || item.id) === voiceId);
+    if (voice) {
+      void playVoiceSample(voice);
+    }
+  };
+
+  const playBedPreview = async (track: MusicTrackOption) => {
+    if (track.id === 'none' || musicIntensity === 'none') {
+      stopBedPreview();
+      return;
+    }
+
+    const src = resolvePreviewSrc(track);
+    if (!src) {
+      return;
+    }
+
+    stopBedPreview();
+    if (!bedAudioRef.current) {
+      bedAudioRef.current = new Audio();
+      bedAudioRef.current.preload = 'auto';
+      bedAudioRef.current.addEventListener('ended', () => {
+        setPlayingTrackId(null);
+        setBedLoading(false);
+      });
+      bedAudioRef.current.addEventListener('error', () => {
+        setPlayingTrackId(null);
+        setBedLoading(false);
+      });
+    }
+
+    const audio = bedAudioRef.current;
+    const intensityVolume =
+      musicIntensity === 'soft' ? 0.45 : musicIntensity === 'strong' ? 0.9 : 0.7;
+    audio.volume = intensityVolume;
+
+    if (playingTrackId === track.id && !audio.paused) {
+      stopBedPreview();
+      return;
+    }
+
+    setBedLoading(true);
+    setPlayingTrackId(track.id);
+    try {
+      audio.src = src;
+      audio.currentTime = 0;
+      await audio.play();
+    } catch {
+      setPlayingTrackId(null);
+    } finally {
+      setBedLoading(false);
+    }
+  };
+
+  const handleMusicSelect = (trackId: string) => {
+    onMusicChange(trackId);
+    const track = selectableTracks.find((item) => item.id === trackId);
+    if (track) {
+      void playBedPreview(track);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      stopBedPreview();
+      stopVoiceSample();
+      bedAudioRef.current = null;
+      voiceAudioRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (subStep !== 1) {
+      stopBedPreview();
+    }
+    if (subStep !== 0) {
+      stopVoiceSample();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subStep]);
+
+  useEffect(() => {
+    const current = visibleVoices.find((voice) => (voice.slug || voice.id) === selectedVoiceId);
+    if (!current) {
+      return;
+    }
+    const gender = (current.gender || '').toLowerCase();
+    if (gender === 'male' || (selectedVoiceId || '').startsWith('daudi')) {
+      setGenderFilter('male');
+    } else if (gender === 'female' || (selectedVoiceId || '').startsWith('rehema')) {
+      setGenderFilter('female');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const stillVisible = genderedVoices.some((voice) => (voice.slug || voice.id) === selectedVoiceId);
+    if (!stillVisible && genderedVoices[0]) {
+      onVoiceChange(genderedVoices[0].slug || genderedVoices[0].id || '');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [genderFilter]);
+
+  useEffect(() => {
+    if (!bedAudioRef.current || musicIntensity === 'none') {
+      if (musicIntensity === 'none') {
+        stopBedPreview();
+      }
+      return;
+    }
+    bedAudioRef.current.volume =
+      musicIntensity === 'soft' ? 0.45 : musicIntensity === 'strong' ? 0.9 : 0.7;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [musicIntensity]);
 
   const savePronunciation = async () => {
     const original = (subscription.business_name || '').trim();
@@ -138,14 +351,16 @@ const VoicePreviewStep: React.FC<Props> = ({
 
   const handlePrimary = async () => {
     if (subStep === 0) {
-      if (!selectedVoiceId && visibleVoices[0]) {
-        onVoiceChange(visibleVoices[0].slug || visibleVoices[0].id || '');
+      stopVoiceSample();
+      if (!selectedVoiceId && genderedVoices[0]) {
+        onVoiceChange(genderedVoices[0].slug || genderedVoices[0].id || '');
       }
       setSubStep(1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     if (subStep === 1) {
+      stopBedPreview();
       if (!previewAsset) {
         await onGeneratePreview();
       }
@@ -176,29 +391,57 @@ const VoicePreviewStep: React.FC<Props> = ({
             <SoundOutlined /> Chagua sauti + hakiki jina
           </h2>
           <p className="beat-hint">
-            Hatua 1/3 — sikiliza jina la biashara pekee (bila muziki). {remainingPronunciation}/
-            {pronunciationLimit} majaribio yamebaki.
+            Hatua 1/3 — chagua Kike au Kiume, gusa sauti ili isikike. Halafu hakiki jina la biashara.{' '}
+            {remainingPronunciation}/{pronunciationLimit} majaribio ya jina yamebaki.
           </p>
 
-          <label className="good-label">Sauti (Daudi / Rehema)</label>
+          <label className="good-label">Aina ya sauti</label>
           <Radio.Group
-            className="beat-voice-list beat-voice-list-compact"
-            value={selectedVoiceId}
-            onChange={(e) => onVoiceChange(e.target.value)}
-          >
-            {visibleVoices.map((voice) => {
+            value={genderFilter}
+            onChange={(e) => setGenderFilter(e.target.value)}
+            optionType="button"
+            buttonStyle="solid"
+            className="beat-chip-group"
+            options={[
+              { label: 'Ya Kike', value: 'female' },
+              { label: 'Ya Kiume', value: 'male' },
+            ]}
+          />
+
+          <label className="good-label" style={{ marginTop: 16, display: 'block' }}>
+            Mtindo wa sauti — gusa kusikiliza
+          </label>
+          <div className="beat-music-list">
+            {genderedVoices.map((voice) => {
               const id = voice.slug || voice.id || '';
+              const selected = selectedVoiceId === id;
+              const isPlaying = playingVoiceId === id;
               return (
-                <Radio key={id} value={id} className="beat-voice-option">
-                  <strong>{voice.label.replace(/^Daudi — |^Rehema — /, '')}</strong>
-                  <span className="beat-voice-meta">
-                    {(voice.gender || '').toLowerCase() === 'male' ? 'Kiume' : 'Kike'}
-                    {voice.style ? ` · ${voice.style}` : ''}
+                <button
+                  key={id}
+                  type="button"
+                  className={`beat-music-option${selected ? ' is-selected' : ''}${
+                    isPlaying ? ' is-playing' : ''
+                  }`}
+                  onClick={() => handleVoiceSelect(id)}
+                  aria-pressed={selected}
+                >
+                  <span className="beat-music-option-main">
+                    <strong>{voice.label.replace(/^Daudi — |^Rehema — /, '')}</strong>
+                    <span className="beat-voice-meta">
+                      {genderFilter === 'male' ? 'Kiume' : 'Kike'}
+                      {voice.style ? ` · ${voice.style}` : ''}
+                      {isPlaying ? ' · Inacheza…' : ''}
+                      {voiceLoading && selected ? ' · Inapakia…' : ''}
+                    </span>
                   </span>
-                </Radio>
+                  <span className="beat-music-option-action" aria-hidden>
+                    {isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+                  </span>
+                </button>
               );
             })}
-          </Radio.Group>
+          </div>
 
           <label className="good-label" style={{ marginTop: 16, display: 'block' }}>
             Jinsi jina lisemwe — “{subscription.business_name || '—'}”
@@ -222,14 +465,17 @@ const VoicePreviewStep: React.FC<Props> = ({
           <Button
             type="default"
             icon={<SoundOutlined />}
-            onClick={onGeneratePronunciationTest}
+            onClick={() => {
+              stopVoiceSample();
+              onGeneratePronunciationTest();
+            }}
             loading={testingPronunciation}
-            disabled={remainingPronunciation < 1 || testingPronunciation}
+            disabled={remainingPronunciation < 1 || testingPronunciation || !selectedVoiceId}
             block
             size="large"
             style={{ marginBottom: 12 }}
           >
-            Sikiliza jina
+            Sikiliza jina la biashara
           </Button>
 
           {pronunciationSrc && (
@@ -252,8 +498,8 @@ const VoicePreviewStep: React.FC<Props> = ({
             <CustomerServiceOutlined /> Muziki na kasi
           </h2>
           <p className="beat-hint">
-            Hatua 2/3 — chagua beat, kisha tutatengeneza preview fupi (~15s).{' '}
-            {remainingPreviews}/{previewLimit} previews zimebaki.
+            Hatua 2/3 — chagua beat; sample inacheza moja kwa moja. Kisha tutatengeneza preview kamili
+            (hadi ~40s). {remainingPreviews}/{previewLimit} previews zimebaki.
           </p>
 
           <label className="good-label">Kasi ya kusoma</label>
@@ -271,19 +517,50 @@ const VoicePreviewStep: React.FC<Props> = ({
           />
 
           <label className="good-label" style={{ marginTop: 16, display: 'block' }}>
-            Background music
+            Background music — gusa kusikiliza
           </label>
-          <Radio.Group
-            className="beat-voice-list beat-voice-list-compact"
-            value={selectedMusicId || 'warm_pad'}
-            onChange={(e) => onMusicChange(e.target.value)}
-          >
-            {compactTracks.map((track) => (
-              <Radio key={track.id} value={track.id} className="beat-voice-option">
-                <strong>{track.label}</strong>
-              </Radio>
-            ))}
-          </Radio.Group>
+          <div className="beat-music-list">
+            {selectableTracks.map((track) => {
+              const selected = (selectedMusicId || 'warm_pad') === track.id;
+              const isPlaying = playingTrackId === track.id;
+              const canHear = track.id !== 'none' && musicIntensity !== 'none';
+              return (
+                <button
+                  key={track.id}
+                  type="button"
+                  className={`beat-music-option${selected ? ' is-selected' : ''}${
+                    isPlaying ? ' is-playing' : ''
+                  }`}
+                  onClick={() => handleMusicSelect(track.id)}
+                  aria-pressed={selected}
+                >
+                  <span className="beat-music-option-main">
+                    <strong>{track.label}</strong>
+                    <span className="beat-voice-meta">
+                      {track.id === 'none'
+                        ? 'Hakuna bed'
+                        : track.mood
+                          ? track.mood
+                          : 'Background bed'}
+                      {isPlaying ? ' · Inacheza…' : ''}
+                      {bedLoading && selected ? ' · Inapakia…' : ''}
+                    </span>
+                  </span>
+                  <span className="beat-music-option-action" aria-hidden>
+                    {canHear ? (
+                      isPlaying ? (
+                        <PauseCircleOutlined />
+                      ) : (
+                        <PlayCircleOutlined />
+                      )
+                    ) : (
+                      <SoundOutlined />
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
           <label className="good-label" style={{ marginTop: 16, display: 'block' }}>
             Nguvu ya muziki
@@ -300,6 +577,15 @@ const VoicePreviewStep: React.FC<Props> = ({
               { label: 'Bila', value: 'none' },
             ]}
           />
+
+          {musicIntensity === 'none' && (
+            <Alert
+              style={{ marginTop: 12 }}
+              type="info"
+              showIcon
+              message="Muziki umezimwa — preview itakuwa voice pekee."
+            />
+          )}
 
           {isGenerating && (
             <div className="beat-loading-block" style={{ marginTop: 16 }}>

@@ -66,4 +66,42 @@ class BeatAiWorkerClient
         return $response->json();
     }
 
+    /**
+     * Fetch a raw body from the AI worker (e.g. audio/mpeg music preview).
+     *
+     * @return array{ok: bool, status: int, body: string, content_type: string|null, message?: string}
+     */
+    public static function getRaw(string $path, int $timeoutSeconds = 60): array
+    {
+        $baseUrl = rtrim((string) Config::get('beat.ai_worker.base_url'), '/');
+        $token = (string) Config::get('beat.ai_worker.internal_token', '');
+
+        $request = Http::timeout($timeoutSeconds);
+        if ($token !== '') {
+            $request = $request->withToken($token);
+        }
+
+        try {
+            $response = $request->get("{$baseUrl}{$path}");
+        } catch (\Exception $e) {
+            Log::error('ai-worker raw GET failed: ' . $e->getMessage());
+
+            return [
+                'ok' => false,
+                'status' => 503,
+                'body' => '',
+                'content_type' => null,
+                'message' => 'AI worker is unavailable',
+            ];
+        }
+
+        return [
+            'ok' => $response->successful(),
+            'status' => $response->status(),
+            'body' => $response->body(),
+            'content_type' => $response->header('Content-Type'),
+            'message' => $response->successful() ? null : 'AI worker returned an error',
+        ];
+    }
+
 }

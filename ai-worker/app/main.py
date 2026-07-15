@@ -53,6 +53,48 @@ def tts_voices(_: None = Depends(verify_token)) -> list[VoiceResponse]:
     ]
 
 
+@app.get("/v1/tts/voices/{voice_id}/sample")
+def voice_sample(
+    voice_id: str,
+    _: None = Depends(verify_token),
+):
+    """Short stock phrase so customers can audition a voice without burning limits."""
+    import base64
+
+    from fastapi.responses import Response
+
+    from app.services.tts_synthesizer import synthesize_audio
+
+    request = TtsSynthesizeRequest(
+        subscription_id=0,
+        text="Habari, karibu. Hivi ndivyo sauti yangu inavyosikika.",
+        voice_id=voice_id,
+        music_track_id="none",
+        music_intensity="none",
+        speaking_speed="normal",
+        profile=AudioProfile(
+            format="mp3",
+            sample_rate=16000,
+            channels=1,
+            max_duration_seconds=8,
+            watermark=False,
+        ),
+        render_mode="pronunciation_test",
+    )
+    result = synthesize_audio(request)
+    if not result.success or not result.audio:
+        raise HTTPException(status_code=502, detail=result.message or "Voice sample failed")
+    audio = base64.b64decode(result.audio.content_base64)
+    return Response(
+        content=audio,
+        media_type="audio/mpeg",
+        headers={
+            "Cache-Control": "public, max-age=86400",
+            "Content-Disposition": f'inline; filename="{voice_id}-sample.mp3"',
+        },
+    )
+
+
 @app.get("/v1/music/tracks", response_model=list[MusicTrackResponse])
 def music_tracks(_: None = Depends(verify_token)) -> list[MusicTrackResponse]:
     from app.services.music_library import list_music_tracks
@@ -67,6 +109,16 @@ def music_tracks(_: None = Depends(verify_token)) -> list[MusicTrackResponse]:
         )
         for track in list_music_tracks()
     ]
+
+
+@app.get("/v1/music/tracks/{track_id}/preview")
+def music_track_preview(
+    track_id: str,
+    _: None = Depends(verify_token),
+):
+    from app.services.music_preview import render_music_preview
+
+    return render_music_preview(track_id)
 
 
 @app.post("/v1/tts/synthesize", response_model=TtsSynthesizeResponse)
@@ -91,7 +143,7 @@ def tts_preview(
     request.profile.format = "mp3"
     request.profile.sample_rate = 16000
     request.profile.channels = 1
-    request.profile.max_duration_seconds = min(request.profile.max_duration_seconds or 15, 15)
+    request.profile.max_duration_seconds = min(request.profile.max_duration_seconds or 40, 40)
     request.render_mode = request.render_mode or "preview"
     return synthesize_audio(request)
 

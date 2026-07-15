@@ -35,7 +35,7 @@ class CustomerBeatController extends BaseController
             'business_name' => 'required|string|max:255',
             'contact_phone' => 'required|string|max:32',
             'subscription_package' => 'required',
-            'voice_type' => 'required|in:MALE,FEMALE',
+            'voice_type' => 'nullable|in:MALE,FEMALE',
             'subscription_phones' => 'required|array|min:1',
             'business_location' => 'nullable|string|max:255',
             'landmark' => 'nullable|string|max:255',
@@ -361,16 +361,35 @@ class CustomerBeatController extends BaseController
 
     public function listVoices(): JsonResponse
     {
-        $voices = TtsVoiceProfile::query()
-            ->where('is_active', true)
-            ->orderByDesc('is_default')
-            ->get();
+        $voices = BeatAudioService::listVoices();
+        if ($voices === []) {
+            $voices = TtsVoiceProfile::query()
+                ->where('is_active', true)
+                ->orderByDesc('is_default')
+                ->get()
+                ->map(static function (TtsVoiceProfile $profile): array {
+                    $id = (string) $profile->slug;
 
-        if ($voices->isEmpty()) {
-            $voices = BeatAudioService::listVoices();
+                    return [
+                        'id' => $id,
+                        'slug' => $id,
+                        'label' => $profile->label,
+                        'gender' => $profile->gender,
+                        'provider' => $profile->provider,
+                        'language' => $profile->language,
+                        'style' => $profile->style,
+                        'sample_url' => url('/api/v1/tunes/customer/tts/voices/' . rawurlencode($id) . '/sample'),
+                    ];
+                })
+                ->all();
         }
 
         return $this->returnResponse('TTS voices', ['voices' => $voices]);
+    }
+
+    public function previewVoiceSample(string $voiceId)
+    {
+        return BeatAudioService::streamVoiceSample($voiceId);
     }
 
     public function listMusicTracks(): JsonResponse
@@ -378,6 +397,11 @@ class CustomerBeatController extends BaseController
         return $this->returnResponse('Music tracks', [
             'tracks' => BeatAudioService::listMusicTracks(),
         ]);
+    }
+
+    public function previewMusicTrack(string $trackId)
+    {
+        return BeatAudioService::streamMusicPreview($trackId);
     }
 
     public function generatePreview(Request $request): JsonResponse

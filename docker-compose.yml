@@ -51,14 +51,16 @@ services:
       BEAT_AI_WORKER_TOKEN: ${BEAT_AI_WORKER_TOKEN:-}
       BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}
       BEAT_LLM_API_KEY: ${BEAT_LLM_API_KEY:-}
-      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-2.5-flash-lite}
+      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-flash-lite-latest}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-lite-latest}
       AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
-      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-southafricanorth}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-eastus}
       BEAT_TTS_PROVIDER: ${BEAT_TTS_PROVIDER:-azure}
       BEAT_DEFAULT_VOICE_ID: ${BEAT_DEFAULT_VOICE_ID:-daudi-professional}
       BEAT_MMS_MODEL_ID: ${BEAT_MMS_MODEL_ID:-facebook/mms-tts-swh}
+      BEAT_SCRIPT_MAX_DURATION_SECONDS: ${BEAT_SCRIPT_MAX_DURATION_SECONDS:-40}
+      BEAT_SCRIPT_MAXIMUM_WORDS: ${BEAT_SCRIPT_MAXIMUM_WORDS:-95}
     depends_on:
       mysql:
         condition: service_healthy
@@ -83,11 +85,13 @@ services:
       BEAT_DEFAULT_VOICE_ID: ${BEAT_DEFAULT_VOICE_ID:-daudi-professional}
       BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}
       BEAT_LLM_API_KEY: ${BEAT_LLM_API_KEY:-}
-      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-2.5-flash-lite}
+      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-flash-lite-latest}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-lite-latest}
       AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
-      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-southafricanorth}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-eastus}
+      BEAT_SCRIPT_MAX_DURATION_SECONDS: ${BEAT_SCRIPT_MAX_DURATION_SECONDS:-40}
+      BEAT_SCRIPT_MAXIMUM_WORDS: ${BEAT_SCRIPT_MAXIMUM_WORDS:-95}
     volumes:
       - ./ai-worker/app:/app/app
       - ./ai-worker/voices:/app/voices:ro

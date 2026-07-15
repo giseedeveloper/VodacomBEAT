@@ -37,10 +37,10 @@ class AudioRenderProfile:
 
 
 PREVIEW_PROFILE = AudioRenderProfile(
-    name="preview_mixed_short",
+    name="preview_mixed_full",
     intro_delay_ms=1200,
     outro_duration_ms=2500,
-    maximum_duration_seconds=15,
+    maximum_duration_seconds=40,
     sample_rate=16000,
     channels=1,
     output_format="mp3",
@@ -81,10 +81,12 @@ def profile_from_request(
     watermark: bool,
     render_name: str | None = None,
 ) -> AudioRenderProfile:
-    if render_name == "preview" or (watermark and max_duration_seconds <= 20):
+    if render_name == "preview":
         base = PREVIEW_PROFILE
     elif render_name == "pronunciation_test":
         base = VOICE_ONLY_TEST_PROFILE
+    elif watermark:
+        base = PREVIEW_PROFILE
     else:
         base = FINAL_PROFILE
 

@@ -56,11 +56,13 @@ def synthesize_audio(request: TtsSynthesizeRequest) -> TtsSynthesizeResponse:
         return TtsSynthesizeResponse(success=False, message=str(exc))
 
     render_name = None
-    if request.profile.watermark or request.profile.max_duration_seconds <= 20:
+    if request.render_mode == "preview" or request.profile.watermark:
         render_name = "preview"
     if request.render_mode == "pronunciation_test":
         render_name = "pronunciation_test"
         music_path = None
+    if request.render_mode == "final":
+        render_name = "final"
 
     try:
         processed, duration = process_wav_profile(

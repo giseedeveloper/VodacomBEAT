@@ -40,13 +40,13 @@ type SubStep = 0 | 1 | 2;
 const SUB_STEPS = [
   { title: 'Wewe', subtitle: 'Jina + biashara' },
   { title: 'Maelezo', subtitle: 'Bidhaa + eneo' },
-  { title: 'Kifurushi', subtitle: 'Simu + malipo' },
+  { title: 'Simu', subtitle: 'Namba + package' },
 ];
 
 const STEP_FIELDS: string[][] = [
   ['contact_person_name', 'contact_phone', 'business_name', 'business_description'],
   ['products_or_services', 'business_location'],
-  ['subscription_package', 'voice_type', 'selectedPhones'],
+  ['selectedPhones', 'subscription_package'],
 ];
 
 const BusinessInfoStep: React.FC<Props> = ({
@@ -251,51 +251,13 @@ const BusinessInfoStep: React.FC<Props> = ({
       <div style={{ display: subStep === 2 ? 'block' : 'none' }}>
         <Card className="beat-card" bodyStyle={{ backgroundColor: '#f9f9f9' }}>
           <h2 className="beat-section-title">
-            <GiftOutlined /> Kifurushi na Sauti
+            <MobileOutlined /> Namba za muito
           </h2>
-          <p className="beat-hint">Hatua 3/3 — chagua muda, sauti, na namba.</p>
+          <p className="beat-hint">
+            Hatua 3/3 — weka namba zitakazopatiwa caller tune, kisha chagua kifurushi. Sauti (kike/kiume)
+            utachagua baadaye unaposikiliza preview.
+          </p>
 
-          <Form.Item
-            name="subscription_package"
-            label={<span className="good-label">Kifurushi</span>}
-            rules={[{ required: true, message: 'Chagua kifurushi' }]}
-          >
-            <Radio.Group onChange={onPackageChange} className="beat-radio-group">
-              {(packagesList.length
-                ? packagesList
-                : [
-                    { package: 1, price: 0, duration: 1 },
-                    { package: 3, price: 0, duration: 3 },
-                    { package: 6, price: 0, duration: 6 },
-                    { package: 12, price: 0, duration: 12 },
-                  ]
-              ).map((pkg) => (
-                <Radio key={String(pkg.package)} value={pkg.package}>
-                  {pkg.duration || pkg.package}{' '}
-                  {Number(pkg.duration || pkg.package) === 1 ? 'Month' : 'Months'}
-                  {pkg.price ? ` — ${pkg.price.toLocaleString()} TZS` : ''}
-                </Radio>
-              ))}
-            </Radio.Group>
-          </Form.Item>
-
-          <Form.Item
-            name="voice_type"
-            label={<span className="good-label">Sauti</span>}
-            rules={[{ required: true, message: 'Chagua sauti' }]}
-            initialValue="FEMALE"
-          >
-            <Radio.Group className="beat-radio-group">
-              <Radio value="FEMALE">Ya Kike</Radio>
-              <Radio value="MALE">Ya Kiume</Radio>
-            </Radio.Group>
-          </Form.Item>
-        </Card>
-
-        <Card className="beat-card" bodyStyle={{ backgroundColor: '#f9f9f9' }}>
-          <h2 className="beat-section-title">
-            <MobileOutlined /> Simu za muito
-          </h2>
           <Form.List
             name="selectedPhones"
             rules={[
@@ -331,6 +293,36 @@ const BusinessInfoStep: React.FC<Props> = ({
               </>
             )}
           </Form.List>
+        </Card>
+
+        <Card className="beat-card" bodyStyle={{ backgroundColor: '#f9f9f9' }}>
+          <h2 className="beat-section-title">
+            <GiftOutlined /> Kifurushi
+          </h2>
+
+          <Form.Item
+            name="subscription_package"
+            label={<span className="good-label">Muda wa subscription</span>}
+            rules={[{ required: true, message: 'Chagua kifurushi' }]}
+          >
+            <Radio.Group onChange={onPackageChange} className="beat-radio-group">
+              {(packagesList.length
+                ? packagesList
+                : [
+                    { package: 1, price: 0, duration: 1 },
+                    { package: 3, price: 0, duration: 3 },
+                    { package: 6, price: 0, duration: 6 },
+                    { package: 12, price: 0, duration: 12 },
+                  ]
+              ).map((pkg) => (
+                <Radio key={String(pkg.package)} value={pkg.package}>
+                  {pkg.duration || pkg.package}{' '}
+                  {Number(pkg.duration || pkg.package) === 1 ? 'Month' : 'Months'}
+                  {pkg.price ? ` — ${pkg.price.toLocaleString()} TZS` : ''}
+                </Radio>
+              ))}
+            </Radio.Group>
+          </Form.Item>
         </Card>
 
         <Card className="beat-card beat-summary-card" bodyStyle={{ backgroundColor: '#fff5f5' }}>

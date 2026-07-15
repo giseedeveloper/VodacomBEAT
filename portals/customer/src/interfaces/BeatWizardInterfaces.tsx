@@ -116,6 +116,7 @@ export interface TtsVoice {
   is_active?: boolean;
   is_finetuned?: boolean;
   is_premium?: boolean;
+  sample_url?: string | null;
 }
 
 export interface SelcomTransaction {

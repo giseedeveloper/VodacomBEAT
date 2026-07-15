@@ -94,9 +94,27 @@ export async function fetchVoices(): Promise<TtsVoice[]> {
   return response.data.payload.voices || [];
 }
 
-export async function fetchMusicTracks(): Promise<{ id: string; label: string; mood?: string }[]> {
+export function voiceSampleUrl(voiceId: string): string {
+  if (!voiceId) {
+    return '';
+  }
+  const apiBase = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
+  return `${apiBase}/api/v1/tunes/customer/tts/voices/${encodeURIComponent(voiceId)}/sample`;
+}
+
+export async function fetchMusicTracks(): Promise<
+  { id: string; label: string; mood?: string; preview_url?: string | null }[]
+> {
   const response = await getRequest(`${BASE}/music/tracks`);
   return response.data.payload.tracks || [];
+}
+
+export function musicTrackPreviewUrl(trackId: string): string {
+  if (!trackId || trackId === 'none') {
+    return '';
+  }
+  const apiBase = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
+  return `${apiBase}/api/v1/tunes/customer/music/tracks/${encodeURIComponent(trackId)}/preview`;
 }
 
 export async function generatePreview(
