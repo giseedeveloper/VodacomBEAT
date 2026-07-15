@@ -4,10 +4,13 @@ namespace App\Http\Controllers\reports;
 
 use App\Exports\SubscriptionsExport;
 use App\Http\Controllers\BaseController;
+use App\Models\ExportLog;
 use App\Models\TuneSubscription;
+use App\Services\ExportBatchService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SubscriptionsManagementController extends BaseController
@@ -46,13 +49,37 @@ class SubscriptionsManagementController extends BaseController
 
     public function exportSubscriptions(Request $request)
     {
-        $fileName = "subscriptions-" . Carbon::now()->format('dd-m-Y-H-i-s') . ".xlsx";
-        $binaryFileResponse = Excel::download(new SubscriptionsExport,
+        try {
+            $exportLog = ExportBatchService::createBatch(Auth::id());
+        } catch (\RuntimeException $e) {
+            return $this->returnError($e->getMessage(), [], 404);
+        }
+
+        $subscriptions = $exportLog->subscriptions()->with(['phones', 'package'])->get();
+        $fileName = $exportLog->file_name ?: ('subscriptions-' . Carbon::now()->format('Y-m-d-H-i-s') . '.xlsx');
+
+        $exportLog->checksum = hash('sha256', $subscriptions->pluck('id')->implode(','));
+        $exportLog->save();
+
+        $binaryFileResponse = Excel::download(
+            new SubscriptionsExport($subscriptions, $exportLog->batch_reference),
             $fileName,
             null,
             ['Access-Control-Allow-Origin' => '*']
         );
-        return  $binaryFileResponse->send();
+
+        return $binaryFileResponse->send();
+    }
+
+    public function listExportBatches(Request $request): JsonResponse
+    {
+        $perPage = $request->input('perPage', 15);
+        $responseData['export_logs'] = ExportLog::query()
+            ->withCount('subscriptions')
+            ->latest()
+            ->paginate($perPage);
+
+        return $this->returnResponse('Export batches', $responseData);
     }
 
 

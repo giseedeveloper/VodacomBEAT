@@ -20,10 +20,13 @@ class RequestReferenceMiddleware
         $requestId = (string) Str::uuid();
 
         Log::shareContext([
-            'request-id' => (string) Str::uuid(),
+            'request-id' => $requestId,
         ]);
 
-        return $next($request)->header('Request-Id', $requestId);
+        $response = $next($request);
+        $response->headers->set('Request-Id', $requestId);
+
+        return $response;
     }
 
 }

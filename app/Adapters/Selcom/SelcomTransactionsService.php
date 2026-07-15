@@ -6,6 +6,7 @@ use App\Models\SelcomTransaction;
 use App\Models\TuneSubscription;
 use App\Objects\SelcomCallback;
 use App\Objects\SelcomOrderResponse;
+use App\Objects\TransactionCompletionResult;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
@@ -140,7 +141,7 @@ class SelcomTransactionsService
         return $selcomTransaction;
     }
 
-    public function completeTransaction(SelcomCallback $selcomCallback): ?SelcomTransaction
+    public function completeTransaction(SelcomCallback $selcomCallback): TransactionCompletionResult
     {
 
         /** @var SelcomTransaction | null  $selcomTransaction */
@@ -150,7 +151,13 @@ class SelcomTransactionsService
 
         if (!$selcomTransaction) {
             Log::error("transaction with order id {$selcomCallback->order_id} was not found");
-            return null;
+            return new TransactionCompletionResult(null);
+        }
+
+        // Duplicate callback: transaction already completed, do not touch it again.
+        if ($selcomTransaction->status === SelcomTransaction::$STATUS_SUCCESS) {
+            Log::warning("duplicate selcom callback for order id {$selcomCallback->order_id} - transaction already SUCCESS, skipping update");
+            return new TransactionCompletionResult($selcomTransaction, true);
         }
 
         $selcomTransaction->selcom_reference = $selcomCallback->reference;
@@ -160,7 +167,7 @@ class SelcomTransactionsService
         $selcomTransaction->payer_phone = $selcomCallback->phone;
         $selcomTransaction->save();
 
-        return $selcomTransaction;
+        return new TransactionCompletionResult($selcomTransaction);
 
     }
 

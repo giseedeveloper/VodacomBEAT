@@ -2,12 +2,10 @@ import "../css/App.css";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import LoginPage from "./auth/LoginPage";
 import MainLayout from "./MainLayout";
-import RequireAuth from "../services/auth/RequireAuth";
 import PageNotFound from "./etc/pages/PageNotFound";
 import React from "react";
-import Dashboard from "./features/reports/Dashboard";
 import Logout from "../services/auth/Logout";
-import SubscriptionForm from "./features/SubscriptionForm";
+import SubscriptionWizard from "./features/wizard/SubscriptionWizard";
 import StatusPage from "./features/StatusPage";
 
 function AppRouter() {
@@ -16,25 +14,19 @@ function AppRouter() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<LoginPage/>}/>
-
-                    <Route path="/*" element={<MainLayout/>}>
-                        <Route index element={<SubscriptionForm/>}/>
-                        <Route path="home" element={<SubscriptionForm/>}/>
-
-                        <Route path="customers" >
-                            <Route index element={<SubscriptionForm/>} />
-                        </Route>
-
-                        <Route path="subscriptions/:reference" >
-                            <Route index element={<StatusPage/>} />
-                        </Route>
-
-                    </Route>
                     <Route path="/logout" element={<Logout><LoginPage/></Logout>}/>
 
-                    <Route path="*" element={<PageNotFound></PageNotFound>}/>
-                </Routes>
+                    <Route path="/*" element={<MainLayout/>}>
+                        <Route index element={<SubscriptionWizard/>}/>
+                        <Route path="home" element={<SubscriptionWizard/>}/>
+                        <Route path="subscribe" element={<SubscriptionWizard/>}/>
+                        <Route path="subscribe/:reference" element={<SubscriptionWizard/>}/>
+                        <Route path="customers" element={<SubscriptionWizard/>}/>
+                        <Route path="subscriptions/:reference" element={<StatusPage/>}/>
+                    </Route>
 
+                    <Route path="*" element={<PageNotFound/>}/>
+                </Routes>
             </BrowserRouter>
         </div>
     );

@@ -4,6 +4,7 @@ use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\contest\ContestantsController;
 use App\Http\Controllers\contest\VotesController;
 use App\Http\Controllers\management\VotesWeightManagementController;
+use App\Http\Controllers\tunes\CustomerBeatController;
 use App\Http\Controllers\tunes\TunesAgentController;
 use App\Http\Controllers\tunes\TunesCustomerController;
 use Illuminate\Http\Request;
@@ -45,8 +46,19 @@ Route::prefix("/v1/tunes/customer")->group(function(){
 
     Route::get('/packages', [TunesCustomerController::class,'getPackages']);
     Route::post('/subscription/add', [TunesCustomerController::class,'addSubscription']);
-    Route::post('/subscription/details', [TunesCustomerController::class,'getSubscription']);
+    Route::post('/subscription/details', [CustomerBeatController::class,'getDetails']);
     Route::post('/subscription/payment/retry', [TunesCustomerController::class,'retryPayment']);
+
+    // BEAT guided flow (draft → script → preview → payment)
+    Route::post('/subscription/draft', [CustomerBeatController::class,'createDraft']);
+    Route::post('/subscription/script/generate', [CustomerBeatController::class,'generateScript']);
+    Route::post('/subscription/script/approve', [CustomerBeatController::class,'approveScript']);
+    Route::get('/tts/voices', [CustomerBeatController::class,'listVoices']);
+    Route::get('/music/tracks', [CustomerBeatController::class,'listMusicTracks']);
+    Route::post('/subscription/audio/preview', [CustomerBeatController::class,'generatePreview']);
+    Route::post('/subscription/audio/approve', [CustomerBeatController::class,'approvePreview']);
+    Route::post('/subscription/payment/init', [CustomerBeatController::class,'initiatePayment']);
+    Route::get('/audio/{assetId}/stream', [CustomerBeatController::class,'streamAudio']);
 
 });
 

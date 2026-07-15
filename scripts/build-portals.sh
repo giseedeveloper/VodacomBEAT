@@ -3,9 +3,15 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-API_URL="${REACT_APP_API_URL:-https://165.22.124.111:8000}"
-
-export REACT_APP_API_URL="$API_URL"
+# Same-origin via nginx /api/ (works for biztune.co.tz AND IP).
+# Only set REACT_APP_API_URL if you need an absolute override.
+if [ -n "${REACT_APP_API_URL:-}" ]; then
+  export REACT_APP_API_URL
+  echo "Using REACT_APP_API_URL=$REACT_APP_API_URL"
+else
+  unset REACT_APP_API_URL || true
+  echo "Using runtime window.location.origin (same-origin /api)"
+fi
 export NODE_ENV=production
 export CI=false
 export DISABLE_ESLINT_PLUGIN=true
@@ -22,7 +28,7 @@ build_portal() {
   echo "=========================================="
   echo " Building: $output_name"
   echo " Portal:   portals/$portal_dir"
-  echo " API URL:  $REACT_APP_API_URL"
+  echo " API URL:  ${REACT_APP_API_URL:-<window.location.origin>}"
   echo "=========================================="
 
   cd "$ROOT/portals/$portal_dir"

@@ -57,9 +57,15 @@ class TunesCustomerController extends BaseController
         }
 
         $unpaidSubscription = TunesSubscriptionService::addPendingSubscription($request, $packageConfiguration,null);
-        TunesSubscriptionService::initCharge($unpaidSubscription);
+        if (! TunesSubscriptionService::initCharge($unpaidSubscription)) {
+            return $this->returnError(
+                'Payment request could not be sent. Please check your payment phone and try again.',
+                ['subscription' => $unpaidSubscription],
+                502
+            );
+        }
 
-        $responseData['subscription'] = $unpaidSubscription;
+        $responseData['subscription'] = $unpaidSubscription->refresh();
         return $this->returnResponse('Pending subscription created', $responseData);
     }
 
@@ -82,9 +88,15 @@ class TunesCustomerController extends BaseController
             return $this->returnError("Subscription with reference {$reference} does not exist", [], 400);
         }
 
-        TunesSubscriptionService::initCharge($unpaidSubscription);
+        if (! TunesSubscriptionService::initCharge($unpaidSubscription)) {
+            return $this->returnError(
+                'Payment request could not be sent. Please check your payment phone and try again.',
+                ['subscription' => $unpaidSubscription],
+                502
+            );
+        }
 
-        $responseData['subscription'] = $unpaidSubscription;
+        $responseData['subscription'] = $unpaidSubscription->refresh();
         return $this->returnResponse('Pending subscription created', $responseData);
     }
 

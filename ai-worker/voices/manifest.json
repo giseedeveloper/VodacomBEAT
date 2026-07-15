@@ -1,0 +1,35 @@
+{
+  "default_voice_id": "mms-swh-default",
+  "voices": [
+    {
+      "id": "mms-swh-default",
+      "label": "Kiswahili (MMS Default)",
+      "language": "sw-TZ",
+      "gender": "neutral",
+      "provider": "mms",
+      "model_id": "facebook/mms-tts-swh",
+      "is_finetuned": false,
+      "license_note": "CC-BY-NC 4.0 — dev/staging until BizTune fine-tuned voices are ready"
+    },
+    {
+      "id": "biztune-female-v1",
+      "label": "BizTune Female v1 (fine-tuned)",
+      "language": "sw-TZ",
+      "gender": "female",
+      "provider": "mms",
+      "model_id": "local/biztune-female-v1",
+      "is_finetuned": true,
+      "license_note": "Deploy after fine-tune — place checkpoint under /app/models/biztune-female-v1"
+    },
+    {
+      "id": "biztune-male-v1",
+      "label": "BizTune Male v1 (fine-tuned)",
+      "language": "sw-TZ",
+      "gender": "male",
+      "provider": "mms",
+      "model_id": "local/biztune-male-v1",
+      "is_finetuned": true,
+      "license_note": "Deploy after fine-tune — place checkpoint under /app/models/biztune-male-v1"
+    }
+  ]
+}

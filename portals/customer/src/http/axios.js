@@ -19,7 +19,7 @@ axiosClient.defaults.headers = {
     'Access-Control-Allow-Origin': '*'
 };
 
-//All request will wait 10 seconds before timeout
-axiosClient.defaults.timeout = 15000;
+// Script + TTS generation can take longer than typical API calls
+axiosClient.defaults.timeout = 120000;
 
 export default axiosClient;

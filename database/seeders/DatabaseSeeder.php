@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             SmsGatewaySeeder::class,
             NotificationTemplateSeeder::class,
             DemoUsersSeeder::class,
+            TtsVoiceProfileSeeder::class,
         ]);
     }
 }

@@ -1,0 +1,34 @@
+{
+  "tracks": [
+    {
+      "id": "none",
+      "label": "Bila Muziki / No Music",
+      "mood": "none",
+      "file": null
+    },
+    {
+      "id": "warm_pad",
+      "label": "Warm Soft Pad",
+      "mood": "calm",
+      "file": "warm_pad.wav"
+    },
+    {
+      "id": "afro_light",
+      "label": "Afro Light Groove",
+      "mood": "upbeat",
+      "file": "afro_light.wav"
+    },
+    {
+      "id": "marimba_glow",
+      "label": "Marimba Glow",
+      "mood": "friendly",
+      "file": "marimba_glow.wav"
+    },
+    {
+      "id": "corporate_clean",
+      "label": "Corporate Clean",
+      "mood": "professional",
+      "file": "corporate_clean.wav"
+    }
+  ]
+}

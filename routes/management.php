@@ -10,6 +10,9 @@ use App\Http\Controllers\management\TopicsManagementController;
 use App\Http\Controllers\management\UsersManagementController;
 use App\Http\Controllers\reports\SubscriptionsManagementController;
 use App\Http\Controllers\reports\TransactionsManagementController;
+use App\Http\Controllers\tunes\BeatAudioController;
+use App\Http\Controllers\tunes\BeatScriptController;
+use App\Http\Controllers\tunes\TunesInstallationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -93,9 +96,23 @@ Route::prefix('v1/transactions')->middleware('auth:api')->group(function () {
     Route::get('/', [TransactionsManagementController::class,'getTransactions']);
 });
 
+Route::prefix('v1/management/tunes')->middleware('auth:api')->group(function () {
+    Route::get('/subscriptions', [TunesInstallationController::class,'getSubscriptions']);
+    Route::post('/subscriptions/{id}/installed', [TunesInstallationController::class,'markInstalled']);
+    Route::post('/subscriptions/{id}/status', [TunesInstallationController::class,'updateStatus']);
+    Route::post('/subscriptions/{id}/script/generate', [BeatScriptController::class,'generateScript']);
+    Route::get('/subscriptions/{id}/script/versions', [BeatScriptController::class,'listScriptVersions']);
+    Route::get('/tts/voices', [BeatAudioController::class,'listVoices']);
+    Route::post('/subscriptions/{id}/audio/preview', [BeatAudioController::class,'generatePreview']);
+    Route::post('/subscriptions/{id}/audio/final', [BeatAudioController::class,'generateFinal']);
+    Route::get('/subscriptions/{id}/audio/assets', [BeatAudioController::class,'listAssets']);
+    Route::get('/audio/{assetId}/download', [BeatAudioController::class,'downloadAsset']);
+});
+
 Route::prefix('v1/management/subscriptions')->middleware('auth:api')->group(function () {
     Route::get('/list', [SubscriptionsManagementController::class,'getSubscriptions']);
     Route::get('/export', [SubscriptionsManagementController::class,'exportSubscriptions']);
+    Route::get('/export/batches', [SubscriptionsManagementController::class,'listExportBatches']);
 });
 
 Route::get('/v1/subscriptions/export', [SubscriptionsManagementController::class,'exportSubscriptions']);

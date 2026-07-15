@@ -19,8 +19,11 @@ class AgentsCommissionService
     public static function onCommissionDisbursement(TuneSubscription $tuneSubscription): ?bool
     {
 
-        Log::info('');
-
+        // Guard: commission is money leaving the company - never disburse twice.
+        if ($tuneSubscription->commission_issued_at !== null) {
+            Log::warning("commission already issued for subscription {$tuneSubscription->id} at {$tuneSubscription->commission_issued_at}, refusing to disburse again");
+            return false;
+        }
 
         /** @var ReferralAgent | null $agent */
         $agent = $tuneSubscription->agent;

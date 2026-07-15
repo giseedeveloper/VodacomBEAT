@@ -3,7 +3,7 @@ set -e
 
 mkdir -p /etc/nginx/ssl /var/www/certbot
 
-DOMAINS="admin.biztune.co.tz agent.biztune.co.tz referrals.biztune.co.tz"
+DOMAINS="biztune.co.tz www.biztune.co.tz admin.biztune.co.tz agent.biztune.co.tz referrals.biztune.co.tz"
 IP="${SERVER_IP:-165.22.124.111}"
 
 # Prefer Let's Encrypt certificate when available

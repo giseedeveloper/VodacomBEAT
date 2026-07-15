@@ -20,3 +20,7 @@ yarn-error.log
 /storage/logs/
 /portals/admin-dashboard/node_modules/
 /deploy/dist
+
+__pycache__/
+*.pyc
+.ai-worker/**/__pycache__/

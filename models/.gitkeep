@@ -1,0 +1,5 @@
+# Place fine-tuned BizTune checkpoints here:
+# - biztune-female-v1/
+# - biztune-male-v1/
+#
+# See ai-worker/FINETUNE.md for training and deployment steps.

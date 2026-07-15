@@ -22,30 +22,36 @@ class SelcomController extends BaseController
 
         $callbackObject = SelcomCallback::fromResponse($request);
         $selcomTransactionService = new SelcomTransactionsService();
-        $existingSelcomTransaction = $selcomTransactionService->completeTransaction($callbackObject);
+        $completionResult = $selcomTransactionService->completeTransaction($callbackObject);
+        $existingSelcomTransaction = $completionResult->transaction;
 
-        if($existingSelcomTransaction!=null){
+        if ($completionResult->wasAlreadyCompleted) {
+            // Duplicate Selcom delivery: acknowledge but do not re-process,
+            // re-activate, or write another ledger row.
+            Log::warning("duplicate selcom callback acknowledged without processing. order id: {$callbackObject->order_id}");
+        } elseif ($existingSelcomTransaction != null) {
 
             $tuneSubscription = TunesSubscriptionService::onPaymentComplete($existingSelcomTransaction);
 
-            //Create ledger transaction
-            LedgerTransaction::query()->create([
-                "selcom_reference"=>$existingSelcomTransaction->selcom_reference,
-                "selcom_uuid"=>$existingSelcomTransaction->selcom_uuid,
-                "selcom_token"=>$existingSelcomTransaction->selcom_token,
+            if ($tuneSubscription != null) {
+                //Create ledger transaction
+                LedgerTransaction::query()->create([
+                    "selcom_reference"=>$existingSelcomTransaction->selcom_reference,
+                    "selcom_uuid"=>$existingSelcomTransaction->selcom_uuid,
+                    "selcom_token"=>$existingSelcomTransaction->selcom_token,
 
-                "subscription_id"=>$tuneSubscription->id,
-                "subscriber_id"=>$tuneSubscription->customer_id,
-                "payer_phone"=>$tuneSubscription->payment_phone,
-                "amount"=>$tuneSubscription->amount,
-                "status"=>LedgerTransaction::$STATUS_SUCCESS,
-                "payment_url",
+                    "subscription_id"=>$tuneSubscription->id,
+                    "subscriber_id"=>$tuneSubscription->customer_id,
+                    "payer_phone"=>$tuneSubscription->payment_phone,
+                    "amount"=>$tuneSubscription->amount,
+                    "status"=>LedgerTransaction::$STATUS_SUCCESS,
 
-                "receipt"=>$existingSelcomTransaction->rec,
-                "reference"=>$existingSelcomTransaction->id,
-                "txid"=>$existingSelcomTransaction->selcom_transaction_id,
-                "third_party"=>"Selcom"
-            ]);
+                    "receipt"=>$existingSelcomTransaction->rec,
+                    "reference"=>$existingSelcomTransaction->id,
+                    "txid"=>$existingSelcomTransaction->selcom_transaction_id,
+                    "third_party"=>"Selcom"
+                ]);
+            }
         }
 
         $responseEntity['success'] = $existingSelcomTransaction != null;
