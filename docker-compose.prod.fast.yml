@@ -45,11 +45,15 @@ services:
       REDIS_PORT: 6379
       BEAT_AI_WORKER_URL: http://ai-worker:8080
       BEAT_AI_WORKER_TOKEN: ${BEAT_AI_WORKER_TOKEN:-}
-      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://api.openai.com/v1}
+      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}
       BEAT_LLM_API_KEY: ${BEAT_LLM_API_KEY:-}
-      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gpt-4o-mini}
-      BEAT_TTS_PROVIDER: mms
-      BEAT_DEFAULT_VOICE_ID: ${BEAT_DEFAULT_VOICE_ID:-mms-swh-default}
+      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-southafricanorth}
+      BEAT_TTS_PROVIDER: ${BEAT_TTS_PROVIDER:-azure}
+      BEAT_DEFAULT_VOICE_ID: ${BEAT_DEFAULT_VOICE_ID:-daudi-professional}
       BEAT_MMS_MODEL_ID: ${BEAT_MMS_MODEL_ID:-facebook/mms-tts-swh}
     depends_on:
       mysql:
@@ -82,11 +86,15 @@ services:
       REDIS_PORT: 6379
       BEAT_AI_WORKER_URL: http://ai-worker:8080
       BEAT_AI_WORKER_TOKEN: ${BEAT_AI_WORKER_TOKEN:-}
-      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://api.openai.com/v1}
+      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}
       BEAT_LLM_API_KEY: ${BEAT_LLM_API_KEY:-}
-      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gpt-4o-mini}
-      BEAT_TTS_PROVIDER: mms
-      BEAT_DEFAULT_VOICE_ID: ${BEAT_DEFAULT_VOICE_ID:-mms-swh-default}
+      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-southafricanorth}
+      BEAT_TTS_PROVIDER: ${BEAT_TTS_PROVIDER:-azure}
+      BEAT_DEFAULT_VOICE_ID: ${BEAT_DEFAULT_VOICE_ID:-daudi-professional}
       BEAT_MMS_MODEL_ID: ${BEAT_MMS_MODEL_ID:-facebook/mms-tts-swh}
     depends_on:
       mysql:
@@ -109,11 +117,15 @@ services:
     environment:
       REDIS_URL: redis://redis:6379/0
       BEAT_AI_WORKER_TOKEN: ${BEAT_AI_WORKER_TOKEN:-}
-      BEAT_TTS_PROVIDER: mms
+      BEAT_TTS_PROVIDER: ${BEAT_TTS_PROVIDER:-azure}
       BEAT_VOICES_MANIFEST: /app/voices/manifest.json
-      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://api.openai.com/v1}
+      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}
       BEAT_LLM_API_KEY: ${BEAT_LLM_API_KEY:-}
-      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gpt-4o-mini}
+      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-southafricanorth}
     depends_on:
       - redis
     volumes:
@@ -131,10 +143,14 @@ services:
     command: ["rq", "worker", "--url", "redis://redis:6379/0", "beat_script"]
     environment:
       REDIS_URL: redis://redis:6379/0
-      BEAT_TTS_PROVIDER: mms
-      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://api.openai.com/v1}
+      BEAT_TTS_PROVIDER: ${BEAT_TTS_PROVIDER:-azure}
+      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}
       BEAT_LLM_API_KEY: ${BEAT_LLM_API_KEY:-}
-      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gpt-4o-mini}
+      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-southafricanorth}
     depends_on:
       - redis
     volumes:

@@ -5,6 +5,7 @@ import callIcon from '../../../assets/images/logo-white.png';
 import stockIcon from '../../../assets/images/mobiad-rectangle.png';
 import { notifyHttpError } from '../../../services/notification/notifications';
 import {
+  answerFollowUp,
   approvePreview,
   approveScript,
   createDraftSubscription,
@@ -13,8 +14,10 @@ import {
   fetchSubscriptionDetails,
   fetchVoices,
   generatePreview,
+  generatePronunciationTest,
   generateScript,
   initiatePayment,
+  updatePronunciation,
 } from '../../../services/beat/CustomerBeatApi';
 import {
   AudioAsset,
@@ -27,6 +30,7 @@ import {
   WizardStepKey,
 } from '../../../interfaces/BeatWizardInterfaces';
 import BusinessInfoStep from './BusinessInfoStep';
+import ClarifyStep from './ClarifyStep';
 import ScriptReviewStep from './ScriptReviewStep';
 import VoicePreviewStep from './VoicePreviewStep';
 import PaymentStep from './PaymentStep';
@@ -40,12 +44,15 @@ const SubscriptionWizard: React.FC = () => {
   const { reference: routeReference } = useParams();
 
   const [businessForm] = Form.useForm();
+  const [clarifyForm] = Form.useForm();
   const [paymentForm] = Form.useForm();
 
   const [step, setStep] = useState<WizardStepKey>('business');
   const [loading, setLoading] = useState(false);
   const [generatingScript, setGeneratingScript] = useState(false);
   const [generatingPreview, setGeneratingPreview] = useState(false);
+  const [followUpQuestions, setFollowUpQuestions] = useState<string[]>([]);
+  const [selectedVariant, setSelectedVariant] = useState<string>('FRIENDLY_PROMOTIONAL');
 
   const [packagesList, setPackagesList] = useState<TunePackage[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<TunePackage>();
@@ -58,11 +65,24 @@ const SubscriptionWizard: React.FC = () => {
   const [musicTracks, setMusicTracks] = useState<{ id: string; label: string; mood?: string }[]>([]);
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>();
   const [selectedMusicId, setSelectedMusicId] = useState<string>('warm_pad');
+  const [speakingSpeed, setSpeakingSpeed] = useState<'slow' | 'normal' | 'fast'>('normal');
+  const [musicIntensity, setMusicIntensity] = useState<'soft' | 'medium' | 'strong' | 'none'>(
+    'medium'
+  );
   const [previewAsset, setPreviewAsset] = useState<AudioAsset | null>(null);
+  const [pronunciationAsset, setPronunciationAsset] = useState<AudioAsset | null>(null);
+  const [testingPronunciation, setTestingPronunciation] = useState(false);
+
+  const visibleSteps = useMemo(() => {
+    if (step === 'clarify' || followUpQuestions.length) {
+      return WIZARD_STEPS;
+    }
+    return WIZARD_STEPS.filter((item) => item.key !== 'clarify');
+  }, [step, followUpQuestions.length]);
 
   const stepIndex = useMemo(
-    () => Math.max(0, WIZARD_STEPS.findIndex((s) => s.key === step)),
-    [step]
+    () => Math.max(0, visibleSteps.findIndex((s) => s.key === step)),
+    [step, visibleSteps]
   );
 
   const reference =
@@ -78,12 +98,41 @@ const SubscriptionWizard: React.FC = () => {
       const latestScript = payload.script_versions?.[0] || null;
       setScriptVersion(latestScript);
       setScriptText(latestScript?.plain_text || payload.subscription.voice_script || '');
+      setSelectedVariant(payload.subscription.selected_script_variant || 'FRIENDLY_PROMOTIONAL');
 
       const latestPreview =
-        payload.audio_assets?.find((a) => a.asset_type === 'preview') ||
-        payload.audio_assets?.[0] ||
-        null;
+        payload.audio_assets?.find((a) => a.asset_type === 'preview') || null;
+      const latestPronunciation =
+        payload.audio_assets?.find((a) => a.asset_type === 'pronunciation_test') || null;
       setPreviewAsset(latestPreview || null);
+      setPronunciationAsset(latestPronunciation || null);
+
+      if (payload.subscription.preferred_music_track_id) {
+        setSelectedMusicId(payload.subscription.preferred_music_track_id);
+      }
+      if (payload.subscription.speaking_speed) {
+        setSpeakingSpeed(payload.subscription.speaking_speed);
+      }
+      if (payload.subscription.music_intensity) {
+        setMusicIntensity(payload.subscription.music_intensity);
+      }
+      if (payload.subscription.preferred_voice_profile) {
+        setSelectedVoiceId(payload.subscription.preferred_voice_profile);
+      }
+
+      if (payload.subscription.analysis_action === 'ASK_FOLLOW_UP_QUESTIONS') {
+        setStep('clarify');
+        return;
+      }
+
+      // Soft-blocked with a resolved template — continue wizard instead of blank status
+      if (
+        payload.subscription.status === 'MANUAL_REVIEW_REQUESTED' &&
+        payload.subscription.script_template_key
+      ) {
+        setStep('script');
+        return;
+      }
 
       const next = statusToStep(payload.subscription.status, payload.wizard_step);
       if (next === 'status') {
@@ -105,16 +154,20 @@ const SubscriptionWizard: React.FC = () => {
 
     fetchVoices()
       .then((list) => {
-        setVoices(list);
-        const preferred = list.find((v) => v.is_default) || list[0];
+        const preferredOnly = list.filter((v) => {
+          const provider = (v.provider || '').toLowerCase();
+          const id = (v.slug || v.id || '').toLowerCase();
+          return provider === 'azure' || id.startsWith('daudi-') || id.startsWith('rehema-');
+        });
+        const usable = preferredOnly.length ? preferredOnly : list;
+        setVoices(usable);
+        const preferred = usable.find((v) => v.is_default) || usable[0];
         const id = preferred?.slug || preferred?.id;
         if (id) {
           setSelectedVoiceId(id);
         }
       })
-      .catch(() => {
-        // Voices optional at boot — preview step can still use default.
-      });
+      .catch(() => undefined);
 
     fetchMusicTracks()
       .then((tracks) => {
@@ -129,9 +182,6 @@ const SubscriptionWizard: React.FC = () => {
         setMusicTracks([
           { id: 'none', label: 'Bila Muziki' },
           { id: 'warm_pad', label: 'Warm Soft Pad' },
-          { id: 'afro_light', label: 'Afro Light Groove' },
-          { id: 'marimba_glow', label: 'Marimba Glow' },
-          { id: 'corporate_clean', label: 'Corporate Clean' },
         ]);
       });
   }, []);
@@ -150,9 +200,39 @@ const SubscriptionWizard: React.FC = () => {
     }
   };
 
+  const runScriptGeneration = async (ref: string) => {
+    setGeneratingScript(true);
+    setStep('script');
+    try {
+      const payload = await generateScript(ref);
+      setSubscription(payload.subscription);
+      setScriptVersion(payload.script_version);
+      const variants = payload.variants || payload.script_version?.structured_payload?.versions || [];
+      const preferred =
+        variants.find((v) => v.variant === 'FRIENDLY_PROMOTIONAL') || variants[0];
+      setSelectedVariant(preferred?.variant || 'FRIENDLY_PROMOTIONAL');
+      setScriptText(preferred?.text || payload.script_version?.plain_text || '');
+    } catch (errorObj) {
+      notifyHttpError('Imeshindikana kutengeneza maneno', errorObj as object);
+      await hydrateFromDetails(ref);
+    } finally {
+      setGeneratingScript(false);
+    }
+  };
+
   const handleCreateDraft = async () => {
     try {
-      const values = await businessForm.validateFields();
+      // Ensure required store fields across all sub-steps are present
+      await businessForm.validateFields([
+        'contact_person_name',
+        'contact_phone',
+        'business_name',
+        'business_description',
+        'subscription_package',
+        'voice_type',
+        'selectedPhones',
+      ]);
+      const values = businessForm.getFieldsValue(true);
       const phones = (values.selectedPhones || [])
         .map((p: { phoneNumber?: string }) => p.phoneNumber)
         .filter(Boolean);
@@ -167,11 +247,20 @@ const SubscriptionWizard: React.FC = () => {
         contact_person_name: values.contact_person_name,
         contact_phone: values.contact_phone,
         business_name: values.business_name,
+        business_description: values.business_description,
         business_location: values.business_location,
-        business_industry: values.business_industry,
+        landmark: values.landmark,
+        products_or_services: values.products_or_services,
+        secondary_products: values.secondary_products,
+        target_audience: values.target_audience,
         call_to_action: values.call_to_action,
+        selling_points: values.selling_points,
+        preferred_tone: values.preferred_tone,
+        must_include_words: values.must_include_words,
+        must_exclude_words: values.must_exclude_words,
+        offer_text: values.offer_text,
         subscription_package: values.subscription_package,
-        voice_type: values.voice_type,
+        voice_type: values.voice_type || 'FEMALE',
         subscription_phones: phones,
       });
 
@@ -179,7 +268,19 @@ const SubscriptionWizard: React.FC = () => {
       setSubscription(sub);
       localStorage.setItem(STORAGE_KEY, sub.subscription_reference);
       navigate(`/subscribe/${sub.subscription_reference}`, { replace: true });
-      setStep('script');
+      setFollowUpQuestions(payload.follow_up_questions || []);
+
+      if (payload.next_step === 'clarify' || payload.next_action === 'ASK_FOLLOW_UP_QUESTIONS') {
+        setStep('clarify');
+        return;
+      }
+
+      if (payload.next_step === 'status' || payload.next_action === 'MANUAL_CATEGORY_REVIEW') {
+        localStorage.removeItem(STORAGE_KEY);
+        navigate(`/subscriptions/${sub.subscription_reference}`);
+        return;
+      }
+
       await runScriptGeneration(sub.subscription_reference);
     } catch (errorObj) {
       if ((errorObj as { errorFields?: unknown })?.errorFields) {
@@ -191,18 +292,33 @@ const SubscriptionWizard: React.FC = () => {
     }
   };
 
-  const runScriptGeneration = async (ref: string) => {
-    setGeneratingScript(true);
+  const handleClarify = async () => {
+    if (!reference) {
+      return;
+    }
     try {
-      const payload = await generateScript(ref);
+      const values = await clarifyForm.validateFields();
+      setLoading(true);
+      const payload = await answerFollowUp(reference, values);
       setSubscription(payload.subscription);
-      setScriptVersion(payload.script_version);
-      setScriptText(payload.script_version?.plain_text || '');
+      setFollowUpQuestions(payload.follow_up_questions || []);
+
+      if (payload.next_step === 'clarify' || payload.next_action === 'ASK_FOLLOW_UP_QUESTIONS') {
+        setStep('clarify');
+        return;
+      }
+      if (payload.next_step === 'status' || payload.next_action === 'MANUAL_CATEGORY_REVIEW') {
+        navigate(`/subscriptions/${reference}`);
+        return;
+      }
+      await runScriptGeneration(reference);
     } catch (errorObj) {
-      notifyHttpError('Imeshindikana kutengeneza maneno', errorObj as object);
-      await hydrateFromDetails(ref);
+      if ((errorObj as { errorFields?: unknown })?.errorFields) {
+        return;
+      }
+      notifyHttpError('Imeshindikana kuhifadhi majibu', errorObj as object);
     } finally {
-      setGeneratingScript(false);
+      setLoading(false);
     }
   };
 
@@ -212,7 +328,7 @@ const SubscriptionWizard: React.FC = () => {
     }
     setLoading(true);
     try {
-      await approveScript(reference, scriptText.trim());
+      await approveScript(reference, scriptText.trim(), selectedVariant);
       setStep('preview');
       if (!previewAsset) {
         await runPreviewGeneration();
@@ -230,7 +346,13 @@ const SubscriptionWizard: React.FC = () => {
     }
     setGeneratingPreview(true);
     try {
-      const payload = await generatePreview(reference, selectedVoiceId, selectedMusicId);
+      const payload = await generatePreview(
+        reference,
+        selectedVoiceId,
+        selectedMusicId,
+        speakingSpeed,
+        musicIntensity
+      );
       setSubscription(payload.subscription);
       setPreviewAsset(payload.audio_asset);
     } catch (errorObj) {
@@ -238,6 +360,35 @@ const SubscriptionWizard: React.FC = () => {
       await hydrateFromDetails(reference);
     } finally {
       setGeneratingPreview(false);
+    }
+  };
+
+  const runPronunciationTest = async () => {
+    if (!reference) {
+      return;
+    }
+    setTestingPronunciation(true);
+    try {
+      const payload = await generatePronunciationTest(reference, selectedVoiceId);
+      setSubscription(payload.subscription);
+      setPronunciationAsset(payload.audio_asset);
+    } catch (errorObj) {
+      notifyHttpError('Imeshindikana kutengeneza pronunciation test', errorObj as object);
+    } finally {
+      setTestingPronunciation(false);
+    }
+  };
+
+  const handleUpdatePronunciation = async (original: string, replacement: string) => {
+    if (!reference) {
+      return;
+    }
+    try {
+      const payload = await updatePronunciation(reference, original, replacement);
+      setSubscription(payload.subscription);
+      await runPronunciationTest();
+    } catch (errorObj) {
+      notifyHttpError('Imeshindikana kuhifadhi pronunciation', errorObj as object);
     }
   };
 
@@ -286,7 +437,8 @@ const SubscriptionWizard: React.FC = () => {
             <div>
               <h1 className="beat-hero-title">BizTune Caller Tune</h1>
               <Paragraph className="beat-hero-copy">
-                Tangaza biashara yako kwa muito wa simu — andaa maneno, sikiliza preview, kisha lipia.
+                AI inachambua biashara yako, backend inachagua template, kisha unachagua script moja
+                kati ya tatu.
               </Paragraph>
             </div>
           </Space>
@@ -295,7 +447,7 @@ const SubscriptionWizard: React.FC = () => {
             <Steps
               current={stepIndex}
               responsive
-              items={WIZARD_STEPS.map((item) => ({
+              items={visibleSteps.map((item) => ({
                 title: item.title,
                 description: item.subtitle,
               }))}
@@ -325,17 +477,32 @@ const SubscriptionWizard: React.FC = () => {
             />
           )}
 
+          {step === 'clarify' && (
+            <ClarifyStep
+              form={clarifyForm}
+              questions={followUpQuestions}
+              loading={loading}
+              onContinue={handleClarify}
+              onBack={() => setStep('business')}
+            />
+          )}
+
           {step === 'script' && (
             <ScriptReviewStep
               subscription={subscription}
               scriptVersion={scriptVersion}
               scriptText={scriptText}
+              selectedVariant={selectedVariant}
               loading={loading}
               generating={generatingScript}
               onScriptTextChange={setScriptText}
+              onVariantChange={(variant, text) => {
+                setSelectedVariant(variant);
+                setScriptText(text);
+              }}
               onRegenerate={() => reference && runScriptGeneration(reference)}
               onContinue={handleApproveScript}
-              onBack={() => setStep('business')}
+              onBack={() => setStep(followUpQuestions.length ? 'clarify' : 'business')}
             />
           )}
 
@@ -346,11 +513,19 @@ const SubscriptionWizard: React.FC = () => {
               musicTracks={musicTracks}
               selectedVoiceId={selectedVoiceId}
               selectedMusicId={selectedMusicId}
+              speakingSpeed={speakingSpeed}
+              musicIntensity={musicIntensity}
               previewAsset={previewAsset}
+              pronunciationAsset={pronunciationAsset}
               loading={loading}
               generating={generatingPreview}
+              testingPronunciation={testingPronunciation}
               onVoiceChange={setSelectedVoiceId}
               onMusicChange={setSelectedMusicId}
+              onSpeakingSpeedChange={setSpeakingSpeed}
+              onMusicIntensityChange={setMusicIntensity}
+              onGeneratePronunciationTest={runPronunciationTest}
+              onUpdatePronunciation={handleUpdatePronunciation}
               onGeneratePreview={runPreviewGeneration}
               onApprove={handleApprovePreview}
               onBack={() => setStep('script')}

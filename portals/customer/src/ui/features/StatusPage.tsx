@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { postRequest } from '../../http/RestService';
 import { notifyHttpError } from '../../services/notification/notifications';
-import { Alert, Button, Card, Col, Image, Progress, Row, Space, Tag } from 'antd';
+import { Alert, Button, Card, Col, Image, Progress, Row, Space, Spin, Tag } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import successPhone from '../../assets/images/icons/successful_phone.png';
 import ussdPinIcon from '../../assets/images/icons/ussd.png';
-import { UserOutlined, CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import {
+  UserOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import { fetchSubscriptionDetails } from '../../services/beat/CustomerBeatApi';
 import {
   SelcomTransaction,
@@ -13,7 +18,7 @@ import {
 } from '../../interfaces/BeatWizardInterfaces';
 
 const StatusPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [subscription, setSubscription] = useState<TuneSubscription>();
   const [transaction, setTransaction] = useState<SelcomTransaction | null>();
   const { reference } = useParams();
@@ -57,18 +62,64 @@ const StatusPage = () => {
     !!subscription?.starts_at ||
     status === 'PAID' ||
     status === 'ACTIVE' ||
-    status === 'INSTALLED';
+    status === 'INSTALLED' ||
+    status === 'READY_FOR_INSTALLATION' ||
+    status === 'EXPORTED' ||
+    status === 'INSTALLATION_IN_PROGRESS';
+
   const isAwaitingPin =
-    !isPaidOrActive &&
-    (status === 'PAYMENT_PENDING' || status === 'AWAITING_PAYMENT' || !status);
+    status === 'PAYMENT_PENDING' ||
+    status === 'AWAITING_PAYMENT' ||
+    status === 'CUSTOMER_APPROVED';
+
+  const isInProgress =
+    status === 'DRAFT' ||
+    status === 'SCRIPT_GENERATING' ||
+    status === 'SCRIPT_READY' ||
+    status === 'PREVIEW_GENERATING' ||
+    status === 'PREVIEW_READY';
+
+  const isManualOrFailed =
+    status === 'MANUAL_REVIEW_REQUESTED' ||
+    status === 'FAILED' ||
+    status === 'CANCELLED' ||
+    status === 'QA_CHANGES_REQUIRED';
 
   const resumeWizardPath = reference ? `/subscribe/${reference}` : '/';
+
+  if (isLoading && !subscription) {
+    return (
+      <div className="container beat-wizard" style={{ marginTop: 48, textAlign: 'center' }}>
+        <Spin size="large" />
+        <p style={{ marginTop: 16, color: '#666' }}>Inatafuta hali ya subscription…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container beat-wizard" style={{ marginTop: 24, marginBottom: 64 }}>
       <Row gutter={16} justify="center">
+        <Col xs={24} md={20} lg={14} xl={12}>
+          <Alert
+            showIcon
+            type="info"
+            style={{ marginBottom: 16 }}
+            message={`Kumbukumbu: ${reference}`}
+            description={
+              subscription?.business_name
+                ? `Biashara: ${subscription.business_name}`
+                : 'Angalia hali ya oda yako hapa.'
+            }
+          />
+          {status && (
+            <p style={{ marginBottom: 16 }}>
+              <Tag color="blue">{status}</Tag>
+            </p>
+          )}
+        </Col>
+
         {isAwaitingPin && (
-          <Col className="gutter-row" xs={24} md={20} lg={14} xl={12} style={{ marginTop: '2em' }}>
+          <Col className="gutter-row" xs={24} md={20} lg={14} xl={12}>
             <Space className="beat-hero" align="start" size={16}>
               <Image preview={false} width={72} height={72} src={ussdPinIcon} alt="" />
               <div>
@@ -79,14 +130,6 @@ const StatusPage = () => {
                 </p>
               </div>
             </Space>
-
-            <Alert
-              showIcon
-              type="info"
-              style={{ marginBottom: 16 }}
-              message={`Kumbukumbu: ${reference}`}
-              description="Tunachunguza malipo kiotomatiki kila sekunde 12."
-            />
 
             <Card bodyStyle={{ backgroundColor: '#f9f9f9' }} className="beat-card">
               <div className="beat-status-progress">
@@ -132,20 +175,13 @@ const StatusPage = () => {
                     </Button>
                   </Link>
                 </Col>
-                <Col span={24} style={{ marginTop: 12 }}>
-                  <Link to="/">
-                    <Button size="large" block type="dashed">
-                      Anza Mwanzo
-                    </Button>
-                  </Link>
-                </Col>
               </Row>
             </Card>
           </Col>
         )}
 
         {isPaidOrActive && (
-          <Col className="gutter-row" xs={24} md={20} lg={14} xl={12} style={{ marginTop: '2em' }}>
+          <Col className="gutter-row" xs={24} md={20} lg={14} xl={12}>
             <Space className="beat-hero" align="center" size={16}>
               <Image preview={false} width={64} height={64} src={successPhone} alt="" />
               <div>
@@ -160,7 +196,6 @@ const StatusPage = () => {
             <Card bodyStyle={{ backgroundColor: '#f9f9f9' }} className="beat-card">
               <p>
                 <Tag color="green">{status || 'PAID'}</Tag>
-                <Tag>{reference}</Tag>
               </p>
               <p>
                 Huduma itaanza: <strong>{subscription?.starts_at || 'Baada ya usakinishaji'}</strong>
@@ -168,9 +203,6 @@ const StatusPage = () => {
                 Hadi: <strong>{subscription?.ends_at || '—'}</strong>
               </p>
               <p>
-                Number ya malipo:{' '}
-                <span style={{ fontWeight: 'lighter' }}>{subscription?.payment_phone}</span>
-                <br />
                 Biashara:{' '}
                 <span style={{ fontWeight: 'lighter' }}>{subscription?.business_name}</span>
               </p>
@@ -182,6 +214,68 @@ const StatusPage = () => {
                   </Tag>
                 </div>
               ))}
+            </Card>
+          </Col>
+        )}
+
+        {(isManualOrFailed || isInProgress || (!isAwaitingPin && !isPaidOrActive)) && (
+          <Col className="gutter-row" xs={24} md={20} lg={14} xl={12}>
+            <Space className="beat-hero" align="start" size={16}>
+              <ExclamationCircleOutlined style={{ color: '#E60000', fontSize: 48 }} />
+              <div>
+                <h1 className="beat-hero-title">
+                  {status === 'MANUAL_REVIEW_REQUESTED'
+                    ? 'Inahitaji ukaguzi wa timu'
+                    : status === 'FAILED'
+                      ? 'Imeshindikana kwa sasa'
+                      : isInProgress
+                        ? 'Oda bado haijakamilika'
+                        : 'Hali ya oda'}
+                </h1>
+                <p className="beat-hero-copy">
+                  {status === 'MANUAL_REVIEW_REQUESTED'
+                    ? 'AI haijakamilisha kuainisha biashara / script. Unaweza kurudi wizard kukamilisha, au subiri admin.'
+                    : isInProgress
+                      ? 'Endelea na hatua za script, sauti, au malipo.'
+                      : 'Angalia hali hapa chini au rudi kwenye wizard.'}
+                </p>
+              </div>
+            </Space>
+
+            <Card bodyStyle={{ backgroundColor: '#f9f9f9' }} className="beat-card">
+              <Alert
+                showIcon
+                type={status === 'FAILED' ? 'error' : 'warning'}
+                style={{ marginBottom: 16 }}
+                message={status || 'UNKNOWN'}
+                description={
+                  subscription?.analysis_action
+                    ? `Analysis: ${subscription.analysis_action}`
+                    : undefined
+                }
+              />
+
+              <Row gutter={12}>
+                <Col span={24}>
+                  <Link to={resumeWizardPath}>
+                    <Button type="primary" size="large" block className="beat-primary-btn">
+                      Endelea / Rudi Wizard →
+                    </Button>
+                  </Link>
+                </Col>
+                <Col span={12} style={{ marginTop: 12 }}>
+                  <Button size="large" block loading={isLoading} onClick={fetchSubscription}>
+                    Refresh
+                  </Button>
+                </Col>
+                <Col span={12} style={{ marginTop: 12 }}>
+                  <Link to="/">
+                    <Button size="large" block type="dashed">
+                      Anza Mwanzo
+                    </Button>
+                  </Link>
+                </Col>
+              </Row>
             </Card>
           </Col>
         )}

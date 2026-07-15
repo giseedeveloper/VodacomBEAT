@@ -4,26 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * @property int $id
- * @property string $slug
- * @property string $label
- * @property string $provider
- * @property string $model_id
- * @property string $gender
- * @property string $language
- * @property bool $is_finetuned
- * @property bool $is_default
- * @property bool $is_active
- * @property string|null $license_note
- */
 class TtsVoiceProfile extends Model
 {
-
     protected $casts = [
         'is_finetuned' => 'boolean',
         'is_default' => 'boolean',
         'is_active' => 'boolean',
+        'is_premium' => 'boolean',
     ];
 
     protected $fillable = [
@@ -31,12 +18,18 @@ class TtsVoiceProfile extends Model
         'label',
         'provider',
         'model_id',
+        'provider_voice_id',
         'gender',
+        'style',
+        'speaking_rate',
+        'pitch',
         'language',
         'is_finetuned',
         'is_default',
         'is_active',
+        'is_premium',
+        'preview_audio_path',
+        'style_prompt',
         'license_note',
     ];
-
 }

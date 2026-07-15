@@ -1,35 +1,75 @@
 {
-  "default_voice_id": "mms-swh-default",
+  "default_voice_id": "daudi-professional",
   "voices": [
     {
-      "id": "mms-swh-default",
-      "label": "Kiswahili (MMS Default)",
+      "id": "daudi-professional",
+      "label": "Daudi — Male Professional",
+      "language": "sw-TZ",
+      "gender": "male",
+      "provider": "azure",
+      "model_id": "sw-TZ-DaudiNeural",
+      "is_finetuned": false,
+      "license_note": "Azure Neural TTS sw-TZ — production default male"
+    },
+    {
+      "id": "daudi-energetic",
+      "label": "Daudi — Male Energetic",
+      "language": "sw-TZ",
+      "gender": "male",
+      "provider": "azure",
+      "model_id": "sw-TZ-DaudiNeural",
+      "is_finetuned": false,
+      "license_note": "Azure Neural TTS sw-TZ"
+    },
+    {
+      "id": "daudi-calm",
+      "label": "Daudi — Male Calm",
+      "language": "sw-TZ",
+      "gender": "male",
+      "provider": "azure",
+      "model_id": "sw-TZ-DaudiNeural",
+      "is_finetuned": false,
+      "license_note": "Azure Neural TTS sw-TZ — closest to manual Chaz pacing"
+    },
+    {
+      "id": "rehema-friendly",
+      "label": "Rehema — Female Friendly",
+      "language": "sw-TZ",
+      "gender": "female",
+      "provider": "azure",
+      "model_id": "sw-TZ-RehemaNeural",
+      "is_finetuned": false,
+      "license_note": "Azure Neural TTS sw-TZ — production default female"
+    },
+    {
+      "id": "rehema-professional",
+      "label": "Rehema — Female Professional",
+      "language": "sw-TZ",
+      "gender": "female",
+      "provider": "azure",
+      "model_id": "sw-TZ-RehemaNeural",
+      "is_finetuned": false,
+      "license_note": "Azure Neural TTS sw-TZ"
+    },
+    {
+      "id": "rehema-energetic",
+      "label": "Rehema — Female Energetic",
+      "language": "sw-TZ",
+      "gender": "female",
+      "provider": "azure",
+      "model_id": "sw-TZ-RehemaNeural",
+      "is_finetuned": false,
+      "license_note": "Azure Neural TTS sw-TZ"
+    },
+    {
+      "id": "mms-swh-fallback",
+      "label": "Kiswahili MMS Fallback",
       "language": "sw-TZ",
       "gender": "neutral",
       "provider": "mms",
       "model_id": "facebook/mms-tts-swh",
       "is_finetuned": false,
-      "license_note": "CC-BY-NC 4.0 — dev/staging until BizTune fine-tuned voices are ready"
-    },
-    {
-      "id": "biztune-female-v1",
-      "label": "BizTune Female v1 (fine-tuned)",
-      "language": "sw-TZ",
-      "gender": "female",
-      "provider": "mms",
-      "model_id": "local/biztune-female-v1",
-      "is_finetuned": true,
-      "license_note": "Deploy after fine-tune — place checkpoint under /app/models/biztune-female-v1"
-    },
-    {
-      "id": "biztune-male-v1",
-      "label": "BizTune Male v1 (fine-tuned)",
-      "language": "sw-TZ",
-      "gender": "male",
-      "provider": "mms",
-      "model_id": "local/biztune-male-v1",
-      "is_finetuned": true,
-      "license_note": "Deploy after fine-tune — place checkpoint under /app/models/biztune-male-v1"
+      "license_note": "CC-BY-NC — offline fallback only"
     }
   ]
 }

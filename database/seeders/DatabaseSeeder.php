@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             NotificationTemplateSeeder::class,
             DemoUsersSeeder::class,
             TtsVoiceProfileSeeder::class,
+            ScriptTemplateSeeder::class,
         ]);
     }
 }

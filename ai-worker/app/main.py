@@ -8,7 +8,9 @@ from fastapi import Depends, FastAPI, Header, HTTPException
 
 from app.config import INTERNAL_TOKEN
 from app.schemas.audio import AudioProfile, MusicTrackResponse, TtsSynthesizeRequest, TtsSynthesizeResponse, VoiceResponse
+from app.schemas.business_analysis import BusinessAnalyzeRequest, BusinessAnalyzeResponse
 from app.schemas.script import ScriptGenerateRequest, ScriptGenerateResponse
+from app.services.business_analyzer import analyze_business
 from app.services.script_generator import generate_script
 
 logging.basicConfig(level=logging.INFO)
@@ -27,7 +29,9 @@ def verify_token(authorization: str | None = Header(default=None)) -> None:
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "beat-ai-worker", "tts_provider": "mms"}
+    from app.config import TTS_PROVIDER
+
+    return {"status": "ok", "service": "beat-ai-worker", "tts_provider": TTS_PROVIDER}
 
 
 @app.get("/v1/tts/voices", response_model=list[VoiceResponse])
@@ -54,7 +58,13 @@ def music_tracks(_: None = Depends(verify_token)) -> list[MusicTrackResponse]:
     from app.services.music_library import list_music_tracks
 
     return [
-        MusicTrackResponse(id=track.id, label=track.label, mood=track.mood)
+        MusicTrackResponse(
+            id=track.id,
+            label=track.label,
+            mood=track.mood,
+            category=track.category,
+            recommended_for=track.recommended_for or [],
+        )
         for track in list_music_tracks()
     ]
 
@@ -78,9 +88,29 @@ def tts_preview(
 
     request.profile = request.profile or AudioProfile()
     request.profile.watermark = True
-    if request.profile.format == "wav":
-        request.profile.format = "mp3"
-        request.profile.sample_rate = min(request.profile.sample_rate, 22050)
+    request.profile.format = "mp3"
+    request.profile.sample_rate = 16000
+    request.profile.channels = 1
+    request.profile.max_duration_seconds = min(request.profile.max_duration_seconds or 15, 15)
+    request.render_mode = request.render_mode or "preview"
+    return synthesize_audio(request)
+
+
+@app.post("/v1/tts/pronunciation-test", response_model=TtsSynthesizeResponse)
+def tts_pronunciation_test(
+    request: TtsSynthesizeRequest,
+    _: None = Depends(verify_token),
+) -> TtsSynthesizeResponse:
+    from app.services.tts_synthesizer import synthesize_audio
+
+    request.profile = request.profile or AudioProfile()
+    request.profile.watermark = False
+    request.profile.format = "mp3"
+    request.profile.sample_rate = 16000
+    request.profile.channels = 1
+    request.profile.max_duration_seconds = 12
+    request.music_track_id = "none"
+    request.render_mode = "pronunciation_test"
     return synthesize_audio(request)
 
 
@@ -94,8 +124,19 @@ def tts_final(
     request.profile = request.profile or AudioProfile()
     request.profile.watermark = False
     request.profile.format = "wav"
-    request.profile.sample_rate = max(request.profile.sample_rate, 44100)
+    request.profile.sample_rate = 16000
+    request.profile.channels = 2
+    request.profile.max_duration_seconds = max(request.profile.max_duration_seconds or 40, 40)
+    request.render_mode = "final"
     return synthesize_audio(request)
+
+
+@app.post("/v1/business/analyze", response_model=BusinessAnalyzeResponse)
+def business_analyze(
+    request: BusinessAnalyzeRequest,
+    _: None = Depends(verify_token),
+) -> BusinessAnalyzeResponse:
+    return analyze_business(request)
 
 
 @app.post("/v1/script/generate", response_model=ScriptGenerateResponse)

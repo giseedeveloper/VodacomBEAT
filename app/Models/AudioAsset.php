@@ -32,6 +32,15 @@ class AudioAsset extends Model
         'duration_seconds',
         'checksum_sha256',
         'profile',
+        'qc_report',
+        'qc_passed',
+        'expires_at',
+    ];
+
+    protected $casts = [
+        'qc_report' => 'array',
+        'qc_passed' => 'boolean',
+        'expires_at' => 'datetime',
     ];
 
     public function subscription(): BelongsTo

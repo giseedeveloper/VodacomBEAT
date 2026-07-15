@@ -1,3 +1,4 @@
+# Local Docker Desktop — BEAT stack for Phase 2 testing
 services:
   mysql:
     image: mysql:8.0
@@ -16,6 +17,12 @@ services:
       timeout: 5s
       retries: 20
 
+  redis:
+    image: redis:7-alpine
+    container_name: vodacom-redis
+    restart: unless-stopped
+    # No host port — avoid conflict with other stacks on 6379
+
   api:
     build:
       context: .
@@ -23,35 +30,72 @@ services:
     container_name: vodacom-api
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      # Host 8010 — avoid conflict with other apps on 8000
+      - "8010:8000"
     volumes:
       - .:/var/www/html
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
-      APP_URL: http://localhost:8000
+      APP_URL: http://localhost:8010
       DB_CONNECTION: mysql
       DB_HOST: mysql
       DB_PORT: 3306
       DB_DATABASE: vodacom-caller-tunes
       DB_USERNAME: root
       DB_PASSWORD: secret
+      QUEUE_CONNECTION: sync
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      BEAT_AI_WORKER_URL: http://ai-worker:8080
+      BEAT_AI_WORKER_TOKEN: ${BEAT_AI_WORKER_TOKEN:-}
+      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}
+      BEAT_LLM_API_KEY: ${BEAT_LLM_API_KEY:-}
+      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-southafricanorth}
+      BEAT_TTS_PROVIDER: ${BEAT_TTS_PROVIDER:-azure}
+      BEAT_DEFAULT_VOICE_ID: ${BEAT_DEFAULT_VOICE_ID:-daudi-professional}
+      BEAT_MMS_MODEL_ID: ${BEAT_MMS_MODEL_ID:-facebook/mms-tts-swh}
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_started
+      ai-worker:
+        condition: service_started
 
-  admin:
+  ai-worker:
     build:
-      context: .
-      dockerfile: docker/admin/Dockerfile
-    container_name: vodacom-admin
+      context: ./ai-worker
+      dockerfile: Dockerfile
+    container_name: beat-ai-worker
     restart: unless-stopped
     ports:
-      - "3332:3332"
+      - "8081:8080"
     environment:
-      PORT: 3332
-      WDS_SOCKET_PORT: 3332
-      NODE_ENV: development
+      REDIS_URL: redis://redis:6379/0
+      BEAT_AI_WORKER_TOKEN: ${BEAT_AI_WORKER_TOKEN:-}
+      BEAT_TTS_PROVIDER: ${BEAT_TTS_PROVIDER:-azure}
+      BEAT_VOICES_MANIFEST: /app/voices/manifest.json
+      BEAT_DEFAULT_VOICE_ID: ${BEAT_DEFAULT_VOICE_ID:-daudi-professional}
+      BEAT_LLM_BASE_URL: ${BEAT_LLM_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}
+      BEAT_LLM_API_KEY: ${BEAT_LLM_API_KEY:-}
+      BEAT_LLM_MODEL: ${BEAT_LLM_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      AZURE_SPEECH_KEY: ${AZURE_SPEECH_KEY:-}
+      AZURE_SPEECH_REGION: ${AZURE_SPEECH_REGION:-southafricanorth}
+    volumes:
+      - ./ai-worker/app:/app/app
+      - ./ai-worker/voices:/app/voices:ro
+      - ./ai-worker/music:/app/music:ro
+      - ./models:/app/models:ro
+      - beat_hf_cache:/root/.cache/huggingface
+    depends_on:
+      - redis
 
   customer:
     build:
@@ -68,42 +112,14 @@ services:
       PORT: 3000
       WDS_SOCKET_PORT: 3000
       NODE_ENV: development
-
-  agents:
-    build:
-      context: .
-      dockerfile: docker/node/Dockerfile
-    container_name: vodacom-agents
-    restart: unless-stopped
-    ports:
-      - "3001:3001"
-    volumes:
-      - ./portals/vodacom-agents-portal:/app
-      - agents_node_modules:/app/node_modules
-    environment:
-      PORT: 3001
-      WDS_SOCKET_PORT: 3001
-      NODE_ENV: development
-
-  referrals:
-    build:
-      context: .
-      dockerfile: docker/node/Dockerfile
-    container_name: vodacom-referrals
-    restart: unless-stopped
-    ports:
-      - "3002:3002"
-    volumes:
-      - ./portals/referrals-agents-portal:/app
-      - referrals_node_modules:/app/node_modules
-    environment:
-      PORT: 3002
-      WDS_SOCKET_PORT: 3002
-      NODE_ENV: development
+      REACT_APP_API_URL: http://localhost:8010
+      # Browser calls host-mapped API; signed audio URLs use APP_URL
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    depends_on:
+      - api
 
 volumes:
   mysql_data:
-  admin_node_modules:
   customer_node_modules:
-  agents_node_modules:
-  referrals_node_modules:
+  beat_hf_cache:

@@ -1,6 +1,7 @@
 import { getRequest, postRequest } from '../../http/RestService';
 import {
   AudioAsset,
+  ScriptVariantOption,
   ScriptVersion,
   SelcomTransaction,
   TunePackage,
@@ -21,6 +22,25 @@ export async function createDraftSubscription(form: WizardDraftForm) {
   return response.data.payload as {
     subscription: TuneSubscription;
     next_step: string;
+    next_action?: string;
+    follow_up_questions?: string[];
+    template_key?: string;
+    requires_admin_review?: boolean;
+  };
+}
+
+export async function answerFollowUp(reference: string, answers: Record<string, unknown>) {
+  const response = await postRequest(`${BASE}/subscription/follow-up`, {
+    reference,
+    ...answers,
+  });
+  return response.data.payload as {
+    subscription: TuneSubscription;
+    next_step: string;
+    next_action?: string;
+    follow_up_questions?: string[];
+    template_key?: string;
+    requires_admin_review?: boolean;
   };
 }
 
@@ -40,12 +60,27 @@ export async function generateScript(reference: string) {
   return response.data.payload as {
     subscription: TuneSubscription;
     script_version: ScriptVersion;
+    variants?: ScriptVariantOption[];
+    requires_admin_review?: boolean;
   };
 }
 
-export async function approveScript(reference: string, plainText?: string) {
+export async function approveScript(reference: string, plainText?: string, variant?: string) {
   const response = await postRequest(`${BASE}/subscription/script/approve`, {
     reference,
+    plain_text: plainText,
+    variant,
+  });
+  return response.data.payload as {
+    subscription: TuneSubscription;
+    next_step: string;
+  };
+}
+
+export async function selectScriptVariant(reference: string, variant: string, plainText?: string) {
+  const response = await postRequest(`${BASE}/subscription/script/select`, {
+    reference,
+    variant,
     plain_text: plainText,
   });
   return response.data.payload as {
@@ -64,15 +99,55 @@ export async function fetchMusicTracks(): Promise<{ id: string; label: string; m
   return response.data.payload.tracks || [];
 }
 
-export async function generatePreview(reference: string, voiceId?: string, musicTrackId?: string) {
+export async function generatePreview(
+  reference: string,
+  voiceId?: string,
+  musicTrackId?: string,
+  speakingSpeed?: string,
+  musicIntensity?: string
+) {
   const response = await postRequest(`${BASE}/subscription/audio/preview`, {
     reference,
     voice_id: voiceId,
     music_track_id: musicTrackId || 'warm_pad',
+    speaking_speed: speakingSpeed || 'normal',
+    music_intensity: musicIntensity || 'medium',
   });
   return response.data.payload as {
     subscription: TuneSubscription;
     audio_asset: AudioAsset;
+  };
+}
+
+export async function generatePronunciationTest(
+  reference: string,
+  voiceId?: string,
+  phrase?: string
+) {
+  const response = await postRequest(`${BASE}/subscription/audio/pronunciation-test`, {
+    reference,
+    voice_id: voiceId,
+    phrase,
+  });
+  return response.data.payload as {
+    subscription: TuneSubscription;
+    audio_asset: AudioAsset;
+  };
+}
+
+export async function updatePronunciation(
+  reference: string,
+  originalText: string,
+  replacementText: string
+) {
+  const response = await postRequest(`${BASE}/subscription/audio/pronunciation`, {
+    reference,
+    original_text: originalText,
+    replacement_text: replacementText,
+  });
+  return response.data.payload as {
+    subscription: TuneSubscription;
+    entry: { id: number; original_text: string; replacement_text: string };
   };
 }
 
@@ -96,6 +171,7 @@ export async function initiatePayment(reference: string, paymentPhone: string) {
   };
 }
 
+/** Prefer asset.play_url (signed). This helper remains for legacy callers. */
 export function audioStreamUrl(assetId: number | string, reference: string): string {
   const origin =
     process.env.REACT_APP_API_URL ||

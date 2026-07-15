@@ -1,4 +1,4 @@
-"""Resolve configured TTS provider and voice manifest."""
+"""Resolve configured TTS provider — cascading Azure → MMS → local."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import logging
 from functools import lru_cache
 from pathlib import Path
 
-from app.config import TTS_PROVIDER, VOICES_MANIFEST_PATH
+from app.config import AZURE_SPEECH_KEY, TTS_PROVIDER, VOICES_MANIFEST_PATH
 from app.services.tts.base import TtsProvider, VoiceInfo
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def _load_voice_manifest() -> list[VoiceInfo]:
     manifest_path = Path(VOICES_MANIFEST_PATH)
     if not manifest_path.exists():
-        raise RuntimeError(f"Voice manifest not found: {manifest_path}")
+        return []
 
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
     voices: list[VoiceInfo] = []
@@ -50,18 +50,17 @@ def _mms_available() -> bool:
 def get_tts_provider() -> TtsProvider:
     provider = TTS_PROVIDER.lower().strip()
 
+    # Production path: cascading fallback always preferred for reliability
+    if provider in {"azure", "auto", "cascade", ""} or AZURE_SPEECH_KEY:
+        from app.services.tts.cascading import build_cascading_provider
+
+        logger.info("Using cascading TTS provider (Azure → MMS → local)")
+        return build_cascading_provider()
+
     if provider == "mms" and _mms_available():
         from app.services.tts.mms_adapter import MmsTtsAdapter
 
-        voices = _load_voice_manifest()
-        logger.info("Using MMS-TTS provider with %s voices", len(voices))
-        return MmsTtsAdapter(voices)
-
-    if provider == "mms" and not _mms_available():
-        logger.warning(
-            "MMS/torch not installed — falling back to local TTS (macOS say / espeak). "
-            "Use Docker ai-worker for production MMS voices."
-        )
+        return MmsTtsAdapter(_load_voice_manifest())
 
     from app.services.tts.local_fallback import LocalFallbackTtsAdapter
 

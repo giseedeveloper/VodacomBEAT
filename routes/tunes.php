@@ -51,14 +51,21 @@ Route::prefix("/v1/tunes/customer")->group(function(){
 
     // BEAT guided flow (draft → script → preview → payment)
     Route::post('/subscription/draft', [CustomerBeatController::class,'createDraft']);
+    Route::post('/subscription/analyze', [CustomerBeatController::class,'analyzeBusiness']);
+    Route::post('/subscription/follow-up', [CustomerBeatController::class,'answerFollowUp']);
     Route::post('/subscription/script/generate', [CustomerBeatController::class,'generateScript']);
+    Route::post('/subscription/script/select', [CustomerBeatController::class,'selectScriptVariant']);
     Route::post('/subscription/script/approve', [CustomerBeatController::class,'approveScript']);
     Route::get('/tts/voices', [CustomerBeatController::class,'listVoices']);
     Route::get('/music/tracks', [CustomerBeatController::class,'listMusicTracks']);
     Route::post('/subscription/audio/preview', [CustomerBeatController::class,'generatePreview']);
+    Route::post('/subscription/audio/pronunciation-test', [CustomerBeatController::class,'generatePronunciationTest']);
+    Route::post('/subscription/audio/pronunciation', [CustomerBeatController::class,'updatePronunciation']);
     Route::post('/subscription/audio/approve', [CustomerBeatController::class,'approvePreview']);
     Route::post('/subscription/payment/init', [CustomerBeatController::class,'initiatePayment']);
-    Route::get('/audio/{assetId}/stream', [CustomerBeatController::class,'streamAudio']);
+    Route::get('/audio/{assetId}/stream', [CustomerBeatController::class,'streamAudio'])
+        ->name('customer.audio.stream')
+        ->middleware('signed');
 
 });
 

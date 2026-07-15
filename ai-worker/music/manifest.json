@@ -4,31 +4,56 @@
       "id": "none",
       "label": "Bila Muziki / No Music",
       "mood": "none",
-      "file": null
+      "category": "none",
+      "file": null,
+      "recommended_for": [],
+      "intro_duration_ms": 0,
+      "outro_duration_ms": 0,
+      "default_volume": 0
     },
     {
       "id": "warm_pad",
-      "label": "Warm Soft Pad",
+      "label": "Restaurant Warm / Soft Pad",
       "mood": "calm",
-      "file": "warm_pad.wav"
+      "category": "Restaurant Warm",
+      "file": "warm_pad.wav",
+      "recommended_for": ["FOOD_HOSPITALITY", "GENERAL_OTHER"],
+      "intro_duration_ms": 1500,
+      "outro_duration_ms": 4000,
+      "default_volume": 0.18
     },
     {
       "id": "afro_light",
-      "label": "Afro Light Groove",
+      "label": "Retail Energetic / Afro Light",
       "mood": "upbeat",
-      "file": "afro_light.wav"
+      "category": "Retail Energetic",
+      "file": "afro_light.wav",
+      "recommended_for": ["RETAIL_FASHION", "EVENTS_ENTERTAINMENT"],
+      "intro_duration_ms": 1500,
+      "outro_duration_ms": 4000,
+      "default_volume": 0.17
     },
     {
       "id": "marimba_glow",
-      "label": "Marimba Glow",
+      "label": "African Soft / Marimba Glow",
       "mood": "friendly",
-      "file": "marimba_glow.wav"
+      "category": "African Soft",
+      "file": "marimba_glow.wav",
+      "recommended_for": ["RETAIL_FASHION", "BEAUTY_PERSONAL_CARE", "RELIGIOUS_COMMUNITY"],
+      "intro_duration_ms": 1500,
+      "outro_duration_ms": 4000,
+      "default_volume": 0.16
     },
     {
       "id": "corporate_clean",
-      "label": "Corporate Clean",
+      "label": "Corporate Modern / Technology Digital",
       "mood": "professional",
-      "file": "corporate_clean.wav"
+      "category": "Corporate Modern",
+      "file": "corporate_clean.wav",
+      "recommended_for": ["TECHNOLOGY_TELECOM", "FINANCE_INSURANCE", "PROFESSIONAL_SERVICES"],
+      "intro_duration_ms": 1500,
+      "outro_duration_ms": 4000,
+      "default_volume": 0.15
     }
   ]
 }

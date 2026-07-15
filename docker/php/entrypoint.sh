@@ -55,6 +55,18 @@ if [ -n "${BEAT_AI_WORKER_URL:-}" ]; then
     fi
 fi
 
+# Sync common BEAT secrets from container env into .env (Laravel local reads .env heavily)
+for key in GEMINI_API_KEY GEMINI_MODEL AZURE_SPEECH_KEY AZURE_SPEECH_REGION BEAT_TTS_PROVIDER BEAT_DEFAULT_VOICE_ID BEAT_LLM_BASE_URL BEAT_LLM_API_KEY BEAT_LLM_MODEL BEAT_AI_WORKER_TOKEN; do
+    eval "val=\${$key:-}"
+    if [ -n "$val" ]; then
+        if grep -q "^${key}=" .env 2>/dev/null; then
+            sed -i "s|^${key}=.*|${key}=${val}|" .env
+        else
+            echo "${key}=${val}" >> .env
+        fi
+    fi
+done
+
 # Keep .env.production in sync when APP_ENV=production (Laravel prefers it)
 if [ "${APP_ENV:-}" = "production" ] && [ -f .env.production ]; then
     for key in DB_HOST DB_PASSWORD APP_URL APP_ENV APP_DEBUG QUEUE_CONNECTION REDIS_HOST BEAT_AI_WORKER_URL BEAT_AI_WORKER_TOKEN BEAT_LLM_API_KEY; do
@@ -76,6 +88,9 @@ done
 
 php artisan config:clear --no-interaction
 php artisan migrate --force --no-interaction
+# Seed BEAT essentials even if PermissionsSeeder fails on re-run
+php artisan db:seed --class=TtsVoiceProfileSeeder --force --no-interaction || true
+php artisan db:seed --class=ScriptTemplateSeeder --force --no-interaction || true
 php artisan db:seed --force --no-interaction || true
 
 # Honor container command (e.g. queue:work); default to built-in PHP server

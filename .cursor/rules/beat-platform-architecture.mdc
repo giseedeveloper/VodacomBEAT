@@ -30,20 +30,23 @@ Side states: CANCELLED, FAILED, MANUAL_REVIEW_REQUESTED
 
 - Preview BEFORE payment (low quality or watermarked); final HQ audio AFTER payment.
 - TTS behind a provider interface (`listVoices` / `generatePreview` / `generateFinal`).
-  **Default: self-hosted Meta MMS-TTS** (`facebook/mms-tts-swh`) in `ai-worker/`.
-  Azure is optional, not required. Fine-tuned BizTune voices (`local/biztune-*`)
-  replace MMS default for commercial production — see `ai-worker/FINETUNE.md`.
-  MMS base checkpoint is CC-BY-NC (dev/staging until fine-tuned voices ship).
-  Never couple business logic to one vendor.
+  **Production default: Azure Neural TTS sw-TZ** (`sw-TZ-DaudiNeural` male,
+  `sw-TZ-RehemaNeural` female) with SSML pauses + pronunciation dictionary.
+  Voice profiles (Daudi Professional/Calm/Energetic, Rehema Friendly/…) map rate/pitch
+  — customers choose profiles, not raw Male/Female only.
+  MMS-TTS remains offline/dev fallback. Gemini TTS / ElevenLabs are future/premium
+  A/B options — never couple business logic to one vendor.
+- Voice Production Engine (ai-worker): Azure/MMS voice → FFmpeg mix calibrated to
+  manual studio reference (Chaz sample: ~1.5s music intro, sidechain ducking,
+  ~4s outro, loudnorm, 16 kHz stereo WAV final / short MP3 preview).
+  Configurable `AudioRenderProfile` — never hard-code Vodacom/Chaz values in
+  business code alone.
 - AI/audio worker is a separate Python 3.11 service (`ai-worker/`, own Docker
-  container). LLM access via OpenAI-compatible adapter (base URL + key + model
-  from env) so providers are swappable. Laravel stays the core for orders,
-  payments, statuses.
-- LLM script generation returns structured JSON (versions, pronunciation_hints,
-  estimated_duration, warnings) — server-side validation of duration, business name,
-  location, CTA, forbidden claims.
-- Audio output specs come from a configurable `AudioOutputProfile` (format, sample
-  rate, channels, bit depth, max duration) — never hard-code Vodacom specs.
+  container). Script analysis/generation via Gemini (structured JSON) with
+  OpenAI-compatible fallback. Laravel stays the core for orders, payments,
+  templates, status machine.
+- Hybrid script pipeline: Business Analysis → Template Resolver (DB) →
+  3 script variants → backend validators. Gemini must not invent template keys.
 - Generation limits: 3 script gens, 5 voice previews, 3 music changes, 2 full
   revisions → then manual production ticket (MANUAL_REVIEW_REQUESTED).
 

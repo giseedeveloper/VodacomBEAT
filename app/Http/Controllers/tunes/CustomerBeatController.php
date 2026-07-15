@@ -11,6 +11,7 @@ use App\Models\TuneSubscriptionPackage;
 use App\Models\TtsVoiceProfile;
 use App\Services\BeatAudioService;
 use App\Services\BeatScriptService;
+use App\Services\BusinessAnalysisService;
 use App\Services\NotificationServiceService;
 use App\Services\SubscriptionStatusService;
 use App\Services\TunesSubscriptionService;
@@ -25,7 +26,9 @@ class CustomerBeatController extends BaseController
 
     public function createDraft(Request $request): JsonResponse
     {
-        Log::info('customer draft subscription: ' . json_encode($request->all()));
+        Log::info('customer draft subscription: ' . json_encode($request->except([
+            'subscription_phones', 'payment_phone', 'contact_phone',
+        ])));
 
         $request->validate([
             'contact_person_name' => 'required|string|max:255',
@@ -35,8 +38,18 @@ class CustomerBeatController extends BaseController
             'voice_type' => 'required|in:MALE,FEMALE',
             'subscription_phones' => 'required|array|min:1',
             'business_location' => 'nullable|string|max:255',
+            'landmark' => 'nullable|string|max:255',
             'business_industry' => 'nullable|string|max:255',
+            'business_description' => 'nullable|string|max:2000',
+            'products_or_services' => 'nullable',
+            'secondary_products' => 'nullable',
+            'target_audience' => 'nullable|string|max:500',
             'call_to_action' => 'nullable|string|max:255',
+            'selling_points' => 'nullable',
+            'preferred_tone' => 'nullable|string|max:64',
+            'must_include_words' => 'nullable',
+            'must_exclude_words' => 'nullable',
+            'offer_text' => 'nullable|string|max:255',
             'voice_script' => 'nullable|string|max:2000',
         ]);
 
@@ -53,9 +66,117 @@ class CustomerBeatController extends BaseController
             SubscriptionStatusService::DRAFT
         );
 
+        try {
+            $analysisResult = BusinessAnalysisService::analyze($subscription, null);
+        } catch (\Exception $e) {
+            return $this->returnError($e->getMessage(), [
+                'subscription' => $subscription->refresh(),
+            ], 502);
+        }
+
+        $nextStep = match ($analysisResult['next_action']) {
+            BusinessAnalysisService::ACTION_ASK_FOLLOW_UP => 'clarify',
+            BusinessAnalysisService::ACTION_MANUAL_CATEGORY_REVIEW => 'status',
+            default => 'script_pending',
+        };
+
         return $this->returnResponse('Draft subscription created', [
             'subscription' => $subscription->refresh(),
-            'next_step' => 'script',
+            'analysis' => $analysisResult['analysis'],
+            'next_action' => $analysisResult['next_action'],
+            'follow_up_questions' => $analysisResult['follow_up_questions'],
+            'template_key' => $analysisResult['template_key'],
+            'requires_admin_review' => $analysisResult['requires_admin_review'],
+            'next_step' => $nextStep,
+        ]);
+    }
+
+    public function answerFollowUp(Request $request): JsonResponse
+    {
+        $request->validate([
+            'reference' => 'required|string',
+            'business_description' => 'nullable|string|max:2000',
+            'products_or_services' => 'nullable',
+            'secondary_products' => 'nullable',
+            'business_location' => 'nullable|string|max:255',
+            'landmark' => 'nullable|string|max:255',
+            'call_to_action' => 'nullable|string|max:255',
+            'target_audience' => 'nullable|string|max:500',
+            'selling_points' => 'nullable',
+            'preferred_tone' => 'nullable|string',
+            'offer_text' => 'nullable|string|max:255',
+        ]);
+
+        $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
+        if ($subscription === null) {
+            return $this->returnError('Subscription not found', [], 404);
+        }
+
+        $subscription->fill([
+            'business_description' => $request->input('business_description', $subscription->business_description),
+            'products_or_services' => TunesSubscriptionService::normalizeStringList(
+                $request->input('products_or_services', $subscription->products_or_services)
+            ),
+            'secondary_products' => TunesSubscriptionService::normalizeStringList(
+                $request->input('secondary_products', $subscription->secondary_products)
+            ),
+            'business_location' => $request->input('business_location', $subscription->business_location),
+            'landmark' => $request->input('landmark', $subscription->landmark),
+            'call_to_action' => $request->input('call_to_action', $subscription->call_to_action),
+            'target_audience' => $request->input('target_audience', $subscription->target_audience),
+            'selling_points' => TunesSubscriptionService::normalizeStringList(
+                $request->input('selling_points', $subscription->selling_points)
+            ),
+            'preferred_tone' => $request->input('preferred_tone', $subscription->preferred_tone),
+            'offer_text' => $request->input('offer_text', $subscription->offer_text),
+        ]);
+        $subscription->save();
+
+        try {
+            $analysisResult = BusinessAnalysisService::analyze($subscription, null);
+        } catch (\Exception $e) {
+            return $this->returnError($e->getMessage(), [], 502);
+        }
+
+        $nextStep = match ($analysisResult['next_action']) {
+            BusinessAnalysisService::ACTION_ASK_FOLLOW_UP => 'clarify',
+            BusinessAnalysisService::ACTION_MANUAL_CATEGORY_REVIEW => 'status',
+            default => 'script_pending',
+        };
+
+        return $this->returnResponse('Follow-up answers saved', [
+            'subscription' => $subscription->refresh(),
+            'analysis' => $analysisResult['analysis'],
+            'next_action' => $analysisResult['next_action'],
+            'follow_up_questions' => $analysisResult['follow_up_questions'],
+            'template_key' => $analysisResult['template_key'],
+            'requires_admin_review' => $analysisResult['requires_admin_review'],
+            'next_step' => $nextStep,
+        ]);
+    }
+
+    public function analyzeBusiness(Request $request): JsonResponse
+    {
+        $request->validate(['reference' => 'required|string']);
+
+        $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
+        if ($subscription === null) {
+            return $this->returnError('Subscription not found', [], 404);
+        }
+
+        try {
+            $analysisResult = BusinessAnalysisService::analyze($subscription, null);
+        } catch (\Exception $e) {
+            return $this->returnError($e->getMessage(), [], 502);
+        }
+
+        return $this->returnResponse('Business analyzed', [
+            'subscription' => $subscription->refresh(),
+            'analysis' => $analysisResult['analysis'],
+            'next_action' => $analysisResult['next_action'],
+            'follow_up_questions' => $analysisResult['follow_up_questions'],
+            'template_key' => $analysisResult['template_key'],
+            'requires_admin_review' => $analysisResult['requires_admin_review'],
         ]);
     }
 
@@ -76,7 +197,15 @@ class CustomerBeatController extends BaseController
         $assets = AudioAsset::query()
             ->where('subscription_id', $subscription->id)
             ->latest()
-            ->get();
+            ->get()
+            ->map(function (AudioAsset $asset) use ($subscription) {
+                $asset->setAttribute(
+                    'play_url',
+                    BeatAudioService::signedPlayUrl($asset, $subscription->subscription_reference)
+                );
+
+                return $asset;
+            });
 
         $transaction = SelcomTransaction::query()
             ->where('order_id', $subscription->subscription_reference)
@@ -89,6 +218,11 @@ class CustomerBeatController extends BaseController
             'audio_assets' => $assets,
             'transaction' => $transaction,
             'wizard_step' => self::wizardStepForStatus($subscription->status),
+            'limits' => [
+                'pronunciation_tests' => (int) config('beat.limits.pronunciation_tests', 3),
+                'voice_previews' => (int) config('beat.limits.voice_previews', 3),
+                'music_changes' => (int) config('beat.limits.music_changes', 3),
+            ],
         ]);
     }
 
@@ -99,6 +233,29 @@ class CustomerBeatController extends BaseController
         $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
         if ($subscription === null) {
             return $this->returnError('Subscription not found', [], 404);
+        }
+
+        if ($subscription->analysis_action === BusinessAnalysisService::ACTION_ASK_FOLLOW_UP) {
+            return $this->returnError('Please answer follow-up questions before generating scripts', [
+                'next_action' => $subscription->analysis_action,
+            ], 400);
+        }
+
+        if ($subscription->analysis_action === BusinessAnalysisService::ACTION_MANUAL_CATEGORY_REVIEW
+            && $subscription->status === SubscriptionStatusService::MANUAL_REVIEW_REQUESTED
+            && empty($subscription->script_template_key)) {
+            return $this->returnError('This order needs manual category review before scripts can be generated', [
+                'status' => $subscription->status,
+            ], 400);
+        }
+
+        // Recover soft-blocked orders that already have a resolved template
+        if ($subscription->status === SubscriptionStatusService::MANUAL_REVIEW_REQUESTED
+            && ! empty($subscription->script_template_key)) {
+            $subscription->analysis_action = BusinessAnalysisService::ACTION_GENERATE_WITH_ADMIN_REVIEW;
+            $subscription->requires_admin_script_review = true;
+            $subscription->status = SubscriptionStatusService::DRAFT;
+            $subscription->save();
         }
 
         if (! BeatScriptService::canGenerate($subscription)) {
@@ -117,6 +274,37 @@ class CustomerBeatController extends BaseController
         return $this->returnResponse('Script generated', [
             'subscription' => $subscription->refresh(),
             'script_version' => $scriptVersion,
+            'variants' => $scriptVersion->structured_payload['versions'] ?? [],
+            'requires_admin_review' => (bool) $subscription->requires_admin_script_review,
+        ]);
+    }
+
+    public function selectScriptVariant(Request $request): JsonResponse
+    {
+        $request->validate([
+            'reference' => 'required|string',
+            'variant' => 'required|string|max:64',
+            'plain_text' => 'nullable|string|max:2000',
+        ]);
+
+        $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
+        if ($subscription === null) {
+            return $this->returnError('Subscription not found', [], 404);
+        }
+
+        try {
+            $subscription = BeatScriptService::selectVariant(
+                $subscription,
+                $request->input('variant'),
+                $request->input('plain_text')
+            );
+        } catch (\Exception $e) {
+            return $this->returnError($e->getMessage(), [], 400);
+        }
+
+        return $this->returnResponse('Script variant selected', [
+            'subscription' => $subscription,
+            'next_step' => 'preview',
         ]);
     }
 
@@ -125,6 +313,7 @@ class CustomerBeatController extends BaseController
         $request->validate([
             'reference' => 'required|string',
             'plain_text' => 'nullable|string|max:2000',
+            'variant' => 'nullable|string|max:64',
         ]);
 
         $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
@@ -139,14 +328,25 @@ class CustomerBeatController extends BaseController
             ], 400);
         }
 
-        $plainText = $request->input('plain_text');
-        if (is_string($plainText) && trim($plainText) !== '') {
-            $subscription->voice_script = trim($plainText);
-            $subscription->save();
+        if ($request->filled('variant')) {
+            try {
+                $subscription = BeatScriptService::selectVariant(
+                    $subscription,
+                    $request->input('variant'),
+                    $request->input('plain_text')
+                );
+            } catch (\Exception $e) {
+                return $this->returnError($e->getMessage(), [], 400);
+            }
+        } else {
+            $plainText = $request->input('plain_text');
+            if (is_string($plainText) && trim($plainText) !== '') {
+                $subscription->voice_script = trim($plainText);
+                $subscription->save();
+            }
         }
 
         if ($subscription->status === SubscriptionStatusService::SCRIPT_READY) {
-            // Stay on SCRIPT_READY — customer advances to voice preview in the UI.
             return $this->returnResponse('Script approved', [
                 'subscription' => $subscription->refresh(),
                 'next_step' => 'preview',
@@ -186,6 +386,8 @@ class CustomerBeatController extends BaseController
             'reference' => 'required|string',
             'voice_id' => 'nullable|string',
             'music_track_id' => 'nullable|string',
+            'speaking_speed' => 'nullable|in:slow,normal,fast',
+            'music_intensity' => 'nullable|in:soft,medium,strong,none',
         ]);
 
         $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
@@ -193,18 +395,105 @@ class CustomerBeatController extends BaseController
             return $this->returnError('Subscription not found', [], 404);
         }
 
-        $voiceId = $request->input('voice_id') ?: self::voiceIdForType($subscription->voice_type);
-        $musicTrackId = $request->input('music_track_id', 'warm_pad');
+        $voiceId = $request->input('voice_id')
+            ?: $subscription->preferred_voice_profile
+            ?: self::voiceIdForType($subscription->voice_type);
+        $musicTrackId = $request->input('music_track_id', $subscription->preferred_music_track_id ?: 'warm_pad');
 
         try {
-            $asset = BeatAudioService::generatePreview($subscription, $voiceId, null, $musicTrackId);
+            $asset = BeatAudioService::generatePreview(
+                $subscription,
+                $voiceId,
+                null,
+                $musicTrackId,
+                $request->input('speaking_speed'),
+                $request->input('music_intensity')
+            );
         } catch (\Exception $e) {
             return $this->returnError($e->getMessage(), [], 502);
         }
 
+        $subscription = $subscription->refresh();
+        $asset->setAttribute(
+            'play_url',
+            BeatAudioService::signedPlayUrl($asset, $subscription->subscription_reference)
+        );
+
         return $this->returnResponse('Preview generated', [
-            'subscription' => $subscription->refresh(),
+            'subscription' => $subscription,
             'audio_asset' => $asset,
+        ]);
+    }
+
+    public function generatePronunciationTest(Request $request): JsonResponse
+    {
+        $request->validate([
+            'reference' => 'required|string',
+            'voice_id' => 'nullable|string',
+            'phrase' => 'nullable|string|max:255',
+        ]);
+
+        $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
+        if ($subscription === null) {
+            return $this->returnError('Subscription not found', [], 404);
+        }
+
+        $voiceId = $request->input('voice_id')
+            ?: $subscription->preferred_voice_profile
+            ?: self::voiceIdForType($subscription->voice_type);
+
+        try {
+            $asset = BeatAudioService::generatePronunciationTest(
+                $subscription,
+                $voiceId,
+                $request->input('phrase'),
+                null
+            );
+        } catch (\Exception $e) {
+            return $this->returnError($e->getMessage(), [], 400);
+        }
+
+        $subscription = $subscription->refresh();
+        $asset->setAttribute(
+            'play_url',
+            BeatAudioService::signedPlayUrl($asset, $subscription->subscription_reference)
+        );
+
+        return $this->returnResponse('Pronunciation test ready', [
+            'subscription' => $subscription,
+            'audio_asset' => $asset,
+        ]);
+    }
+
+    public function updatePronunciation(Request $request): JsonResponse
+    {
+        $request->validate([
+            'reference' => 'required|string',
+            'original_text' => 'required|string|max:255',
+            'replacement_text' => 'required|string|max:255',
+        ]);
+
+        $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
+        if ($subscription === null) {
+            return $this->returnError('Subscription not found', [], 404);
+        }
+
+        $entry = \App\Models\PronunciationEntry::query()->updateOrCreate(
+            [
+                'subscription_id' => $subscription->id,
+                'original_text' => trim($request->input('original_text')),
+                'scope' => 'subscription',
+            ],
+            [
+                'replacement_text' => trim($request->input('replacement_text')),
+                'language' => 'sw',
+                'is_active' => true,
+            ]
+        );
+
+        return $this->returnResponse('Pronunciation updated', [
+            'entry' => $entry,
+            'subscription' => $subscription->refresh(),
         ]);
     }
 
@@ -302,7 +591,7 @@ class CustomerBeatController extends BaseController
         ]);
     }
 
-    public function streamAudio(Request $request, $assetId): \Symfony\Component\HttpFoundation\BinaryFileResponse|JsonResponse
+    public function streamAudio(Request $request, $assetId): BinaryFileResponse|JsonResponse
     {
         $request->validate(['reference' => 'required|string']);
 
@@ -315,6 +604,10 @@ class CustomerBeatController extends BaseController
         $asset = AudioAsset::query()->find($assetId);
         if ($asset === null || (int) $asset->subscription_id !== (int) $subscription->id) {
             return $this->returnError('Audio asset not found', [], 404);
+        }
+
+        if ($asset->expires_at && $asset->expires_at->isPast()) {
+            return $this->returnError('Audio URL has expired', [], 410);
         }
 
         if (! Storage::disk('local')->exists($asset->file_path)) {
@@ -334,13 +627,16 @@ class CustomerBeatController extends BaseController
 
     protected static function voiceIdForType(?string $voiceType): string
     {
-        // Prefer local gender voices for Mac fallback; MMS uses default when available.
         if (strtoupper((string) $voiceType) === 'FEMALE') {
-            $preferred = ['biztune-female-v1', 'local-female', 'mms-swh-default'];
+            $preferred = ['rehema-friendly', 'rehema-professional', 'rehema-energetic', 'mms-swh-default'];
         } elseif (strtoupper((string) $voiceType) === 'MALE') {
-            $preferred = ['biztune-male-v1', 'local-male', 'mms-swh-default'];
+            $preferred = ['daudi-professional', 'daudi-calm', 'daudi-energetic', 'mms-swh-default'];
         } else {
-            $preferred = ['mms-swh-default'];
+            $preferred = [
+                (string) config('beat.tts.default_voice_id', 'daudi-professional'),
+                'daudi-professional',
+                'rehema-friendly',
+            ];
         }
 
         foreach ($preferred as $slug) {
@@ -353,7 +649,7 @@ class CustomerBeatController extends BaseController
             }
         }
 
-        return $preferred[1] ?? (string) config('beat.tts.default_voice_id', 'local-female');
+        return $preferred[0];
     }
 
     protected static function wizardStepForStatus(?string $status): string
@@ -370,6 +666,7 @@ class CustomerBeatController extends BaseController
             SubscriptionStatusService::PAID,
             SubscriptionStatusService::ACTIVE,
             SubscriptionStatusService::INSTALLED => 'status',
+            SubscriptionStatusService::MANUAL_REVIEW_REQUESTED => 'script',
             default => 'business',
         };
     }

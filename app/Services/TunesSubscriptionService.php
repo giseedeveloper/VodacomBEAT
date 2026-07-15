@@ -90,8 +90,18 @@ class TunesSubscriptionService
             'contact_person_name' => $contactPersonName,
             'business_name' => $businessName,
             'business_location' => $request->input('business_location'),
+            'landmark' => $request->input('landmark'),
             'business_industry' => $request->input('business_industry'),
+            'business_description' => $request->input('business_description'),
+            'products_or_services' => self::normalizeStringList($request->input('products_or_services')),
+            'secondary_products' => self::normalizeStringList($request->input('secondary_products')),
+            'target_audience' => $request->input('target_audience'),
             'call_to_action' => $request->input('call_to_action'),
+            'selling_points' => self::normalizeStringList($request->input('selling_points')),
+            'preferred_tone' => $request->input('preferred_tone'),
+            'must_include_words' => self::normalizeStringList($request->input('must_include_words')),
+            'must_exclude_words' => self::normalizeStringList($request->input('must_exclude_words')),
+            'offer_text' => $request->input('offer_text'),
 
             'payment_phone' => $paymentPhone,
             'voice_type' => $voiceType,
@@ -287,6 +297,36 @@ class TunesSubscriptionService
             . str_pad($subscriptionId, 3, "0", STR_PAD_LEFT)
             . "T"
             . dechex(time());
+    }
+
+    /**
+     * @param  mixed  $value
+     * @return array<int, string>|null
+     */
+    public static function normalizeStringList(mixed $value): ?array
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_string($value)) {
+            $parts = preg_split('/[,;\n]+/u', $value) ?: [];
+            $value = $parts;
+        }
+
+        if (! is_array($value)) {
+            return null;
+        }
+
+        $clean = [];
+        foreach ($value as $item) {
+            $item = trim((string) $item);
+            if ($item !== '') {
+                $clean[] = $item;
+            }
+        }
+
+        return $clean ?: null;
     }
 
 }

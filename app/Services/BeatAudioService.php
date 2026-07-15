@@ -40,8 +40,25 @@ class BeatAudioService
             return false;
         }
 
-        $limit = (int) Config::get('beat.limits.voice_previews', 5);
+        $limit = (int) Config::get('beat.limits.voice_previews', 3);
         return (int) $subscription->voice_preview_count < $limit;
+    }
+
+    public static function canGeneratePronunciationTest(TuneSubscription $subscription): bool
+    {
+        $allowed = [
+            SubscriptionStatusService::SCRIPT_READY,
+            SubscriptionStatusService::PREVIEW_GENERATING,
+            SubscriptionStatusService::PREVIEW_READY,
+            SubscriptionStatusService::QA_CHANGES_REQUIRED,
+        ];
+        if (! in_array($subscription->status, $allowed, true)) {
+            return false;
+        }
+
+        $limit = (int) Config::get('beat.limits.pronunciation_tests', 3);
+
+        return (int) ($subscription->pronunciation_test_count ?? 0) < $limit;
     }
 
     public static function canGenerateFinal(TuneSubscription $subscription): bool
@@ -50,7 +67,60 @@ class BeatAudioService
             return false;
         }
 
-        return in_array($subscription->status, self::FINAL_STATUSES, true);
+        if (! in_array($subscription->status, self::FINAL_STATUSES, true)) {
+            return false;
+        }
+
+        $limit = (int) Config::get('beat.limits.full_revisions', 2);
+
+        // Count increments after each successful final; block when already at/over limit.
+        return (int) ($subscription->final_audio_regeneration_count ?? 0) < $limit;
+    }
+
+    /**
+     * Short voice-only clip of business name / critical words (no music).
+     *
+     * @throws \RuntimeException
+     */
+    public static function generatePronunciationTest(
+        TuneSubscription $subscription,
+        ?string $voiceId = null,
+        ?string $customPhrase = null,
+        ?int $requestedBy = null
+    ): AudioAsset {
+        if (! self::canGeneratePronunciationTest($subscription)) {
+            throw new \RuntimeException('Pronunciation test limit reached (max 3)');
+        }
+
+        $phrase = trim((string) ($customPhrase ?: $subscription->business_name));
+        if ($phrase === '') {
+            throw new \RuntimeException('No business name available for pronunciation test');
+        }
+
+        $voiceId = $voiceId
+            ?: $subscription->preferred_voice_profile
+            ?: self::defaultVoiceForSubscription($subscription);
+
+        $asset = self::synthesizeAndStore(
+            $subscription,
+            'pronunciation_test',
+            '/v1/tts/pronunciation-test',
+            self::profileConfig('pronunciation_test'),
+            $voiceId,
+            'none',
+            $phrase,
+            [
+                'speaking_speed' => $subscription->speaking_speed ?: 'normal',
+                'music_intensity' => 'none',
+                'render_mode' => 'pronunciation_test',
+            ]
+        );
+
+        $subscription->pronunciation_test_count = (int) ($subscription->pronunciation_test_count ?? 0) + 1;
+        $subscription->preferred_voice_profile = $voiceId;
+        $subscription->save();
+
+        return $asset;
     }
 
     /**
@@ -60,11 +130,29 @@ class BeatAudioService
         TuneSubscription $subscription,
         ?string $voiceId = null,
         ?int $requestedBy = null,
-        ?string $musicTrackId = 'warm_pad'
+        ?string $musicTrackId = 'warm_pad',
+        ?string $speakingSpeed = null,
+        ?string $musicIntensity = null
     ): AudioAsset {
         if (! self::canGeneratePreview($subscription)) {
             self::handlePreviewLimitBreached($subscription, $requestedBy);
             throw new \RuntimeException('Voice preview generation is not allowed for this subscription');
+        }
+
+        $previousMusic = $subscription->preferred_music_track_id;
+        $voiceId = $voiceId
+            ?: $subscription->preferred_voice_profile
+            ?: self::defaultVoiceForSubscription($subscription);
+        $musicTrackId = $musicTrackId ?: ($subscription->preferred_music_track_id ?: 'warm_pad');
+        $speakingSpeed = $speakingSpeed ?: ($subscription->speaking_speed ?: 'normal');
+        $musicIntensity = $musicIntensity ?: ($subscription->music_intensity ?: 'medium');
+
+        if ($previousMusic && $previousMusic !== $musicTrackId) {
+            $musicLimit = (int) Config::get('beat.limits.music_changes', 3);
+            if ((int) ($subscription->music_change_count ?? 0) >= $musicLimit) {
+                throw new \RuntimeException('Music change limit reached (max 3)');
+            }
+            $subscription->music_change_count = (int) ($subscription->music_change_count ?? 0) + 1;
         }
 
         SubscriptionStatusService::transition(
@@ -80,10 +168,20 @@ class BeatAudioService
             '/v1/tts/preview',
             self::profileConfig('preview'),
             $voiceId,
-            $musicTrackId
+            $musicTrackId,
+            null,
+            [
+                'speaking_speed' => $speakingSpeed,
+                'music_intensity' => $musicIntensity,
+                'render_mode' => 'preview',
+            ]
         );
 
         $subscription->voice_preview_count = (int) $subscription->voice_preview_count + 1;
+        $subscription->preferred_voice_profile = $voiceId;
+        $subscription->preferred_music_track_id = $musicTrackId;
+        $subscription->speaking_speed = $speakingSpeed;
+        $subscription->music_intensity = $musicIntensity;
         $subscription->save();
 
         SubscriptionStatusService::transition(
@@ -122,8 +220,17 @@ class BeatAudioService
             '/v1/tts/final',
             self::profileConfig('vodacom_caller_tune'),
             $voiceId,
-            $musicTrackId
+            $musicTrackId,
+            null,
+            [
+                'speaking_speed' => $subscription->speaking_speed ?: 'normal',
+                'music_intensity' => $subscription->music_intensity ?: 'medium',
+                'render_mode' => 'final',
+            ]
         );
+
+        $subscription->final_audio_regeneration_count = (int) ($subscription->final_audio_regeneration_count ?? 0) + 1;
+        $subscription->save();
 
         SubscriptionStatusService::transition(
             $subscription,
@@ -157,9 +264,11 @@ class BeatAudioService
         string $workerPath,
         array $profile,
         ?string $voiceId,
-        ?string $musicTrackId = 'warm_pad'
+        ?string $musicTrackId = 'warm_pad',
+        ?string $overrideText = null,
+        array $options = []
     ): AudioAsset {
-        $scriptText = self::resolveScriptText($subscription);
+        $scriptText = $overrideText !== null ? trim($overrideText) : self::resolveScriptText($subscription);
         if ($scriptText === '') {
             throw new \RuntimeException('Subscription has no script text for TTS');
         }
@@ -167,24 +276,31 @@ class BeatAudioService
         $voiceId = $voiceId ?: self::defaultVoiceForSubscription($subscription);
         $hints = self::resolvePronunciationHints($subscription);
 
-        $response = BeatAiWorkerClient::post($workerPath, [
+        $payload = [
             'subscription_id' => $subscription->id,
             'text' => $scriptText,
             'voice_id' => $voiceId,
-            'speaking_rate' => 0.95,
+            'speaking_rate' => 1.0,
+            'speaking_speed' => $options['speaking_speed'] ?? ($subscription->speaking_speed ?: 'normal'),
+            'music_intensity' => $options['music_intensity'] ?? ($subscription->music_intensity ?: 'medium'),
             'pronunciation_hints' => $hints,
             'profile' => $profile,
             'music_track_id' => $musicTrackId ?: 'warm_pad',
-        ]);
+            'render_mode' => $options['render_mode'] ?? null,
+        ];
+
+        $response = BeatAiWorkerClient::post($workerPath, $payload);
 
         if (! ($response['success'] ?? false)) {
             try {
-                SubscriptionStatusService::transition(
-                    $subscription,
-                    SubscriptionStatusService::FAILED,
-                    null,
-                    'TTS generation failed'
-                );
+                if ($assetType !== 'pronunciation_test') {
+                    SubscriptionStatusService::transition(
+                        $subscription,
+                        SubscriptionStatusService::FAILED,
+                        null,
+                        'TTS generation failed'
+                    );
+                }
             } catch (\Exception $e) {
                 Log::warning('could not mark subscription failed after TTS error: ' . $e->getMessage());
             }
@@ -208,30 +324,51 @@ class BeatAudioService
 
         Storage::disk('local')->put($relativePath, $binary);
 
+        $ttl = (int) Config::get('beat.limits.audio_url_ttl_minutes', 30);
+
         return AudioAsset::query()->create([
             'subscription_id' => $subscription->id,
             'asset_type' => $assetType,
             'voice_id' => $voiceId,
-            'provider' => Config::get('beat.tts.provider', 'mms'),
+            'provider' => Config::get('beat.tts.provider', 'azure'),
             'file_path' => $relativePath,
             'format' => $extension,
             'sample_rate' => $audio['sample_rate'] ?? null,
             'duration_seconds' => $audio['duration_seconds'] ?? null,
             'checksum_sha256' => $audio['checksum_sha256'] ?? hash('sha256', $binary),
             'profile' => ($profile['profile_key'] ?? null) . ':' . ($musicTrackId ?: 'none'),
+            'qc_report' => $audio['qc_report'] ?? null,
+            'qc_passed' => $audio['qc_passed'] ?? null,
+            'expires_at' => $assetType === 'preview' || $assetType === 'pronunciation_test'
+                ? now()->addMinutes($ttl)
+                : null,
         ]);
+    }
+
+    public static function signedPlayUrl(AudioAsset $asset, string $reference): string
+    {
+        $ttl = (int) Config::get('beat.limits.audio_url_ttl_minutes', 30);
+
+        return \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'customer.audio.stream',
+            now()->addMinutes($ttl),
+            [
+                'assetId' => $asset->id,
+                'reference' => $reference,
+            ]
+        );
     }
 
     protected static function defaultVoiceForSubscription(TuneSubscription $subscription): string
     {
         if (strtoupper((string) $subscription->voice_type) === 'MALE') {
-            return 'local-male';
+            return 'daudi-professional';
         }
         if (strtoupper((string) $subscription->voice_type) === 'FEMALE') {
-            return 'local-female';
+            return 'rehema-friendly';
         }
 
-        return (string) Config::get('beat.tts.default_voice_id', 'mms-swh-default');
+        return (string) Config::get('beat.tts.default_voice_id', 'daudi-professional');
     }
 
     protected static function resolveScriptText(TuneSubscription $subscription): string
@@ -259,12 +396,40 @@ class BeatAudioService
 
         $payload = $latest?->structured_payload ?? [];
         $hints = $payload['pronunciation_hints'] ?? [];
-
         if (! is_array($hints)) {
-            return [];
+            $hints = [];
         }
 
-        return array_values(array_filter($hints, fn ($hint) => is_array($hint) && ! empty($hint['word'])));
+        $fromDb = \App\Models\PronunciationEntry::query()
+            ->where('is_active', true)
+            ->where(function ($query) use ($subscription) {
+                $query->where('scope', 'GLOBAL')
+                    ->orWhere(function ($inner) use ($subscription) {
+                        $inner->whereIn('scope', ['BUSINESS', 'subscription'])
+                            ->where('subscription_id', $subscription->id);
+                    });
+            })
+            ->get(['original_text', 'replacement_text']);
+
+        foreach ($fromDb as $entry) {
+            $hints[] = [
+                'word' => $entry->original_text,
+                'hint' => $entry->replacement_text ?: $entry->original_text,
+            ];
+        }
+
+        // Always include business name as a pronunciation candidate if multi-word/unusual
+        if ($subscription->business_name) {
+            $hints[] = [
+                'word' => $subscription->business_name,
+                'hint' => $subscription->business_name,
+            ];
+        }
+
+        return array_values(array_filter(
+            $hints,
+            fn ($hint) => is_array($hint) && ! empty($hint['word'])
+        ));
     }
 
     protected static function profileConfig(string $profileKey): array

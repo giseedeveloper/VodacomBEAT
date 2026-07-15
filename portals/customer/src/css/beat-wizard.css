@@ -141,6 +141,22 @@
   margin-bottom: 16px;
 }
 
+.beat-voice-list-compact .beat-voice-option {
+  padding: 8px 12px !important;
+}
+
+.beat-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.beat-chip-group .ant-radio-button-wrapper {
+  flex: 1;
+  text-align: center;
+}
+
 .beat-voice-option {
   display: flex !important;
   align-items: flex-start;
@@ -227,6 +243,27 @@
   flex-direction: column;
   gap: 8px;
   align-items: stretch;
+}
+
+.beat-substeps-card {
+  margin-top: 12px;
+}
+
+.beat-substeps-card .ant-steps-item-process .ant-steps-item-icon {
+  background: #e60000;
+  border-color: #e60000;
+}
+
+.beat-optional-collapse {
+  margin-top: 8px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px dashed #ffc9c9;
+}
+
+.beat-optional-collapse .ant-collapse-header {
+  font-weight: 600;
+  color: #666 !important;
 }
 
 @media (max-width: 576px) {

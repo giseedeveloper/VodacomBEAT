@@ -1,8 +1,12 @@
-import React from 'react';
-import { Alert, Button, Card, Col, Input, Row, Space, Spin, Tag, Typography } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Alert, Button, Card, Col, Radio, Row, Space, Spin, Tag, Typography } from 'antd';
 import { EditOutlined, ReloadOutlined, SoundOutlined } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
-import { ScriptVersion, TuneSubscription } from '../../../interfaces/BeatWizardInterfaces';
+import {
+  ScriptVariantOption,
+  ScriptVersion,
+  TuneSubscription,
+} from '../../../interfaces/BeatWizardInterfaces';
 
 const { Paragraph, Text } = Typography;
 
@@ -10,9 +14,11 @@ interface Props {
   subscription?: TuneSubscription;
   scriptVersion?: ScriptVersion | null;
   scriptText: string;
+  selectedVariant?: string;
   loading: boolean;
   generating: boolean;
   onScriptTextChange: (value: string) => void;
+  onVariantChange: (variant: string, text: string) => void;
   onRegenerate: () => void;
   onContinue: () => void;
   onBack: () => void;
@@ -22,9 +28,11 @@ const ScriptReviewStep: React.FC<Props> = ({
   subscription,
   scriptVersion,
   scriptText,
+  selectedVariant,
   loading,
   generating,
   onScriptTextChange,
+  onVariantChange,
   onRegenerate,
   onContinue,
   onBack,
@@ -33,21 +41,44 @@ const ScriptReviewStep: React.FC<Props> = ({
   const isGenerating = generating || subscription?.status === 'SCRIPT_GENERATING';
   const errors = scriptVersion?.validation_errors || [];
   const warnings = scriptVersion?.structured_payload?.warnings || [];
+  const variants: ScriptVariantOption[] = useMemo(
+    () => scriptVersion?.structured_payload?.versions || [],
+    [scriptVersion]
+  );
+  const [activeVariant, setActiveVariant] = useState(selectedVariant || variants[0]?.variant || '');
+
+  useEffect(() => {
+    if (!activeVariant && variants[0]) {
+      setActiveVariant(variants[0].variant);
+      onVariantChange(variants[0].variant, variants[0].text);
+    }
+  }, [variants, activeVariant, onVariantChange]);
 
   return (
     <div className="beat-step">
-      <Card className="beat-card" bodyStyle={{backgroundColor: '#f9f9f9'}}>
+      <Card className="beat-card" bodyStyle={{ backgroundColor: '#f9f9f9' }}>
         <h2 className="beat-section-title">
-          <EditOutlined /> Angalia Maneno / Review Script
+          <EditOutlined /> Chagua Maneno / Pick a Script
         </h2>
         <p className="beat-hint">
-          Soma maneno kwa makini. Unaweza kuhariri kidogo au kuunda upya ({remaining} remaining).
+          AI imekupa versions 3 kutoka template iliyothibitishwa. Chagua moja, hariri kidogo ikiwa
+          unahitaji ({remaining} regenerations left).
         </p>
+
+        {subscription?.requires_admin_script_review && (
+          <Alert
+            type="warning"
+            showIcon
+            style={{ marginBottom: 16 }}
+            message="Inahitaji ukaguzi wa admin"
+            description="Kuna risk flag (mf. lugha ya kidini). Script inatengenezwa, lakini QA itaangalia kabla ya installation."
+          />
+        )}
 
         {isGenerating && (
           <div className="beat-loading-block">
             <Spin size="large" />
-            <Text>Tunatengeneza maneno kwa Kiswahili… tafadhali subiri.</Text>
+            <Text>Tunatengeneza scripts 3… tafadhali subiri.</Text>
           </div>
         )}
 
@@ -55,14 +86,43 @@ const ScriptReviewStep: React.FC<Props> = ({
           <>
             <div className="beat-meta-row">
               <Tag color="red">{subscription?.business_name}</Tag>
+              {subscription?.business_category && <Tag>{subscription.business_category}</Tag>}
+              {subscription?.script_template_key && <Tag color="purple">{subscription.script_template_key}</Tag>}
               {scriptVersion?.tone && <Tag>{scriptVersion.tone}</Tag>}
               {scriptVersion?.estimated_duration_seconds != null && (
                 <Tag color="blue">~{scriptVersion.estimated_duration_seconds}s</Tag>
               )}
-              {scriptVersion?.version_number != null && (
-                <Tag>v{scriptVersion.version_number}</Tag>
-              )}
             </div>
+
+            {variants.length > 0 && (
+              <Radio.Group
+                value={activeVariant}
+                onChange={(e) => {
+                  const key = e.target.value as string;
+                  setActiveVariant(key);
+                  const found = variants.find((v) => v.variant === key);
+                  if (found) {
+                    onVariantChange(key, found.text);
+                  }
+                }}
+                style={{ width: '100%', marginBottom: 16 }}
+              >
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  {variants.map((item) => (
+                    <Radio key={item.variant} value={item.variant} style={{ whiteSpace: 'normal' }}>
+                      <strong>{item.label || item.variant}</strong>
+                      {item.word_count != null ? ` · ${item.word_count} words` : ''}
+                      {!item.valid && item.problems?.length ? (
+                        <Tag color="orange" style={{ marginLeft: 8 }}>
+                          warnings
+                        </Tag>
+                      ) : null}
+                      <div style={{ color: '#555', marginTop: 4 }}>{item.text}</div>
+                    </Radio>
+                  ))}
+                </Space>
+              </Radio.Group>
+            )}
 
             {errors.length > 0 && (
               <Alert
@@ -96,7 +156,7 @@ const ScriptReviewStep: React.FC<Props> = ({
               />
             )}
 
-            <label className="good-label">Maneno ya Muito / Voice Script</label>
+            <label className="good-label">Hariri script uliyochagua</label>
             <TextArea
               rows={6}
               value={scriptText}
@@ -106,7 +166,7 @@ const ScriptReviewStep: React.FC<Props> = ({
             />
 
             <Paragraph type="secondary" style={{ marginTop: 8 }}>
-              Tip: Hakikisha jina la biashara, eneo, na wito wa kitendo vipo ndani ya maneno.
+              Tip: Backend inahakiki jina la biashara, eneo, claims hatarishi, na idadi ya maneno.
             </Paragraph>
           </>
         )}
