@@ -66,36 +66,44 @@ def _mix_voice_and_music(
     profile: AudioRenderProfile,
 ) -> None:
     """
-    Match manual production structure:
-    music intro → delayed voice → duck music under voice → outro fade → loudnorm
+    Community-standard TTS bed mix (FFmpeg cookbook / sidechain ducking):
+    music intro → delayed voice → sidechain duck music under speech → outro → loudnorm.
+
+    Pattern: voice asplit → sidechaincompress(music, voice_sc) → amix(ducked, voice).
     """
     delay = max(0, int(profile.intro_delay_ms))
     total = float(profile.maximum_duration_seconds)
     outro_start = max(0.5, total - (profile.outro_duration_ms / 1000.0))
     outro_dur = max(0.5, profile.outro_duration_ms / 1000.0)
+    sr = int(profile.sample_rate)
+    ch_layout = "stereo" if int(profile.channels) >= 2 else "mono"
+    # Keep bed clearly audible but under voice (community guidance: ~15–25%)
+    bed_vol = max(0.08, min(0.35, float(profile.music_volume or 0.2)))
 
     filter_complex = (
-        f"[0:a]"
+        f"[0:a]aformat=sample_fmts=fltp:sample_rates={sr}:channel_layouts={ch_layout},"
         f"highpass=f={profile.voice_highpass_hz},"
         f"lowpass=f={profile.voice_lowpass_hz},"
         f"acompressor=threshold={profile.compressor_threshold_db}dB:"
         f"ratio={profile.compressor_ratio}:attack=15:release=150,"
-        f"adelay={delay}|{delay}"
-        f"[voice];"
-        f"[1:a]"
+        f"adelay={delay}|{delay},"
+        f"asplit=2[sc][voice];"
+        f"[1:a]aformat=sample_fmts=fltp:sample_rates={sr}:channel_layouts={ch_layout},"
         f"atrim=0:{total},"
         f"asetpts=PTS-STARTPTS,"
-        f"volume={profile.music_volume},"
+        f"volume={bed_vol},"
         f"afade=t=in:st=0:d={profile.fade_in_seconds},"
         f"afade=t=out:st={outro_start}:d={outro_dur}"
         f"[music];"
-        f"[music][voice]sidechaincompress="
+        f"[music][sc]sidechaincompress="
         f"threshold={profile.ducking_threshold}:"
         f"ratio={profile.ducking_ratio}:"
         f"attack={profile.ducking_attack_ms}:"
-        f"release={profile.ducking_release_ms}"
+        f"release={profile.ducking_release_ms}:"
+        f"knee=6:"
+        f"makeup=1"
         f"[ducked];"
-        f"[ducked][voice]amix=inputs=2:duration=longest:normalize=0,"
+        f"[ducked][voice]amix=inputs=2:duration=longest:dropout_transition=0:normalize=0,"
         f"loudnorm=I={profile.target_loudness_lufs}:TP={profile.true_peak_db}:LRA={profile.loudness_range}"
         f"[final]"
     )

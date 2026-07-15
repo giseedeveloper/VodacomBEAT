@@ -10,7 +10,7 @@ from pathlib import Path
 from app.schemas.audio import GeneratedAudio, TtsSynthesizeRequest, TtsSynthesizeResponse
 from app.services.audio_processor import process_wav_profile, validate_audio_file
 from app.services.audio_render_profile import profile_from_request
-from app.services.music_library import resolve_music_path
+from app.services.music_library import list_music_tracks, resolve_music_path
 from app.services.tts.registry import get_tts_provider
 
 
@@ -19,16 +19,23 @@ def synthesize_audio(request: TtsSynthesizeRequest) -> TtsSynthesizeResponse:
     hints = [hint.model_dump() for hint in request.pronunciation_hints]
     music_path = resolve_music_path(request.music_track_id)
 
-    music_volume = None
+    # Prefer intensity override; otherwise use track default volume from manifest
+    track_default = 0.2
+    for track in list_music_tracks():
+        if track.id == request.music_track_id:
+            track_default = float(track.default_volume or 0.2)
+            break
+
+    music_volume = track_default
     if request.music_intensity == "soft":
-        music_volume = 0.12
+        music_volume = max(0.1, track_default * 0.7)
     elif request.music_intensity == "none" or request.music_track_id in (None, "none"):
         music_path = None
         music_volume = 0.0
     elif request.music_intensity == "medium":
-        music_volume = 0.18
+        music_volume = track_default
     elif request.music_intensity == "strong":
-        music_volume = 0.28
+        music_volume = min(0.32, track_default * 1.35)
 
     speaking_rate = request.speaking_rate
     if request.speaking_speed == "slow":

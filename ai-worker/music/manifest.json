@@ -13,47 +13,80 @@
     },
     {
       "id": "warm_pad",
-      "label": "Restaurant Warm / Soft Pad",
+      "label": "Warm Soft Pad",
       "mood": "calm",
       "category": "Restaurant Warm",
       "file": "warm_pad.wav",
       "recommended_for": ["FOOD_HOSPITALITY", "GENERAL_OTHER"],
       "intro_duration_ms": 1500,
       "outro_duration_ms": 4000,
-      "default_volume": 0.18
+      "default_volume": 0.22
+    },
+    {
+      "id": "piano_glow",
+      "label": "Mountain Piano",
+      "mood": "warm",
+      "category": "Piano Soft",
+      "file": "piano_glow.wav",
+      "recommended_for": ["RETAIL_FASHION", "RELIGIOUS_COMMUNITY", "BEAUTY_PERSONAL_CARE"],
+      "intro_duration_ms": 1500,
+      "outro_duration_ms": 4000,
+      "default_volume": 0.2
+    },
+    {
+      "id": "mountain_soft",
+      "label": "Mountain Soft Bed",
+      "mood": "calm",
+      "category": "Ambient Soft",
+      "file": "mountain_soft.wav",
+      "recommended_for": ["FOOD_HOSPITALITY", "HEALTH_PHARMACY", "GENERAL_OTHER"],
+      "intro_duration_ms": 1500,
+      "outro_duration_ms": 4000,
+      "default_volume": 0.2
+    },
+    {
+      "id": "soft_ambient",
+      "label": "Soft Ambient Groove",
+      "mood": "friendly",
+      "category": "Ambient",
+      "file": "soft_ambient.wav",
+      "recommended_for": ["RETAIL_FASHION", "EVENTS_ENTERTAINMENT"],
+      "intro_duration_ms": 1500,
+      "outro_duration_ms": 4000,
+      "default_volume": 0.2
     },
     {
       "id": "afro_light",
-      "label": "Retail Energetic / Afro Light",
+      "label": "Retail Light Groove",
       "mood": "upbeat",
       "category": "Retail Energetic",
       "file": "afro_light.wav",
       "recommended_for": ["RETAIL_FASHION", "EVENTS_ENTERTAINMENT"],
       "intro_duration_ms": 1500,
       "outro_duration_ms": 4000,
-      "default_volume": 0.17
+      "default_volume": 0.2
     },
     {
       "id": "marimba_glow",
-      "label": "African Soft / Marimba Glow",
+      "label": "Warm Piano Glow",
       "mood": "friendly",
       "category": "African Soft",
       "file": "marimba_glow.wav",
       "recommended_for": ["RETAIL_FASHION", "BEAUTY_PERSONAL_CARE", "RELIGIOUS_COMMUNITY"],
       "intro_duration_ms": 1500,
       "outro_duration_ms": 4000,
-      "default_volume": 0.16
+      "default_volume": 0.2
     },
     {
       "id": "corporate_clean",
-      "label": "Corporate Modern / Technology Digital",
+      "label": "Corporate Clean",
       "mood": "professional",
       "category": "Corporate Modern",
       "file": "corporate_clean.wav",
       "recommended_for": ["TECHNOLOGY_TELECOM", "FINANCE_INSURANCE", "PROFESSIONAL_SERVICES"],
       "intro_duration_ms": 1500,
       "outro_duration_ms": 4000,
-      "default_volume": 0.15
+      "default_volume": 0.18
     }
   ]
 }

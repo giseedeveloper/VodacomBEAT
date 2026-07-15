@@ -45,7 +45,7 @@ PREVIEW_PROFILE = AudioRenderProfile(
     channels=1,
     output_format="mp3",
     watermark=True,
-    music_volume=0.16,
+    music_volume=0.22,
 )
 
 FINAL_PROFILE = AudioRenderProfile(
