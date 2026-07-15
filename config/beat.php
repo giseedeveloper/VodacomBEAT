@@ -94,9 +94,10 @@ return [
     ],
 
     'script' => [
-        'max_duration_seconds' => (int) env('BEAT_SCRIPT_MAX_DURATION_SECONDS', 30),
+        // Ceiling matches final caller-tune audio (40s). Shorter scripts/voice are fine.
+        'max_duration_seconds' => (int) env('BEAT_SCRIPT_MAX_DURATION_SECONDS', 40),
         'default_language' => env('BEAT_SCRIPT_DEFAULT_LANGUAGE', 'sw-TZ'),
-        'maximum_words' => (int) env('BEAT_SCRIPT_MAXIMUM_WORDS', 75),
+        'maximum_words' => (int) env('BEAT_SCRIPT_MAXIMUM_WORDS', 95),
         'maximum_primary_products' => 10,
         'maximum_secondary_products' => 4,
         'forbidden_claims' => [

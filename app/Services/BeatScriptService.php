@@ -79,8 +79,8 @@ class BeatScriptService
             'tone' => $subscription->preferred_tone ?: 'FRIENDLY_SALES',
             'voice_type' => $subscription->voice_type,
             'language' => Config::get('beat.script.default_language', 'sw-TZ'),
-            'max_duration_seconds' => (int) ($template->target_duration_seconds ?: Config::get('beat.script.max_duration_seconds', 30)),
-            'maximum_words' => (int) ($template->maximum_words ?: Config::get('beat.script.maximum_words', 75)),
+            'max_duration_seconds' => (int) Config::get('beat.script.max_duration_seconds', 40),
+            'maximum_words' => (int) ($template->maximum_words ?: Config::get('beat.script.maximum_words', 95)),
             'forbidden_claims' => array_values(array_unique(array_merge(
                 Config::get('beat.script.forbidden_claims', []),
                 $template->prohibited_claims ?? [],

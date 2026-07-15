@@ -16,8 +16,8 @@ class ScriptTemplateSeeder extends Seeder
                 'category' => 'RETAIL_FASHION',
                 'objective' => 'VISIT_STORE',
                 'supported_tones' => ['FRIENDLY_SALES', 'ENERGETIC', 'LUXURY', 'RESPECTFUL'],
-                'maximum_words' => 75,
-                'target_duration_seconds' => 30,
+                'maximum_words' => 95,
+                'target_duration_seconds' => 38,
                 'required_fields' => ['businessName', 'productsOrServices', 'location', 'callToAction'],
                 'optional_fields' => ['sellingPoint', 'secondaryProducts', 'landmark'],
                 'opening_rules' => [
@@ -62,7 +62,7 @@ Rules:
 - Keep sentences short and suitable for text-to-speech.
 - Add natural punctuation for voice pauses.
 - Use Tanzanian Kiswahili (sw-TZ).
-- Target 55 to 75 words per variant.
+- Target 70 to 95 words per variant.
 - Preserve the correct spelling of the business name.
 - If the product list is long, prioritize the most important products.
 - Return three script versions: SHORT_DIRECT, FRIENDLY_PROMOTIONAL, PROFESSIONAL.
@@ -83,9 +83,8 @@ TXT,
                     'YOUTHFUL',
                     'RESPECTFUL',
                 ],
-                'maximum_words' => 70,
-                'target_duration_seconds' => 30,
-                'required_fields' => ['businessName', 'callToAction'],
+                'maximum_words' => 90,
+                'target_duration_seconds' => 38,
                 'optional_fields' => ['productsOrServices', 'location', 'landmark', 'sellingPoint'],
                 'opening_rules' => ['Welcome and mention business name'],
                 'body_rules' => ['Describe the offer briefly without inventing facts'],
@@ -94,7 +93,7 @@ TXT,
                 'prompt_instructions' => <<<'TXT'
 Write a short Tanzanian Kiswahili caller-tune script.
 Mention business name, key products/services if provided, location if provided, and CTA.
-Do not invent facts. Keep under 70 words. Return three variants.
+Do not invent facts. Keep under 90 words. Return three variants.
 TXT,
                 'priority' => 10,
             ],
@@ -104,8 +103,8 @@ TXT,
                 'category' => 'FOOD_HOSPITALITY',
                 'objective' => 'VISIT_STORE',
                 'supported_tones' => ['FRIENDLY_SALES', 'ENERGETIC', 'YOUTHFUL'],
-                'maximum_words' => 70,
-                'target_duration_seconds' => 30,
+                'maximum_words' => 90,
+                'target_duration_seconds' => 38,
                 'required_fields' => ['businessName', 'productsOrServices', 'location'],
                 'optional_fields' => ['sellingPoint', 'landmark', 'offer'],
                 'opening_rules' => ['Warm welcome with business name'],

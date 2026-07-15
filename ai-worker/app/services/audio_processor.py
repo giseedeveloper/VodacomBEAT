@@ -18,7 +18,7 @@ def process_wav_profile(
     sample_rate: int,
     channels: int = 1,
     output_format: str = "wav",
-    max_duration_seconds: int = 30,
+    max_duration_seconds: int = 40,
     watermark: bool = False,
     music_path: str | Path | None = None,
     music_volume: float | None = None,

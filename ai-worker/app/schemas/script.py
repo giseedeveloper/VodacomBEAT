@@ -9,8 +9,8 @@ from pydantic import BaseModel, Field
 
 class ScriptTemplateContext(BaseModel):
     template_key: str = "general_business_v1"
-    maximum_words: int = 75
-    target_duration_seconds: int = 30
+    maximum_words: int = 95
+    target_duration_seconds: int = 38
     opening_rules: list[str] = Field(default_factory=list)
     body_rules: list[str] = Field(default_factory=list)
     cta_rules: list[str] = Field(default_factory=list)
@@ -37,8 +37,8 @@ class ScriptGenerateRequest(BaseModel):
     tone: str | None = None
     voice_type: str | None = None
     language: str = "sw-TZ"
-    max_duration_seconds: int = 30
-    maximum_words: int = 75
+    max_duration_seconds: int = 40
+    maximum_words: int = 95
     forbidden_claims: list[str] = Field(default_factory=list)
     template: ScriptTemplateContext | None = None
     safe_context: dict[str, Any] = Field(default_factory=dict)
