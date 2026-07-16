@@ -100,11 +100,21 @@ const VoicePreviewStep: React.FC<Props> = ({
   const [savingHint, setSavingHint] = useState(false);
   const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
   const [bedLoading, setBedLoading] = useState(false);
-  const [genderFilter, setGenderFilter] = useState<'female' | 'male'>('female');
+  const [genderFilter, setGenderFilter] = useState<'female' | 'male'>(() => {
+    const id = (selectedVoiceId || '').toLowerCase();
+    if (id.startsWith('daudi') || id.includes('male')) {
+      return 'male';
+    }
+    if (id.startsWith('rehema') || id.includes('female')) {
+      return 'female';
+    }
+    return 'female';
+  });
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
   const [voiceLoading, setVoiceLoading] = useState(false);
   const bedAudioRef = useRef<HTMLAudioElement | null>(null);
   const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
+  const genderTouchedRef = useRef(false);
 
   const visibleVoices = useMemo(() => customerVoices(voices), [voices]);
   const genderedVoices = useMemo(() => {
@@ -293,20 +303,22 @@ const VoicePreviewStep: React.FC<Props> = ({
   }, [subStep]);
 
   useEffect(() => {
-    const current = visibleVoices.find((voice) => (voice.slug || voice.id) === selectedVoiceId);
-    if (!current) {
+    // Keep gender chip in sync with the actually selected voice (hydrate / parent updates)
+    if (genderTouchedRef.current) {
       return;
     }
-    const gender = (current.gender || '').toLowerCase();
-    if (gender === 'male' || (selectedVoiceId || '').startsWith('daudi')) {
+    const id = (selectedVoiceId || '').toLowerCase();
+    if (id.startsWith('daudi') || id.includes('male')) {
       setGenderFilter('male');
-    } else if (gender === 'female' || (selectedVoiceId || '').startsWith('rehema')) {
+    } else if (id.startsWith('rehema') || id.includes('female')) {
       setGenderFilter('female');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedVoiceId]);
 
   useEffect(() => {
+    if (!genderTouchedRef.current) {
+      return;
+    }
     const stillVisible = genderedVoices.some((voice) => (voice.slug || voice.id) === selectedVoiceId);
     if (!stillVisible && genderedVoices[0]) {
       onVoiceChange(genderedVoices[0].slug || genderedVoices[0].id || '');
@@ -314,6 +326,10 @@ const VoicePreviewStep: React.FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [genderFilter]);
 
+  const onGenderChipChange = (next: 'female' | 'male') => {
+    genderTouchedRef.current = true;
+    setGenderFilter(next);
+  };
   useEffect(() => {
     if (!bedAudioRef.current || musicIntensity === 'none') {
       if (musicIntensity === 'none') {
@@ -361,6 +377,7 @@ const VoicePreviewStep: React.FC<Props> = ({
     }
     if (subStep === 1) {
       stopBedPreview();
+      // Always regenerate when voice changed (stale preview cleared) or missing
       if (!previewAsset) {
         await onGeneratePreview();
       }
@@ -398,7 +415,7 @@ const VoicePreviewStep: React.FC<Props> = ({
           <label className="good-label">Aina ya sauti</label>
           <Radio.Group
             value={genderFilter}
-            onChange={(e) => setGenderFilter(e.target.value)}
+            onChange={(e) => onGenderChipChange(e.target.value)}
             optionType="button"
             buttonStyle="solid"
             className="beat-chip-group"

@@ -90,7 +90,7 @@ const SubscriptionWizard: React.FC = () => {
   const reference =
     routeReference || subscription?.subscription_reference || localStorage.getItem(STORAGE_KEY) || '';
 
-  const hydrateFromDetails = useCallback(async (ref: string) => {
+  const hydrateFromDetails = useCallback(async (ref: string, options?: { preserveStep?: boolean }) => {
     setLoading(true);
     try {
       const payload = await fetchSubscriptionDetails(ref);
@@ -99,8 +99,19 @@ const SubscriptionWizard: React.FC = () => {
 
       const latestScript = payload.script_versions?.[0] || null;
       setScriptVersion(latestScript);
-      setScriptText(latestScript?.plain_text || payload.subscription.voice_script || '');
-      setSelectedVariant(payload.subscription.selected_script_variant || 'FRIENDLY_PROMOTIONAL');
+      const versions = latestScript?.structured_payload?.versions || [];
+      const preferredVariant =
+        payload.subscription.selected_script_variant ||
+        versions.find((v) => v.variant === 'FRIENDLY_PROMOTIONAL')?.variant ||
+        versions[0]?.variant ||
+        'FRIENDLY_PROMOTIONAL';
+      const preferredText =
+        versions.find((v) => v.variant === preferredVariant)?.text ||
+        latestScript?.plain_text ||
+        payload.subscription.voice_script ||
+        '';
+      setSelectedVariant(preferredVariant);
+      setScriptText(preferredText);
 
       const latestPreview =
         payload.audio_assets?.find((a) => a.asset_type === 'preview') || null;
@@ -120,6 +131,11 @@ const SubscriptionWizard: React.FC = () => {
       }
       if (payload.subscription.preferred_voice_profile) {
         setSelectedVoiceId(payload.subscription.preferred_voice_profile);
+      }
+
+      // While generating/selecting scripts, do not jump the user away from Maneno
+      if (options?.preserveStep) {
+        return;
       }
 
       if (payload.subscription.analysis_action === 'ASK_FOLLOW_UP_QUESTIONS') {
@@ -163,11 +179,14 @@ const SubscriptionWizard: React.FC = () => {
         });
         const usable = preferredOnly.length ? preferredOnly : list;
         setVoices(usable);
-        const preferred = usable.find((v) => v.is_default) || usable[0];
-        const id = preferred?.slug || preferred?.id;
-        if (id) {
-          setSelectedVoiceId(id);
-        }
+        // Only seed a default if nothing selected yet (do not clobber hydrate/user choice)
+        setSelectedVoiceId((current) => {
+          if (current) {
+            return current;
+          }
+          const preferred = usable.find((v) => v.is_default) || usable[0];
+          return preferred?.slug || preferred?.id || undefined;
+        });
       })
       .catch(() => undefined);
 
@@ -214,9 +233,12 @@ const SubscriptionWizard: React.FC = () => {
         variants.find((v) => v.variant === 'FRIENDLY_PROMOTIONAL') || variants[0];
       setSelectedVariant(preferred?.variant || 'FRIENDLY_PROMOTIONAL');
       setScriptText(preferred?.text || payload.script_version?.plain_text || '');
+      // Stay on Maneno so customer can pick/edit before voice
+      setStep('script');
     } catch (errorObj) {
       notifyHttpError('Imeshindikana kutengeneza maneno', errorObj as object);
-      await hydrateFromDetails(ref);
+      await hydrateFromDetails(ref, { preserveStep: true });
+      setStep('script');
     } finally {
       setGeneratingScript(false);
     }
@@ -330,10 +352,11 @@ const SubscriptionWizard: React.FC = () => {
     setLoading(true);
     try {
       await approveScript(reference, scriptText.trim(), selectedVariant);
+      // Do NOT auto-generate preview here — customer must pick voice/music first,
+      // otherwise backend falls back to draft voice_type (FEMALE) and wrong gender plays.
+      setPreviewAsset(null);
+      setPronunciationAsset(null);
       setStep('preview');
-      if (!previewAsset) {
-        await runPreviewGeneration();
-      }
     } catch (errorObj) {
       notifyHttpError('Imeshindikana kuthibitisha maneno', errorObj as object);
     } finally {
@@ -343,6 +366,10 @@ const SubscriptionWizard: React.FC = () => {
 
   const runPreviewGeneration = async () => {
     if (!reference) {
+      return;
+    }
+    if (!selectedVoiceId) {
+      notifyHttpError('Chagua sauti kwanza (Kike au Kiume)', {});
       return;
     }
     setGeneratingPreview(true);
@@ -358,7 +385,8 @@ const SubscriptionWizard: React.FC = () => {
       setPreviewAsset(payload.audio_asset);
     } catch (errorObj) {
       notifyHttpError('Imeshindikana kutengeneza preview', errorObj as object);
-      await hydrateFromDetails(reference);
+      await hydrateFromDetails(reference, { preserveStep: true });
+      setStep('preview');
     } finally {
       setGeneratingPreview(false);
     }
@@ -366,6 +394,10 @@ const SubscriptionWizard: React.FC = () => {
 
   const runPronunciationTest = async () => {
     if (!reference) {
+      return;
+    }
+    if (!selectedVoiceId) {
+      notifyHttpError('Chagua sauti kwanza (Kike au Kiume)', {});
       return;
     }
     setTestingPronunciation(true);
@@ -378,6 +410,18 @@ const SubscriptionWizard: React.FC = () => {
     } finally {
       setTestingPronunciation(false);
     }
+  };
+
+  const handleVoiceChange = (voiceId: string) => {
+    setSelectedVoiceId(voiceId);
+    // Stale preview/pronunciation must not keep the previous gender
+    setPreviewAsset(null);
+    setPronunciationAsset(null);
+  };
+
+  const handleMusicChange = (musicId: string) => {
+    setSelectedMusicId(musicId);
+    setPreviewAsset(null);
   };
 
   const handleUpdatePronunciation = async (original: string, replacement: string) => {
@@ -521,8 +565,8 @@ const SubscriptionWizard: React.FC = () => {
               loading={loading}
               generating={generatingPreview}
               testingPronunciation={testingPronunciation}
-              onVoiceChange={setSelectedVoiceId}
-              onMusicChange={setSelectedMusicId}
+              onVoiceChange={handleVoiceChange}
+              onMusicChange={handleMusicChange}
               onSpeakingSpeedChange={setSpeakingSpeed}
               onMusicIntensityChange={setMusicIntensity}
               onGeneratePronunciationTest={runPronunciationTest}

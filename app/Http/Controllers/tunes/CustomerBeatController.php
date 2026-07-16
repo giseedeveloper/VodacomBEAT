@@ -680,8 +680,8 @@ class CustomerBeatController extends BaseController
     {
         return match ($status) {
             SubscriptionStatusService::DRAFT,
-            SubscriptionStatusService::SCRIPT_GENERATING => 'script',
-            SubscriptionStatusService::SCRIPT_READY,
+            SubscriptionStatusService::SCRIPT_GENERATING,
+            SubscriptionStatusService::SCRIPT_READY => 'script',
             SubscriptionStatusService::PREVIEW_GENERATING,
             SubscriptionStatusService::PREVIEW_READY => 'preview',
             SubscriptionStatusService::CUSTOMER_APPROVED,

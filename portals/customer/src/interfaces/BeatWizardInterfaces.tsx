@@ -169,8 +169,9 @@ export function statusToStep(status?: string, wizardStep?: string): WizardStepKe
   switch (status) {
     case 'DRAFT':
     case 'SCRIPT_GENERATING':
-      return 'script';
     case 'SCRIPT_READY':
+      // Stay on Maneno until customer picks/edits and explicitly continues
+      return 'script';
     case 'PREVIEW_GENERATING':
     case 'PREVIEW_READY':
       return 'preview';
