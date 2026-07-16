@@ -45,11 +45,18 @@ def _load_model(model_source: str) -> tuple[VitsModel, AutoTokenizer, int]:
 
 def _apply_pronunciation_hints(text: str, hints: list[dict[str, str]]) -> str:
     updated = text
-    for hint in hints:
+    # Longer keys first + word boundaries to avoid partial/double replacements
+    ordered = sorted(
+        (h for h in hints if h.get("word") and h.get("hint")),
+        key=lambda h: len(h.get("word", "")),
+        reverse=True,
+    )
+    for hint in ordered:
         word = hint.get("word", "").strip()
         replacement = hint.get("hint", "").strip()
         if word and replacement:
-            updated = re.sub(re.escape(word), replacement, updated, flags=re.IGNORECASE)
+            pattern = re.compile(r"(?<!\w)" + re.escape(word) + r"(?!\w)", re.IGNORECASE)
+            updated = pattern.sub(replacement, updated)
     return updated
 
 

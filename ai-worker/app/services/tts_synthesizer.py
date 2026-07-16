@@ -10,13 +10,17 @@ from pathlib import Path
 from app.schemas.audio import GeneratedAudio, TtsSynthesizeRequest, TtsSynthesizeResponse
 from app.services.audio_processor import process_wav_profile, validate_audio_file
 from app.services.audio_render_profile import profile_from_request
+from app.services.loanword_respeller import generate_loanword_hints, merge_hints
 from app.services.music_library import list_music_tracks, resolve_music_path
 from app.services.tts.registry import get_tts_provider
 
 
 def synthesize_audio(request: TtsSynthesizeRequest) -> TtsSynthesizeResponse:
     provider = get_tts_provider()
-    hints = [hint.model_dump() for hint in request.pronunciation_hints]
+    customer_hints = [hint.model_dump() for hint in request.pronunciation_hints]
+    # Respell English loanwords ("Solution" → "Solusheni") so sw-TZ voices
+    # pronounce them naturally; explicit customer hints always win.
+    hints = merge_hints(generate_loanword_hints(request.text), customer_hints)
     music_path = resolve_music_path(request.music_track_id)
 
     # Prefer intensity override; otherwise use track default volume from manifest

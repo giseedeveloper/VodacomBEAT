@@ -35,9 +35,10 @@ def apply_pronunciation(
         if word and replacement:
             mapping[word] = replacement
 
-    # Longer keys first to avoid partial replacements
+    # Longer keys first to avoid partial replacements; word boundaries so
+    # "net" never rewrites the inside of "intaneti" after earlier respells.
     for original in sorted(mapping.keys(), key=len, reverse=True):
-        pattern = re.compile(re.escape(original), re.IGNORECASE)
+        pattern = re.compile(r"(?<!\w)" + re.escape(original) + r"(?!\w)", re.IGNORECASE)
         text = pattern.sub(mapping[original], text)
     return text
 
