@@ -108,8 +108,25 @@ class SubscriptionStatusService
             self::FAILED,
             self::MANUAL_REVIEW_REQUESTED,
         ],
-        self::CUSTOMER_APPROVED => [self::AWAITING_PAYMENT, self::CANCELLED, self::FAILED, self::MANUAL_REVIEW_REQUESTED],
-        self::AWAITING_PAYMENT => [self::PAYMENT_PENDING, self::PAID, self::CANCELLED, self::FAILED, self::MANUAL_REVIEW_REQUESTED],
+        // PREVIEW/SCRIPT_GENERATING allowed: customer may go back and change
+        // voice/music/script any time BEFORE payment is actually made.
+        self::CUSTOMER_APPROVED => [
+            self::AWAITING_PAYMENT,
+            self::PREVIEW_GENERATING,
+            self::SCRIPT_GENERATING,
+            self::CANCELLED,
+            self::FAILED,
+            self::MANUAL_REVIEW_REQUESTED,
+        ],
+        self::AWAITING_PAYMENT => [
+            self::PAYMENT_PENDING,
+            self::PAID,
+            self::PREVIEW_GENERATING,
+            self::SCRIPT_GENERATING,
+            self::CANCELLED,
+            self::FAILED,
+            self::MANUAL_REVIEW_REQUESTED,
+        ],
         self::PAYMENT_PENDING => [self::PAID, self::AWAITING_PAYMENT, self::CANCELLED, self::FAILED, self::MANUAL_REVIEW_REQUESTED],
         self::PAID => [
             self::FINAL_AUDIO_GENERATING,

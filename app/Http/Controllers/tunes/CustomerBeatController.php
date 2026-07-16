@@ -321,8 +321,14 @@ class CustomerBeatController extends BaseController
             return $this->returnError('Subscription not found', [], 404);
         }
 
-        if ($subscription->status !== SubscriptionStatusService::SCRIPT_READY
-            && $subscription->status !== SubscriptionStatusService::PREVIEW_READY) {
+        $editableStatuses = [
+            SubscriptionStatusService::SCRIPT_READY,
+            SubscriptionStatusService::PREVIEW_READY,
+            // Back-navigation before payment
+            SubscriptionStatusService::CUSTOMER_APPROVED,
+            SubscriptionStatusService::AWAITING_PAYMENT,
+        ];
+        if (! in_array($subscription->status, $editableStatuses, true)) {
             return $this->returnError('Script can only be approved when it is ready', [
                 'status' => $subscription->status,
             ], 400);
@@ -528,6 +534,26 @@ class CustomerBeatController extends BaseController
         $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
         if ($subscription === null) {
             return $this->returnError('Subscription not found', [], 404);
+        }
+
+        // Idempotent: re-approving after back-navigation is a no-op
+        if (in_array($subscription->status, [
+            SubscriptionStatusService::CUSTOMER_APPROVED,
+            SubscriptionStatusService::AWAITING_PAYMENT,
+        ], true)) {
+            if ($subscription->status === SubscriptionStatusService::CUSTOMER_APPROVED) {
+                SubscriptionStatusService::transition(
+                    $subscription,
+                    SubscriptionStatusService::AWAITING_PAYMENT,
+                    null,
+                    'Ready for payment'
+                );
+            }
+
+            return $this->returnResponse('Preview approved', [
+                'subscription' => $subscription->refresh(),
+                'next_step' => 'payment',
+            ]);
         }
 
         if ($subscription->status !== SubscriptionStatusService::PREVIEW_READY) {

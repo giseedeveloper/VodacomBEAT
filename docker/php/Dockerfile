@@ -1,7 +1,7 @@
 FROM php:8.2-cli-alpine
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions pdo_mysql zip mbstring intl curl
+RUN install-php-extensions pdo_mysql zip mbstring intl curl redis
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

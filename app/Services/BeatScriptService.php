@@ -16,6 +16,9 @@ class BeatScriptService
         SubscriptionStatusService::PREVIEW_READY,
         SubscriptionStatusService::QA_CHANGES_REQUIRED,
         SubscriptionStatusService::MANUAL_REVIEW_REQUESTED,
+        // Back-navigation before payment
+        SubscriptionStatusService::CUSTOMER_APPROVED,
+        SubscriptionStatusService::AWAITING_PAYMENT,
     ];
 
     public static function canGenerate(TuneSubscription $subscription): bool

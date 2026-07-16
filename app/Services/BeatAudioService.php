@@ -16,6 +16,9 @@ class BeatAudioService
         SubscriptionStatusService::SCRIPT_READY,
         SubscriptionStatusService::PREVIEW_READY,
         SubscriptionStatusService::QA_CHANGES_REQUIRED,
+        // Back-navigation before payment: customer changes voice/music again
+        SubscriptionStatusService::CUSTOMER_APPROVED,
+        SubscriptionStatusService::AWAITING_PAYMENT,
     ];
 
     protected const FINAL_STATUSES = [
@@ -85,6 +88,8 @@ class BeatAudioService
             SubscriptionStatusService::PREVIEW_GENERATING,
             SubscriptionStatusService::PREVIEW_READY,
             SubscriptionStatusService::QA_CHANGES_REQUIRED,
+            SubscriptionStatusService::CUSTOMER_APPROVED,
+            SubscriptionStatusService::AWAITING_PAYMENT,
         ];
         if (! in_array($subscription->status, $allowed, true)) {
             return false;
