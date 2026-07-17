@@ -6,6 +6,8 @@ import {configureStore} from "@reduxjs/toolkit";
 import  authReducer  from "./state/auth/authStore";
 import  serverReducer  from "./state/auth/serverConfigsStore";
 import {Provider} from "react-redux";
+import {ConfigProvider} from "antd";
+import {biztuneTheme} from "./ui/theme";
 
 const appStateStore = configureStore({
     reducer: {
@@ -19,7 +21,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <Provider store={appStateStore}>
-        <AppRouter />
+        <ConfigProvider theme={biztuneTheme}>
+            <AppRouter />
+        </ConfigProvider>
     </Provider>
 );
 

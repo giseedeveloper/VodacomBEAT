@@ -5,6 +5,7 @@ import {Header} from "antd/es/layout/layout";
 import vodaRedIcon from "../assets/images/voda-transparent.png";
 import {Route, Routes} from "react-router-dom";
 import SubscriptionForm from "./features/SubscriptionForm";
+import BizTuneWizard from "./features/biztune/BizTuneWizard";
 import PopUpMenu from "./PopUpMenu";
 import StatusPage from "./features/StatusPage";
 
@@ -26,17 +27,22 @@ function MainLayout() {
             <Content style={{minHeight: '100vh', padding: '0 0'}}>
                 <Routes>
 
-                    <Route path="home" element={<SubscriptionForm/>}/>
+                    <Route index element={<BizTuneWizard/>}/>
+                    <Route path="home" element={<BizTuneWizard/>}/>
+                    <Route path="anza" element={<BizTuneWizard/>}/>
+
+                    {/* Legacy single-page form, kept reachable at /classic */}
+                    <Route path="classic" element={<SubscriptionForm/>}/>
 
                     <Route path="customers">
-                        <Route index element={<SubscriptionForm/>}/>
+                        <Route index element={<BizTuneWizard/>}/>
                     </Route>
 
                     <Route path="subscriptions/:reference" >
                         <Route index element={<StatusPage/>} />
                     </Route>
 
-                    <Route path="*" element={<SubscriptionForm/>}/>
+                    <Route path="*" element={<BizTuneWizard/>}/>
                 </Routes>
 
             </Content>
