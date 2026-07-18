@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Card, Col, Form, Image, RadioChangeEvent, Row, Space, Steps, Typography } from 'antd';
+import { Alert, Card, Col, Form, Image, Row, Space, Typography } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import callIcon from '../../../assets/images/logo-white.png';
 import stockIcon from '../../../assets/images/mobiad-rectangle.png';
@@ -17,6 +17,7 @@ import {
   generatePronunciationTest,
   generateScript,
   initiatePayment,
+  submitCheckout,
   updatePronunciation,
 } from '../../../services/beat/CustomerBeatApi';
 import {
@@ -29,11 +30,13 @@ import {
   WIZARD_STEPS,
   WizardStepKey,
 } from '../../../interfaces/BeatWizardInterfaces';
+import WizardStepper from './WizardStepper';
+import PersonalInfoStep from './PersonalInfoStep';
 import BusinessInfoStep from './BusinessInfoStep';
 import ClarifyStep from './ClarifyStep';
 import ScriptReviewStep from './ScriptReviewStep';
 import VoicePreviewStep from './VoicePreviewStep';
-import PaymentStep from './PaymentStep';
+import CheckoutStep from './CheckoutStep';
 
 const { Paragraph } = Typography;
 
@@ -45,18 +48,17 @@ const SubscriptionWizard: React.FC = () => {
 
   const [businessForm] = Form.useForm();
   const [clarifyForm] = Form.useForm();
-  const [paymentForm] = Form.useForm();
+  const [checkoutForm] = Form.useForm();
 
-  const [step, setStep] = useState<WizardStepKey>('business');
+  const [step, setStep] = useState<WizardStepKey>('personal');
   const [loading, setLoading] = useState(false);
   const [generatingScript, setGeneratingScript] = useState(false);
   const [generatingPreview, setGeneratingPreview] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
   const [followUpQuestions, setFollowUpQuestions] = useState<string[]>([]);
   const [selectedVariant, setSelectedVariant] = useState<string>('FRIENDLY_PROMOTIONAL');
 
   const [packagesList, setPackagesList] = useState<TunePackage[]>([]);
-  const [selectedPackage, setSelectedPackage] = useState<TunePackage>();
-  const [phoneCount, setPhoneCount] = useState(0);
 
   const [subscription, setSubscription] = useState<TuneSubscription>();
   const [scriptVersion, setScriptVersion] = useState<ScriptVersion | null>(null);
@@ -214,13 +216,6 @@ const SubscriptionWizard: React.FC = () => {
     }
   }, [routeReference, hydrateFromDetails]);
 
-  const onPackageChange = (event: RadioChangeEvent) => {
-    const picked = packagesList.find((item) => String(item.package) === String(event.target.value));
-    if (picked) {
-      setSelectedPackage(picked);
-    }
-  };
-
   const runScriptGeneration = async (ref: string) => {
     setGeneratingScript(true);
     setStep('script');
@@ -246,24 +241,7 @@ const SubscriptionWizard: React.FC = () => {
 
   const handleCreateDraft = async () => {
     try {
-      // Ensure required store fields across all sub-steps are present
-      await businessForm.validateFields([
-        'contact_person_name',
-        'contact_phone',
-        'business_name',
-        'business_description',
-        'subscription_package',
-        'selectedPhones',
-      ]);
       const values = businessForm.getFieldsValue(true);
-      const phones = (values.selectedPhones || [])
-        .map((p: { phoneNumber?: string }) => p.phoneNumber)
-        .filter(Boolean);
-
-      if (!phones.length) {
-        notifyHttpError('Ongeza angalau namba moja', {});
-        return;
-      }
 
       setLoading(true);
       const payload = await createDraftSubscription({
@@ -273,8 +251,12 @@ const SubscriptionWizard: React.FC = () => {
         business_description: values.business_description,
         business_location: values.business_location,
         landmark: values.landmark,
+        offer_type: values.offer_type,
         products_or_services: values.products_or_services,
-        secondary_products: values.secondary_products,
+        instagram_handle: values.instagram_handle,
+        facebook_handle: values.facebook_handle,
+        tiktok_handle: values.tiktok_handle,
+        website_url: values.website_url,
         target_audience: values.target_audience,
         call_to_action: values.call_to_action,
         selling_points: values.selling_points,
@@ -282,9 +264,7 @@ const SubscriptionWizard: React.FC = () => {
         must_include_words: values.must_include_words,
         must_exclude_words: values.must_exclude_words,
         offer_text: values.offer_text,
-        subscription_package: values.subscription_package,
         voice_type: 'FEMALE',
-        subscription_phones: phones,
       });
 
       const sub = payload.subscription;
@@ -322,11 +302,19 @@ const SubscriptionWizard: React.FC = () => {
     try {
       const values = await clarifyForm.validateFields();
       setLoading(true);
-      const payload = await answerFollowUp(reference, values);
+      const followUpAnswers = (values.answers || [])
+        .map((answer: string, index: number) => ({
+          question: followUpQuestions[index],
+          answer: (answer || '').trim(),
+        }))
+        .filter((entry: { answer: string }) => entry.answer);
+      const payload = await answerFollowUp(reference, { follow_up_answers: followUpAnswers });
       setSubscription(payload.subscription);
       setFollowUpQuestions(payload.follow_up_questions || []);
 
       if (payload.next_step === 'clarify' || payload.next_action === 'ASK_FOLLOW_UP_QUESTIONS') {
+        // New round of questions — clear the previous answers
+        clarifyForm.resetFields();
         setStep('clarify');
         return;
       }
@@ -445,11 +433,31 @@ const SubscriptionWizard: React.FC = () => {
     try {
       const payload = await approvePreview(reference);
       setSubscription(payload.subscription);
-      setStep('payment');
+      setStep('checkout');
     } catch (errorObj) {
       notifyHttpError('Imeshindikana kuthibitisha sauti', errorObj as object);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCheckout = async (
+    subscriptionPackage: number | string,
+    phones: string[]
+  ): Promise<boolean> => {
+    if (!reference) {
+      return false;
+    }
+    setCheckingOut(true);
+    try {
+      const payload = await submitCheckout(reference, subscriptionPackage, phones);
+      setSubscription(payload.subscription);
+      return true;
+    } catch (errorObj) {
+      notifyHttpError('Imeshindikana kuhifadhi package na namba', errorObj as object);
+      return false;
+    } finally {
+      setCheckingOut(false);
     }
   };
 
@@ -458,7 +466,7 @@ const SubscriptionWizard: React.FC = () => {
       return;
     }
     try {
-      const values = await paymentForm.validateFields();
+      const values = checkoutForm.getFieldsValue(true);
       setLoading(true);
       await initiatePayment(reference, values.payment_phone);
       localStorage.removeItem(STORAGE_KEY);
@@ -482,21 +490,14 @@ const SubscriptionWizard: React.FC = () => {
             <div>
               <h1 className="beat-hero-title">BizTune Caller Tune</h1>
               <Paragraph className="beat-hero-copy">
-                AI inachambua biashara yako, backend inachagua template, kisha unachagua script moja
-                kati ya tatu.
+                Jaza taarifa za biashara yako — AI itatengeneza tangazo, uchague sauti na muziki,
+                kisha ulipie. Dakika chache tu!
               </Paragraph>
             </div>
           </Space>
 
           <Card className="beat-steps-card" bordered={false}>
-            <Steps
-              current={stepIndex}
-              responsive
-              items={visibleSteps.map((item) => ({
-                title: item.title,
-                description: item.subtitle,
-              }))}
-            />
+            <WizardStepper steps={visibleSteps} currentIndex={stepIndex} />
           </Card>
 
           {subscription?.subscription_reference && (
@@ -509,18 +510,36 @@ const SubscriptionWizard: React.FC = () => {
             />
           )}
 
-          {step === 'business' && (
-            <BusinessInfoStep
-              form={businessForm}
-              packagesList={packagesList}
-              selectedPackage={selectedPackage}
-              phoneCount={phoneCount}
-              loading={loading}
-              onPackageChange={onPackageChange}
-              onPhoneCountChange={setPhoneCount}
-              onContinue={handleCreateDraft}
-            />
-          )}
+          <Form
+            form={businessForm}
+            layout="vertical"
+            className="beat-step-form"
+            preserve
+            style={{ display: step === 'personal' || step === 'business' ? 'block' : 'none' }}
+          >
+            {/* Keep both intake steps mounted so navigating back/forth keeps values */}
+            <div style={{ display: step === 'personal' ? 'block' : 'none' }}>
+              <PersonalInfoStep
+                form={businessForm}
+                loading={loading}
+                onContinue={() => {
+                  setStep('business');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            </div>
+            <div style={{ display: step === 'business' ? 'block' : 'none' }}>
+              <BusinessInfoStep
+                form={businessForm}
+                loading={loading}
+                onContinue={handleCreateDraft}
+                onBack={() => {
+                  setStep('personal');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            </div>
+          </Form>
 
           {step === 'clarify' && (
             <ClarifyStep
@@ -577,11 +596,14 @@ const SubscriptionWizard: React.FC = () => {
             />
           )}
 
-          {step === 'payment' && subscription && (
-            <PaymentStep
-              form={paymentForm}
+          {step === 'checkout' && subscription && (
+            <CheckoutStep
+              form={checkoutForm}
               subscription={subscription}
+              packagesList={packagesList}
               loading={loading}
+              checkingOut={checkingOut}
+              onCheckout={handleCheckout}
               onPay={handlePayment}
               onBack={() => setStep('preview')}
             />

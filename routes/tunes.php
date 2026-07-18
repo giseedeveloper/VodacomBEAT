@@ -64,6 +64,7 @@ Route::prefix("/v1/tunes/customer")->group(function(){
     Route::post('/subscription/audio/pronunciation-test', [CustomerBeatController::class,'generatePronunciationTest']);
     Route::post('/subscription/audio/pronunciation', [CustomerBeatController::class,'updatePronunciation']);
     Route::post('/subscription/audio/approve', [CustomerBeatController::class,'approvePreview']);
+    Route::post('/subscription/checkout', [CustomerBeatController::class,'checkout']);
     Route::post('/subscription/payment/init', [CustomerBeatController::class,'initiatePayment']);
     Route::get('/audio/{assetId}/stream', [CustomerBeatController::class,'streamAudio'])
         ->name('customer.audio.stream')

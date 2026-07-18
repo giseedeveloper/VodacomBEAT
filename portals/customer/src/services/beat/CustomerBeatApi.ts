@@ -177,6 +177,22 @@ export async function approvePreview(reference: string) {
   };
 }
 
+export async function submitCheckout(
+  reference: string,
+  subscriptionPackage: number | string,
+  subscriptionPhones: string[]
+) {
+  const response = await postRequest(`${BASE}/subscription/checkout`, {
+    reference,
+    subscription_package: subscriptionPackage,
+    subscription_phones: subscriptionPhones,
+  });
+  return response.data.payload as {
+    subscription: TuneSubscription;
+    next_step: string;
+  };
+}
+
 export async function initiatePayment(reference: string, paymentPhone: string) {
   const response = await postRequest(`${BASE}/subscription/payment/init`, {
     reference,

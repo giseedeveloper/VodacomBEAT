@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Button, Card, Col, Input, Radio, Row, Spin, Steps, Tag } from 'antd';
+import { Alert, Button, Card, Col, Input, Radio, Row, Spin, Tag } from 'antd';
 import {
   AudioOutlined,
   CheckCircleOutlined,
@@ -15,6 +15,7 @@ import {
   TtsVoice,
 } from '../../../interfaces/BeatWizardInterfaces';
 import { musicTrackPreviewUrl, voiceSampleUrl } from '../../../services/beat/CustomerBeatApi';
+import WizardStepper from './WizardStepper';
 
 export interface MusicTrackOption {
   id: string;
@@ -391,15 +392,7 @@ const VoicePreviewStep: React.FC<Props> = ({
   return (
     <div className="beat-step">
       <Card className="beat-card beat-substeps-card" bodyStyle={{ backgroundColor: '#fffaf9' }}>
-        <Steps
-          size="small"
-          current={subStep}
-          responsive
-          items={SUB_STEPS.map((item) => ({
-            title: item.title,
-            description: item.subtitle,
-          }))}
-        />
+        <WizardStepper size="small" steps={SUB_STEPS} currentIndex={subStep} />
       </Card>
 
       {subStep === 0 && (
@@ -408,7 +401,7 @@ const VoicePreviewStep: React.FC<Props> = ({
             <SoundOutlined /> Chagua sauti + hakiki jina
           </h2>
   <p className="beat-hint">
-            Hatua 1/3 — chagua Kike au Kiume kwanza, gusa sauti ili isikike. Halafu hakiki jina la
+            Chagua Kike au Kiume kwanza, gusa sauti ili isikike. Halafu hakiki jina la
             biashara. {remainingPronunciation}/{pronunciationLimit} majaribio ya jina yamebaki.
           </p>
 
@@ -515,7 +508,7 @@ const VoicePreviewStep: React.FC<Props> = ({
             <CustomerServiceOutlined /> Muziki na kasi
           </h2>
           <p className="beat-hint">
-            Hatua 2/3 — chagua beat; sample inacheza moja kwa moja. Kisha tutatengeneza preview kamili
+            Chagua beat; sample inacheza moja kwa moja. Kisha tutatengeneza preview kamili
             (hadi ~40s). {remainingPreviews}/{previewLimit} previews zimebaki.
           </p>
 
@@ -619,7 +612,7 @@ const VoicePreviewStep: React.FC<Props> = ({
             <h2 className="beat-section-title">
               <AudioOutlined /> Sikiliza preview
             </h2>
-            <p className="beat-hint">Hatua 3/3 — ukiridhika, thibitisha sauti ili uendelee malipo.</p>
+            <p className="beat-hint">Ukiridhika, thibitisha sauti ili uendelee malipo.</p>
 
             <div className="beat-preview-player">
               {isGenerating && (

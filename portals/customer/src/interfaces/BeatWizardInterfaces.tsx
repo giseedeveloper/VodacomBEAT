@@ -1,4 +1,13 @@
-export type WizardStepKey = 'business' | 'clarify' | 'script' | 'preview' | 'payment' | 'status';
+export type WizardStepKey =
+  | 'personal'
+  | 'business'
+  | 'clarify'
+  | 'script'
+  | 'preview'
+  | 'checkout'
+  | 'status';
+
+export type OfferType = 'PRODUCTS' | 'SERVICES' | 'BOTH';
 
 export interface TunePackage {
   id?: number;
@@ -23,6 +32,11 @@ export interface TuneSubscription {
   landmark?: string;
   business_industry?: string;
   business_description?: string;
+  offer_type?: OfferType;
+  instagram_handle?: string;
+  facebook_handle?: string;
+  tiktok_handle?: string;
+  website_url?: string;
   products_or_services?: string[];
   secondary_products?: string[];
   target_audience?: string;
@@ -132,6 +146,11 @@ export interface WizardDraftForm {
   business_location?: string;
   landmark?: string;
   business_industry?: string;
+  offer_type?: OfferType;
+  instagram_handle?: string;
+  facebook_handle?: string;
+  tiktok_handle?: string;
+  website_url?: string;
   products_or_services?: string | string[];
   secondary_products?: string | string[];
   target_audience?: string;
@@ -141,29 +160,36 @@ export interface WizardDraftForm {
   must_include_words?: string | string[];
   must_exclude_words?: string | string[];
   offer_text?: string;
-  subscription_package: number | string;
-  voice_type: 'MALE' | 'FEMALE';
-  subscription_phones: string[];
+  subscription_package?: number | string;
+  voice_type?: 'MALE' | 'FEMALE';
+  subscription_phones?: string[];
 }
 
 export const WIZARD_STEPS: { key: WizardStepKey; title: string; subtitle: string }[] = [
-  { key: 'business', title: 'Biashara', subtitle: 'Maelezo ya msingi' },
+  { key: 'personal', title: 'Wewe', subtitle: 'Jina + simu' },
+  { key: 'business', title: 'Biashara', subtitle: 'Maelezo + mitandao' },
   { key: 'clarify', title: 'Thibitisha', subtitle: 'Maswali ya ziada' },
   { key: 'script', title: 'Maneno', subtitle: 'Chagua script' },
-  { key: 'preview', title: 'Sauti', subtitle: 'Sikiliza preview' },
-  { key: 'payment', title: 'Malipo', subtitle: 'Lipia kwa simu' },
+  { key: 'preview', title: 'Sauti', subtitle: 'Sikiliza + kubali' },
+  { key: 'checkout', title: 'Lipia', subtitle: 'Package + namba' },
 ];
 
 export function statusToStep(status?: string, wizardStep?: string): WizardStepKey {
   if (
     wizardStep === 'script' ||
     wizardStep === 'preview' ||
-    wizardStep === 'payment' ||
+    wizardStep === 'checkout' ||
     wizardStep === 'status' ||
+    wizardStep === 'personal' ||
     wizardStep === 'business' ||
     wizardStep === 'clarify'
   ) {
     return wizardStep;
+  }
+
+  // Older API builds returned 'payment'; it now lives inside checkout
+  if (wizardStep === 'payment') {
+    return 'checkout';
   }
 
   switch (status) {
@@ -177,7 +203,7 @@ export function statusToStep(status?: string, wizardStep?: string): WizardStepKe
       return 'preview';
     case 'CUSTOMER_APPROVED':
     case 'AWAITING_PAYMENT':
-      return 'payment';
+      return 'checkout';
     case 'MANUAL_REVIEW_REQUESTED':
       return 'script';
     case 'PAYMENT_PENDING':
@@ -186,6 +212,6 @@ export function statusToStep(status?: string, wizardStep?: string): WizardStepKe
     case 'INSTALLED':
       return 'status';
     default:
-      return 'business';
+      return 'personal';
   }
 }

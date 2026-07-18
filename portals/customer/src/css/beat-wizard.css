@@ -50,6 +50,141 @@
   margin-bottom: 16px;
 }
 
+/* Modern compact stepper — dots + filling line, active title only */
+.beat-stepper {
+  padding: 6px 4px 2px;
+}
+
+.beat-stepper-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.beat-stepper-line {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  background: #ffe3e3;
+  border-radius: 3px;
+}
+
+.beat-stepper-line-fill {
+  right: auto;
+  max-width: calc(100% - 32px);
+  background: linear-gradient(90deg, #e60000, #ff4d4d);
+  transition: width 0.35s ease;
+}
+
+.beat-stepper-dot {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.9em;
+  font-weight: 700;
+  background: #fff;
+  border: 2px solid #ffd6d6;
+  color: #c9a0a0;
+  transition: all 0.25s ease;
+}
+
+.beat-stepper-dot.is-done {
+  background: #e60000;
+  border-color: #e60000;
+  color: #fff;
+}
+
+.beat-stepper-dot.is-active {
+  background: #e60000;
+  border-color: #e60000;
+  color: #fff;
+  box-shadow: 0 0 0 5px rgba(230, 0, 0, 0.14);
+  transform: scale(1.12);
+}
+
+.beat-stepper-caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.beat-stepper-count {
+  font-size: 0.8em;
+  font-weight: 700;
+  color: #e60000;
+  background: #fff0f0;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+.beat-stepper-title {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.beat-stepper-subtitle {
+  color: #888;
+  font-size: 0.9em;
+}
+
+/* Small variant for sub-steps inside a wizard step */
+.beat-stepper-sm .beat-stepper-dot {
+  width: 24px;
+  height: 24px;
+  font-size: 0.78em;
+}
+
+.beat-stepper-sm .beat-stepper-line {
+  left: 12px;
+  right: 12px;
+  height: 2px;
+}
+
+.beat-stepper-sm .beat-stepper-line-fill {
+  max-width: calc(100% - 24px);
+}
+
+.beat-stepper-sm .beat-stepper-caption {
+  margin-top: 8px;
+}
+
+.beat-stepper-sm .beat-stepper-count {
+  font-size: 0.75em;
+}
+
+.beat-stepper-sm .beat-stepper-title {
+  font-size: 0.95em;
+}
+
+@media (max-width: 420px) {
+  .beat-stepper-dot {
+    width: 26px;
+    height: 26px;
+    font-size: 0.8em;
+  }
+
+  .beat-stepper-line {
+    left: 13px;
+    right: 13px;
+  }
+
+  .beat-stepper-line-fill {
+    max-width: calc(100% - 26px);
+  }
+}
+
 .beat-card {
   margin-top: 18px;
   border-radius: 12px;
@@ -304,6 +439,65 @@
   border-color: #e60000;
 }
 
+.beat-input-icon {
+  color: #b8b8b8;
+  margin-right: 4px;
+}
+
+/* BizTune Step 2 — "What does your business offer?" selector */
+.beat-offer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.beat-offer-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+.beat-offer-option:hover {
+  border-color: #ffb3b3;
+}
+
+.beat-offer-option.is-selected {
+  border-color: #e60000;
+  background: #fff5f5;
+  box-shadow: 0 0 0 1px rgba(230, 0, 0, 0.12);
+}
+
+.beat-offer-option:active {
+  transform: scale(0.98);
+}
+
+.beat-offer-icon {
+  font-size: 1.6em;
+  color: #e60000;
+  line-height: 1;
+}
+
+.beat-offer-option strong {
+  font-size: 1em;
+  color: #1a1a1a;
+}
+
+.beat-offer-hint {
+  font-size: 0.8em;
+  color: #888;
+  line-height: 1.2;
+}
+
 .beat-optional-collapse {
   margin-top: 8px;
   background: #fff;
@@ -314,6 +508,22 @@
 .beat-optional-collapse .ant-collapse-header {
   font-weight: 600;
   color: #666 !important;
+}
+
+.beat-social-collapse {
+  margin-top: 18px;
+  background: #f9f9f9;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+}
+
+.beat-social-collapse-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #e60000;
+  font-size: 1.05em;
+  font-weight: 700;
 }
 
 @media (max-width: 576px) {

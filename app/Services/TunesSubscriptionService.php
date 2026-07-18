@@ -37,7 +37,7 @@ class TunesSubscriptionService
 
     public static function addPendingSubscription(
         Request $request,
-        TuneSubscriptionPackage $packageConfiguration,
+        ?TuneSubscriptionPackage $packageConfiguration,
         ?ReferralAgent $agent,
         string $initialStatus = SubscriptionStatusService::AWAITING_PAYMENT
     ): ?TuneSubscription
@@ -53,7 +53,9 @@ class TunesSubscriptionService
         $voiceType = $request->input('voice_type') ?: 'FEMALE';
         $voiceScript = $request->input('voice_script');
 
-        $phones = $request->input('subscription_phones');
+        // Package and phones are optional at draft time (BizTune flow collects
+        // them after the audio is approved). They are applied at checkout.
+        $phones = $request->input('subscription_phones') ?: [];
 
 
         # Get customer
@@ -67,17 +69,22 @@ class TunesSubscriptionService
 
         Log::info("Creating a transaction for $contactPhone, package: " . json_encode($packageConfiguration));
 
-        $totalCost = ($packageConfiguration->price) * count($phones);
+        $totalCost = null;
+        $agentCommission = null;
 
-        /// Determine commission percentage
-        if($agent!=null && is_numeric($agent->commission_percentage)){
-            $commissionPercentage = $agent->commission_percentage;
-        }else{
-            $commissionPercentage = $packageConfiguration->commission_percentage;
+        if ($packageConfiguration !== null && count($phones)) {
+            $totalCost = ($packageConfiguration->price) * count($phones);
+
+            /// Determine commission percentage
+            if($agent!=null && is_numeric($agent->commission_percentage)){
+                $commissionPercentage = $agent->commission_percentage;
+            }else{
+                $commissionPercentage = $packageConfiguration->commission_percentage;
+            }
+
+            $singleSubscriberCommission = round($packageConfiguration->price * ($commissionPercentage/100));
+            $agentCommission = $singleSubscriberCommission * count($phones);
         }
-
-        $singleSubscriberCommission = round($packageConfiguration->price * ($commissionPercentage/100));
-        $agentCommission = $singleSubscriberCommission * count($phones);
 
 
         # Create pending subscription
@@ -93,6 +100,7 @@ class TunesSubscriptionService
             'landmark' => $request->input('landmark'),
             'business_industry' => $request->input('business_industry'),
             'business_description' => $request->input('business_description'),
+            'offer_type' => $request->input('offer_type'),
             'products_or_services' => self::normalizeStringList($request->input('products_or_services')),
             'secondary_products' => self::normalizeStringList($request->input('secondary_products')),
             'target_audience' => $request->input('target_audience'),
@@ -102,13 +110,17 @@ class TunesSubscriptionService
             'must_include_words' => self::normalizeStringList($request->input('must_include_words')),
             'must_exclude_words' => self::normalizeStringList($request->input('must_exclude_words')),
             'offer_text' => $request->input('offer_text'),
+            'instagram_handle' => $request->input('instagram_handle'),
+            'facebook_handle' => $request->input('facebook_handle'),
+            'tiktok_handle' => $request->input('tiktok_handle'),
+            'website_url' => $request->input('website_url'),
 
             'payment_phone' => $paymentPhone,
             'voice_type' => $voiceType,
             'voice_script' => $voiceScript,
 
-            'subscription_package' => $packageConfiguration->package,
-            'subscription_package_id' => $packageConfiguration->id,
+            'subscription_package' => $packageConfiguration?->package,
+            'subscription_package_id' => $packageConfiguration?->id,
             'amount' => $totalCost,
 
             'commission_amount' => $agentCommission,
@@ -132,6 +144,52 @@ class TunesSubscriptionService
         }
 
         return $tuneSubscription;
+    }
+
+    /**
+     * BizTune checkout: apply the package and activation phone numbers that the
+     * customer picked after approving the audio, then recompute amount/commission.
+     */
+    public static function applyPackageAndPhones(
+        TuneSubscription $subscription,
+        TuneSubscriptionPackage $packageConfiguration,
+        array $phones
+    ): TuneSubscription {
+        $phones = array_values(array_unique(array_filter(array_map(
+            fn ($phone) => NotificationServiceService::formatPhoneNumberTZ((string) $phone),
+            $phones
+        ))));
+
+        $agent = $subscription->agent_id
+            ? ReferralAgent::query()->find($subscription->agent_id)
+            : null;
+
+        if ($agent !== null && is_numeric($agent->commission_percentage)) {
+            $commissionPercentage = $agent->commission_percentage;
+        } else {
+            $commissionPercentage = $packageConfiguration->commission_percentage;
+        }
+
+        $singleSubscriberCommission = round($packageConfiguration->price * ($commissionPercentage / 100));
+
+        $subscription->subscription_package_id = $packageConfiguration->id;
+        $subscription->amount = $packageConfiguration->price * count($phones);
+        $subscription->commission_amount = $singleSubscriberCommission * count($phones);
+        $subscription->save();
+
+        TuneSubscriptionPhone::query()
+            ->where('subscription_id', $subscription->id)
+            ->delete();
+
+        foreach ($phones as $phone) {
+            TuneSubscriptionPhone::query()->create([
+                'subscription_id' => $subscription->id,
+                'customer_id' => $subscription->customer_id,
+                'phone_number' => $phone,
+            ]);
+        }
+
+        return $subscription->refresh();
     }
 
     public static function findByReference(string $reference): ?TuneSubscription

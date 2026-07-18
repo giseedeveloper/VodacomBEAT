@@ -34,13 +34,19 @@ class CustomerBeatController extends BaseController
             'contact_person_name' => 'required|string|max:255',
             'business_name' => 'required|string|max:255',
             'contact_phone' => 'required|string|max:32',
-            'subscription_package' => 'required',
+            // Package & activation phones are picked at checkout (after audio approval)
+            'subscription_package' => 'nullable',
             'voice_type' => 'nullable|in:MALE,FEMALE',
-            'subscription_phones' => 'required|array|min:1',
+            'subscription_phones' => 'nullable|array',
             'business_location' => 'nullable|string|max:255',
             'landmark' => 'nullable|string|max:255',
             'business_industry' => 'nullable|string|max:255',
             'business_description' => 'nullable|string|max:2000',
+            'offer_type' => 'nullable|in:PRODUCTS,SERVICES,BOTH',
+            'instagram_handle' => 'nullable|string|max:255',
+            'facebook_handle' => 'nullable|string|max:255',
+            'tiktok_handle' => 'nullable|string|max:255',
+            'website_url' => 'nullable|string|max:255',
             'products_or_services' => 'nullable',
             'secondary_products' => 'nullable',
             'target_audience' => 'nullable|string|max:500',
@@ -54,9 +60,12 @@ class CustomerBeatController extends BaseController
         ]);
 
         $packageNumber = $request->input('subscription_package');
-        $packageConfiguration = TuneSubscriptionPackage::query()->where(['package' => $packageNumber])->first();
-        if (! $packageConfiguration) {
-            return $this->returnError("Package {$packageNumber} does not exist", [], 400);
+        $packageConfiguration = null;
+        if ($packageNumber !== null && $packageNumber !== '') {
+            $packageConfiguration = TuneSubscriptionPackage::query()->where(['package' => $packageNumber])->first();
+            if (! $packageConfiguration) {
+                return $this->returnError("Package {$packageNumber} does not exist", [], 400);
+            }
         }
 
         $subscription = TunesSubscriptionService::addPendingSubscription(
@@ -95,6 +104,9 @@ class CustomerBeatController extends BaseController
     {
         $request->validate([
             'reference' => 'required|string',
+            'follow_up_answers' => 'nullable|array',
+            'follow_up_answers.*.question' => 'nullable|string|max:500',
+            'follow_up_answers.*.answer' => 'nullable|string|max:1000',
             'business_description' => 'nullable|string|max:2000',
             'products_or_services' => 'nullable',
             'secondary_products' => 'nullable',
@@ -110,6 +122,23 @@ class CustomerBeatController extends BaseController
         $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
         if ($subscription === null) {
             return $this->returnError('Subscription not found', [], 404);
+        }
+
+        // Q&A answers from the clarify step are appended to the description so
+        // the analyzer re-runs with the new information (no duplicated form fields).
+        $qaText = collect($request->input('follow_up_answers', []))
+            ->filter(fn ($qa) => filled($qa['answer'] ?? null))
+            ->map(fn ($qa) => trim(($qa['question'] ?? 'Swali') . ' — ' . $qa['answer']))
+            ->implode("\n");
+
+        if ($qaText !== '') {
+            $existingDescription = $request->input('business_description', $subscription->business_description);
+            $request->merge([
+                'business_description' => trim(
+                    ($existingDescription ? $existingDescription . "\n\n" : '')
+                    . "Majibu ya maswali ya ziada:\n" . $qaText
+                ),
+            ]);
         }
 
         $subscription->fill([
@@ -585,6 +614,52 @@ class CustomerBeatController extends BaseController
         ]);
     }
 
+    /**
+     * BizTune checkout (steps 6 & 7): after the audio is approved the customer
+     * picks a package and the phone numbers to activate. Amount is computed here.
+     */
+    public function checkout(Request $request): JsonResponse
+    {
+        $request->validate([
+            'reference' => 'required|string',
+            'subscription_package' => 'required',
+            'subscription_phones' => 'required|array|min:1',
+            'subscription_phones.*' => 'string|max:32',
+        ]);
+
+        $subscription = TunesSubscriptionService::findByReference($request->input('reference'));
+        if ($subscription === null) {
+            return $this->returnError('Subscription not found', [], 404);
+        }
+
+        if (! in_array($subscription->status, [
+            SubscriptionStatusService::CUSTOMER_APPROVED,
+            SubscriptionStatusService::AWAITING_PAYMENT,
+            SubscriptionStatusService::PAYMENT_PENDING,
+        ], true)) {
+            return $this->returnError('Checkout is available after the audio is approved', [
+                'status' => $subscription->status,
+            ], 400);
+        }
+
+        $packageNumber = $request->input('subscription_package');
+        $packageConfiguration = TuneSubscriptionPackage::query()->where(['package' => $packageNumber])->first();
+        if (! $packageConfiguration) {
+            return $this->returnError("Package {$packageNumber} does not exist", [], 400);
+        }
+
+        $subscription = TunesSubscriptionService::applyPackageAndPhones(
+            $subscription,
+            $packageConfiguration,
+            $request->input('subscription_phones')
+        );
+
+        return $this->returnResponse('Checkout saved', [
+            'subscription' => $subscription->load('phones'),
+            'next_step' => 'payment',
+        ]);
+    }
+
     public function initiatePayment(Request $request): JsonResponse
     {
         $request->validate([
@@ -603,6 +678,12 @@ class CustomerBeatController extends BaseController
             SubscriptionStatusService::PAYMENT_PENDING,
         ], true)) {
             return $this->returnError('Payment cannot be started in the current status', [
+                'status' => $subscription->status,
+            ], 400);
+        }
+
+        if (! $subscription->subscription_package_id || ! ($subscription->amount > 0)) {
+            return $this->returnError('Chagua kifurushi na namba za kuwekewa tune kwanza', [
                 'status' => $subscription->status,
             ], 400);
         }
@@ -711,7 +792,7 @@ class CustomerBeatController extends BaseController
             SubscriptionStatusService::PREVIEW_GENERATING,
             SubscriptionStatusService::PREVIEW_READY => 'preview',
             SubscriptionStatusService::CUSTOMER_APPROVED,
-            SubscriptionStatusService::AWAITING_PAYMENT => 'payment',
+            SubscriptionStatusService::AWAITING_PAYMENT => 'checkout',
             SubscriptionStatusService::PAYMENT_PENDING,
             SubscriptionStatusService::PAID,
             SubscriptionStatusService::ACTIVE,
