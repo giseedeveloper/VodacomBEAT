@@ -61,8 +61,8 @@ const ScriptReviewStep: React.FC<Props> = ({
           <EditOutlined /> Chagua Maneno / Pick a Script
         </h2>
         <p className="beat-hint">
-          AI imekupa versions 3 kutoka template iliyothibitishwa. Chagua moja, hariri kidogo ikiwa
-          unahitaji ({remaining} regenerations left).
+          Tumekupa matoleo 3 ya maneno kutoka template iliyothibitishwa. Chagua moja, hariri
+          kidogo ikiwa unahitaji (umebaki na nafasi {remaining} za kutengeneza upya).
         </p>
 
         {subscription?.requires_admin_script_review && (

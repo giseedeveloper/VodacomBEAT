@@ -234,7 +234,7 @@ const StatusPage = () => {
                 </h1>
                 <p className="beat-hero-copy">
                   {status === 'MANUAL_REVIEW_REQUESTED'
-                    ? 'AI haijakamilisha kuainisha biashara / script. Unaweza kurudi wizard kukamilisha, au subiri admin.'
+                    ? 'Bado haijakamilika kuainisha biashara / maneno. Unaweza kurudi wizard kukamilisha, au subiri admin.'
                     : isInProgress
                       ? 'Endelea na hatua za script, sauti, au malipo.'
                       : 'Angalia hali hapa chini au rudi kwenye wizard.'}

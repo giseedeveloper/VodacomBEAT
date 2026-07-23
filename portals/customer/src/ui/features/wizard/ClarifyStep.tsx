@@ -12,7 +12,7 @@ interface Props {
 }
 
 /**
- * AI follow-up step — shows ONLY the questions the AI actually asked,
+ * Follow-up step — shows ONLY the clarification questions that were asked,
  * one answer box per question. It must not repeat the business intake form.
  */
 const ClarifyStep: React.FC<Props> = ({ form, questions, loading, onContinue, onBack }) => {
@@ -20,10 +20,10 @@ const ClarifyStep: React.FC<Props> = ({ form, questions, loading, onContinue, on
     <Form form={form} layout="vertical" className="beat-step-form" onFinish={onContinue}>
       <Card className="beat-card" bodyStyle={{ backgroundColor: '#f9f9f9' }}>
         <h2 className="beat-section-title">
-          <QuestionCircleOutlined /> Maswali machache kutoka kwa AI
+          <QuestionCircleOutlined /> Maswali machache ya ufafanuzi
         </h2>
         <p className="beat-hint">
-          AI imesoma taarifa za biashara yako na inahitaji majibu ya maswali haya tu ili
+          Tumesoma taarifa za biashara yako na tunahitaji majibu ya maswali haya tu ili
           tangazo lako liwe sahihi. Jibu kwa kifupi — hakuna haja ya kurudia ulichojaza.
         </p>
 

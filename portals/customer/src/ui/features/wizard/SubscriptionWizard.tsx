@@ -490,7 +490,7 @@ const SubscriptionWizard: React.FC = () => {
             <div>
               <h1 className="beat-hero-title">BizTune Caller Tune</h1>
               <Paragraph className="beat-hero-copy">
-                Jaza taarifa za biashara yako — AI itatengeneza tangazo, uchague sauti na muziki,
+                Jaza taarifa za biashara yako — tutakutengenezea tangazo, uchague sauti na muziki,
                 kisha ulipie. Dakika chache tu!
               </Paragraph>
             </div>

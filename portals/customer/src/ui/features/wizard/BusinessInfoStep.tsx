@@ -105,7 +105,7 @@ const BusinessInfoStep: React.FC<Props> = ({ form, loading, onContinue, onBack }
           <ShopOutlined /> Biashara yako
         </h2>
         <p className="beat-hint">
-          Ukituma, AI itakutengenezea maneno ya tangazo moja kwa moja.
+          Ukituma, tutakutengenezea maneno ya tangazo moja kwa moja.
         </p>
 
         <Form.Item
